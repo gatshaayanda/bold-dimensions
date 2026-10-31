@@ -1403,3 +1403,103 @@ input, select, textarea, button {
  .jtsEditorialHome{padding-bottom:72px}
 }
 @media(prefers-reduced-motion:reduce){.jtsHomeHeroMedia video{display:none}}
+
+
+/* JTS compact app home: keep the first screen focused on the next customer action. */
+.jtsAppHome{min-height:100dvh;background:#080808;color:#fff;padding:0 0 22px}
+.jtsAppHeader{max-width:1120px;margin:0 auto;padding:14px 22px;display:flex;align-items:center;justify-content:space-between;gap:16px;border-bottom:1px solid #292929}
+.jtsAppLogo{display:flex;align-items:center;gap:10px;color:#fff;text-decoration:none}
+.jtsAppLogo img{width:42px;height:42px;object-fit:contain}
+.jtsAppLogo span{display:grid;gap:3px}
+.jtsAppLogo b{font-size:.9rem;letter-spacing:.12em}
+.jtsAppLogo small{font-size:.58rem;letter-spacing:.16em;color:#d8bd79}
+.jtsAppHeader>span{color:#d5d5d5;font-size:.65rem;letter-spacing:.14em}
+.jtsAppAccount{width:42px;height:42px;display:grid;place-items:center;border:1px solid #b18c4b;border-radius:50%;color:#fff;font-size:1.25rem;text-decoration:none}
+.jtsAppHero{max-width:1120px;margin:0 auto;padding:22px;display:grid;grid-template-columns:minmax(0,1.08fr) minmax(300px,.92fr);gap:26px;align-items:stretch}
+.jtsAppHeroVisual{position:relative;min-height:420px;overflow:hidden;border:1px solid #5e4b2c;background:#151515}
+.jtsAppHeroVisual .jtsHomeHeroMedia,.jtsAppHeroVisual .jtsHomeHeroFallback{position:absolute;inset:0;width:100%;height:100%}
+.jtsAppHeroVisual .jtsHomeHeroMedia img,.jtsAppHeroVisual .jtsHomeHeroMedia video{width:100%;height:100%;object-fit:cover}
+.jtsAppHeroVisual .jtsHomeHeroMedia:after{content:"";position:absolute;inset:35% 0 0;background:linear-gradient(0deg,rgba(0,0,0,.6),transparent)}
+.jtsAppHeroVisual .jtsHomeHeroFallback{padding:32px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;background:radial-gradient(ellipse at 75% 20%,#423721,#191919 48%,#090909)}
+.jtsAppHeroVisual .jtsHomeHeroFallback strong{display:block;color:#fff!important;font:500 clamp(3rem,6vw,5.7rem)/.92 Georgia,serif;letter-spacing:-.055em;text-shadow:0 3px 18px #000;margin:26px 0}
+.jtsAppHeroVisual .jtsHomeHeroFallback em{color:#f0d58a!important;font-style:italic}
+.jtsAppHeroVisual .jtsHomeHeroFallback span,.jtsAppHeroVisual .jtsHomeHeroFallback small{color:#f0d58a!important;text-shadow:0 1px 8px #000}
+.jtsAppHeroCopy{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:clamp(14px,3vw,38px) 0}
+.jtsAppKicker{color:#e7ce91;font-size:.68rem;font-weight:900;letter-spacing:.18em}
+.jtsAppHeroCopy h1{margin:17px 0;color:#fff!important;font:500 clamp(3rem,5.8vw,5.5rem)/.94 Georgia,serif;letter-spacing:-.055em;text-shadow:0 2px 16px rgba(0,0,0,.8)}
+.jtsAppHeroCopy h1 em{color:#f0d58a!important;font-style:italic}
+.jtsAppHeroCopy p{max-width:390px;margin:0 0 26px;color:#e4e4e4;font-size:1rem;line-height:1.6}
+.jtsAppBook{width:100%;min-height:64px;padding:14px 18px;display:flex;align-items:center;gap:14px;background:linear-gradient(105deg,#a47b30,#e4c77f 55%,#b18a42);border:1px solid #f0d58a;color:#090909;text-decoration:none}
+.jtsAppBook span{font-size:1.5rem}.jtsAppBook strong{flex:1;font-size:1.05rem}.jtsAppBook b{font-size:1.4rem}
+.jtsAppShortcuts{max-width:1076px;margin:0 auto;padding:0 22px 20px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.jtsAppShortcuts>a{position:relative;min-height:126px;padding:17px;display:grid;align-content:start;gap:8px;border:1px solid #49433a;background:linear-gradient(145deg,#1b1b1b,#0e0e0e);color:#fff;text-decoration:none}
+.jtsAppShortcuts>a>span{font-size:1.45rem;color:#f0d58a}
+.jtsAppShortcuts>a strong{font:500 1rem Georgia,serif}
+.jtsAppShortcuts>a small{font-size:.72rem;color:#d2d2d2}
+.jtsAppShortcuts>a b{position:absolute;right:14px;top:13px;color:#f0d58a}
+.jtsAppShortcuts>a:focus-visible,.jtsAppShortcuts>a:hover{outline:2px solid #f0d58a;outline-offset:2px;border-color:#f0d58a}
+.jtsAppInstall{max-width:1032px;margin:0 auto 16px;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;border:1px solid #343434;background:#111}
+.jtsAppInstall>div{display:grid;gap:5px}
+.jtsAppInstall>div strong{font:500 1.1rem Georgia,serif;color:#fff}
+.jtsAppInstall>div small{color:#d0d0d0;font-size:.76rem}
+.jtsAppInstall button,.jtsAppInstall a{min-height:42px}
+.jtsAppFooter{max-width:1032px;margin:0 auto;padding:14px 22px;display:flex;align-items:center;justify-content:space-between;gap:16px;border-top:1px solid #292929}
+.jtsAppFooter>span{font-size:.74rem;color:#d1d1d1}
+.jtsAppFooter .jtsAdminAccessLink{color:#a9a9a9;font-size:.68rem}
+.jtsAppHome .jtsHomeDock{display:none}
+.jtsCategoryGridCompact{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.jtsCategoryCardCompact .jtsCategoryVisual{aspect-ratio:16/9}
+.jtsCategoryCompactBody{padding:14px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.jtsCategoryCompactBody h3{margin:4px 0;color:#fff;font-size:.98rem}
+.jtsCategoryCompactBody p{margin:0;color:#d1d1d1;font-size:.72rem}
+.jtsCategoryCompactBody button{flex:0 0 auto;min-height:40px;padding:8px 12px;border:1px solid #d7bd83;background:#151515;color:#fff;font-size:.75rem;font-weight:800}
+.jtsCategoryModalList{list-style:none;margin:0;padding:0}
+.jtsCategoryModalList li{border-bottom:1px solid #373737}
+.jtsCategoryModalList a{min-height:56px;padding:10px 4px;display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:12px;color:#fff;text-decoration:none}
+.jtsCategoryModalList a span{overflow-wrap:anywhere}
+.jtsCategoryModalList a strong{white-space:nowrap}
+.jtsCategoryModalList a b{color:#f0d58a;font-size:.75rem;white-space:nowrap}
+.jtsCategoryModalList a:focus-visible{outline:2px solid #f0d58a;outline-offset:2px}
+.jtsUtilityPage{min-height:100dvh;padding:0 0 42px;background:#090909;color:#fff}
+.jtsUtilityPage>header{max-width:1100px;margin:auto;padding:18px 22px;display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #333;color:#d9bd79;font-size:.68rem;letter-spacing:.14em}
+.jtsUtilityBack{color:#fff;text-decoration:none;font-weight:900}
+.jtsUtilityPage>section{max-width:1100px;margin:0 auto;padding:38px 22px}
+.jtsUtilityPage>section>h1{margin:12px 0;color:#fff;font:500 clamp(2.6rem,6vw,4.5rem)/1 Georgia,serif}
+.jtsUtilityPage>section>h1 em{color:#f0d58a}
+.jtsUtilityPage>section>p{max-width:620px;margin:0 0 24px;color:#ddd;line-height:1.6}
+.jtsUtilityPage>footer{max-width:1100px;margin:auto;padding:0 22px}
+.jtsAdminCategoryMedia{margin:20px 0 26px;padding:18px;border:1px solid #51452e;background:#111}
+.jtsAdminCategoryMediaIntro strong{font-size:1rem;color:#fff}
+.jtsAdminCategoryMediaIntro p{margin:6px 0 14px;color:#dedede;font-size:.82rem;line-height:1.5}
+.jtsAdminCategoryMediaGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.jtsAdminCategoryMediaGrid article{min-width:0;padding:12px;border:1px solid #444;background:#171717}
+.jtsAdminCategoryMediaPreview{aspect-ratio:16/9;display:grid;place-items:center;overflow:hidden;background:#080808;color:#f0d58a;text-align:center;font-size:.78rem;font-weight:900}
+.jtsAdminCategoryMediaPreview img,.jtsAdminCategoryMediaPreview video{width:100%;height:100%;object-fit:cover}
+.jtsAdminCategoryMediaGrid article>strong{display:block;margin:10px 0;color:#fff;font-size:.8rem}
+.jtsAdminCategoryMediaGrid .adminUploadField{display:block;color:#fff;font-size:.76rem}
+.jtsAdminCategoryMediaGrid .adminUploadField input{display:block;width:100%;margin:8px 0}
+.jtsAdminCategoryMediaGrid .adminUploadField small{display:block;color:#ddd;line-height:1.4}
+@media(max-width:760px){
+ .jtsAppHeader{padding:10px 14px}.jtsAppHeader>span{font-size:.55rem}
+ .jtsAppHero{padding:12px 14px 16px;grid-template-columns:1fr;gap:0}
+ .jtsAppHeroVisual{min-height:clamp(250px,72vw,390px);order:0}
+ .jtsAppHeroCopy{padding:18px 2px 0}
+ .jtsAppHeroCopy h1{font-size:clamp(2.7rem,11vw,4rem);margin:10px 0}
+ .jtsAppHeroCopy p{margin-bottom:16px;font-size:.88rem}
+ .jtsAppBook{min-height:58px}
+ .jtsAppShortcuts{padding:0 14px 14px;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .jtsAppShortcuts>a{min-height:105px;padding:13px}
+ .jtsAppInstall{margin:0 14px 14px;padding:12px;align-items:flex-start;flex-direction:column}
+ .jtsAppFooter{padding:12px 14px;flex-wrap:wrap}
+ .jtsAppFooter>span{font-size:.68rem}
+ .jtsAppHome .jtsHomeDock{position:fixed;z-index:40;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(4,1fr);padding:8px 8px calc(8px + env(safe-area-inset-bottom));background:rgba(8,8,8,.98);border-top:1px solid #5c4b2d}
+ .jtsAppHome .jtsHomeDock a{display:grid;justify-items:center;gap:3px;color:#ddd;text-decoration:none}
+ .jtsAppHome .jtsHomeDock a span{font-size:1.2rem;color:#f0d58a}
+ .jtsAppHome .jtsHomeDock a small{font-size:.62rem;font-weight:800}
+ .jtsAppHome{padding-bottom:72px}
+ .jtsCategoryGridCompact{grid-template-columns:1fr}
+ .jtsCategoryCompactBody{padding:12px}
+ .jtsCategoryModalList a{grid-template-columns:minmax(0,1fr) auto}
+ .jtsCategoryModalList a b{grid-column:1/-1}
+ .jtsAdminCategoryMediaGrid{grid-template-columns:1fr}
+}
