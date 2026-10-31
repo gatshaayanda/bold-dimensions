@@ -9,7 +9,7 @@ import AdminGate from "@/app/admin/admin-gate";
 import JtsStyleGuide from "@/components/JtsStyleGuide";
 import { auth, db } from "@/lib/firebase/client";
 import { uploadFiles } from "@/lib/uploadthing";
-import { DEFAULT_PUBLIC_SERVICES, normalizePublicServices, type PublicService, type PublicServiceMedia } from "@/lib/jts/public-services";
+import { DEFAULT_PUBLIC_SERVICES, mergePublicServices, PUBLIC_SERVICE_CATEGORIES, type PublicService, type PublicServiceMedia } from "@/lib/jts/public-services";
 
 type Appointment = {
   id: string;
@@ -55,7 +55,7 @@ function Dashboard() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [adminName, setAdminName] = useState("");
   const [reviews, setReviews] = useState<CustomerReview[]>([]);
-  const [services, setServices] = useState<PublicService[]>(DEFAULT_PUBLIC_SERVICES);
+  const [services, setServices] = useState<PublicService[]>(DEFAULT_PUBLIC_SERVICES);\n  const [categoryMedia, setCategoryMedia] = useState<Record<string, PublicServiceMedia>>({});
   const [stylePosts, setStylePosts] = useState<OwnerStylePost[]>([]);
   const [tab, setTab] = useState<"appointments" | "availability" | "reviews" | "services" | "styleFeed">("appointments");
   const [unavailableDates, setUnavailableDates] = useState<Array<{id:string;date:string;reason:string;updatedAt?:string}>>([]);
@@ -164,6 +164,36 @@ function Dashboard() {
     }, () => setNotice("John's style feed could not be loaded. Check Firebase access and connection."));
     return () => { stopServices(); stopStylePosts(); };
   }, []);
+
+
+  async function uploadCategoryMedia(category: string, file: File) {
+    const isVideo = file.type.startsWith("video/") || /\\.(mp4|webm|mov|m4v)$/i.test(file.name);
+    const isImage = file.type.startsWith("image/") || /\\.(jpe?g|png|webp|gif|avif|heic)$/i.test(file.name);
+    const maxBytes = isVideo ? 8 * 1024 * 1024 : 4 * 1024 * 1024;
+    if ((!isImage && !isVideo) || file.size > maxBytes) {
+      setNotice(isVideo ? "Choose a supported video no larger than 8 MB." : "Choose an image no larger than 4 MB.");
+      return;
+    }
+    const currentUser = auth.currentUser;
+    if (!currentUser) { setNotice("Your admin session expired. Sign in again before uploading."); return; }
+    setMediaUploading(true); setNotice(""); setUploadProgress("Uploading " + category + " cover: " + file.name); setUploadPercent(0);
+    try {
+      const token = await currentUser.getIdToken();
+      const uploaded = await uploadFiles("adminStyleMedia", {
+        files: [file],
+        headers: { Authorization: `Bearer ${token}` },
+        onUploadProgress: ({ progress }) => setUploadPercent(Math.max(0, Math.min(100, Math.round(progress)))),
+      });
+      const url = uploaded[0]?.ufsUrl || uploaded[0]?.url;
+      if (!url) throw new Error("Upload completed without a public media URL.");
+      const next = { ...categoryMedia, [category]: { url, type: isVideo ? "video" as const : "image" as const, alt: category + " by John at JTS Styles" } };
+      await setDoc(doc(db, "businessSettings", "publicServices"), { categoryMedia: next, updatedAt: new Date().toISOString() }, { merge: true });
+      setCategoryMedia(next);
+      setNotice(category + " category cover saved and is now used on the public service page.");
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : "Category media upload failed. Try again.");
+    } finally { setMediaUploading(false); setUploadProgress(""); setUploadPercent(0); }
+  }
 
   async function uploadServiceMedia(files: File[]) {
     if (!serviceDraft || files.length === 0) return;
@@ -446,7 +476,22 @@ function Dashboard() {
     </section> : tab === "services" ? <section id="admin-services" className="adminPanel">
       <div className="panelHeading"><div><span className="kicker">PUBLIC CATALOGUE</span><h2>Services & prices</h2></div><span>{services.length} listed</span></div>
       <p>These records drive the public service cards, booking choices and customer account inspiration. Add photos/videos directly to each service.</p>
-      <p className="adminServiceIntro">Manage the service, price, booking label and its own public photos/videos together. For separate editorial portfolio posts, use John&apos;s style feed.</p>
+      <p className="adminServiceIntro">The 17 supplied services are maintained as one catalogue. Upload one cover per category below; individual service galleries are optional.</p>\n      <div className="jtsAdminCategoryMedia">
+        <div className="jtsAdminCategoryMediaIntro"><strong>Public category covers</strong><p>Upload just one strong photo or short MP4 for each category. You do not need 17 separate service photos. These covers appear on the customer-facing category tiles.</p></div>
+        <div className="jtsAdminCategoryMediaGrid">{PUBLIC_SERVICE_CATEGORIES.map(category => {
+          const media = categoryMedia[category];
+          return <article key={category}>
+            <div className="jtsAdminCategoryMediaPreview">{media ? media.type === "video" ? <video src={media.url} controls playsInline preload="metadata" /> : <img src={media.url} alt={media.alt || category} /> : <span>{category}</span>}</div>
+            <strong>{category}</strong>
+            <label className="adminUploadField"> {media ? "Replace category cover" : "Upload category cover"}
+              <input type="file" accept="image/*,video/mp4,video/webm,video/quicktime,video/x-m4v" disabled={mediaUploading} onChange={event => { const file = event.currentTarget.files?.[0]; if (file) void uploadCategoryMedia(category, file); event.currentTarget.value = ""; }} />
+              <small>One image or video · images up to 4 MB · videos up to 8 MB</small>
+            </label>
+          </article>;
+        })}</div>
+        {mediaUploading && <div className="adminUploadProgress" role="group" aria-label="Category media upload progress"><div className="adminUploadProgressMeta"><span>{uploadProgress || "Preparing secure upload…"}</span><strong>{uploadPercent}%</strong></div><div className="adminUploadProgressTrack" role="progressbar" aria-label="Category cover upload" aria-valuemin={0} aria-valuemax={100} aria-valuenow={uploadPercent}><span style={{width: uploadPercent + "%"}} /></div></div>}
+      </div>
+
       {serviceDraft ? <div className="adminModalBackdrop" onMouseDown={event => { if (event.target === event.currentTarget && !mediaUploading) setServiceDraft(null); }}>
         <section className="adminEditorModal" role="dialog" aria-modal="true" aria-labelledby="admin-service-editor-title">
           <div className="adminModalHeading"><div><span className="kicker">{serviceDraft.id ? "EDIT PUBLIC SERVICE" : "NEW PUBLIC SERVICE"}</span><h2 id="admin-service-editor-title">{serviceDraft.id ? "Edit service" : "Add a service"}</h2><p>Changes here update the public catalogue and booking choices.</p></div><button type="button" className="adminModalClose" aria-label="Close service editor" disabled={mediaUploading} onClick={() => setServiceDraft(null)}>×</button></div>
