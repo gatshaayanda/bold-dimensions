@@ -1350,3 +1350,56 @@ input, select, textarea, button {
 .jtsCategoryBookLink span{color:#e3d2a8}
 @media(max-width:760px){.jtsCategoryGrid{grid-template-columns:1fr;gap:16px}.jtsCategoryBody{padding:16px}.jtsCategoryVisual{aspect-ratio:16/8}}
 @media(max-width:390px){.jtsCategoryServiceList li{grid-template-columns:minmax(0,1fr) auto;gap:7px 10px}.jtsCategoryServiceList li a{grid-column:1/-1;justify-self:start}}
+
+/* JTS app-like public home: cinematic owner media and clear first actions. */
+.jtsEditorialHome .jtsEditHero{padding:clamp(42px,6vw,82px) 0 52px;background:radial-gradient(ellipse at 78% 28%,rgba(181,139,53,.13),transparent 42%),#080808;color:#f7f7f5}
+.jtsEditorialHome .jtsEditHeroCopy>p{max-width:520px;color:#d1d1ce}
+.jtsEditorialHome .jtsEditEyebrow{color:#d9bd79}
+.jtsEditorialHome .jtsEditHeroArt.jtsHomeHeroArt{min-height:clamp(390px,48vw,590px);position:relative;overflow:hidden;border:1px solid #8e7138;border-radius:4px;background:#111;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.jtsHomeHeroMedia,.jtsHomeHeroFallback{position:absolute;inset:0;width:100%;height:100%}
+.jtsHomeHeroMedia:after{content:"";position:absolute;inset:35% 0 0;background:linear-gradient(0deg,rgba(0,0,0,.78),transparent);pointer-events:none}
+.jtsHomeHeroMedia img,.jtsHomeHeroMedia video{width:100%;height:100%;display:block;object-fit:cover}
+.jtsHomeHeroMediaLabel{position:absolute;z-index:2;left:22px;bottom:25px;color:#fff;font-size:.65rem;letter-spacing:.2em;font-weight:900}
+.jtsHomeHeroFallback{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:clamp(24px,5vw,54px);background:radial-gradient(circle at 70% 30%,#39332a,#111 48%,#050505)}
+.jtsHomeHeroFallback>span,.jtsHomeHeroFallback small{color:#d9bd79;letter-spacing:.2em;font-size:.65rem;font-weight:900}
+.jtsHomeHeroFallback strong{margin:30px 0;font:500 clamp(3.2rem,7vw,6.5rem)/.9 Georgia,serif;letter-spacing:-.06em;color:#fff}
+.jtsHomeHeroFallback em{font-weight:400;color:#d9bd79}
+.jtsHomeHeroArt>.jtsEditArtTop,.jtsHomeHeroArt>.jtsEditArtBottom{position:absolute;z-index:3;left:20px;right:20px;color:#fff;text-shadow:0 1px 8px #000}
+.jtsHomeHeroArt>.jtsEditArtTop{top:18px}.jtsHomeHeroArt>.jtsEditArtBottom{bottom:16px}
+.jtsHomeActions{padding:0 0 48px;background:#080808;color:#fff}
+.jtsHomeActionPrimary a{display:flex;align-items:center;gap:18px;min-height:94px;padding:18px 22px;border:1px solid #d4af67;background:linear-gradient(110deg,#b58b35,#e0c37e 58%,#a47b30);color:#090909;box-shadow:0 12px 34px rgba(181,139,53,.17)}
+.jtsHomeActionIcon{display:grid;place-items:center;width:54px;height:54px;border:1px solid rgba(0,0,0,.35);border-radius:50%;font-size:1.8rem}
+.jtsHomeActionPrimary a>span:nth-child(2){display:grid;gap:5px;flex:1}
+.jtsHomeActionPrimary small{font-size:.62rem;font-weight:950;letter-spacing:.17em}
+.jtsHomeActionPrimary strong{font:500 clamp(1.25rem,3vw,1.8rem) Georgia,serif}
+.jtsHomeActionPrimary b{font-size:1.5rem}
+.jtsHomeActionGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:13px}
+.jtsHomeActionGrid>a{position:relative;display:grid;align-content:start;gap:9px;min-height:132px;padding:18px;border:1px solid #474747;background:linear-gradient(145deg,#191919,#0d0d0d);color:#fff}
+.jtsHomeActionGrid>a>span{font-size:1.55rem;color:#d9bd79}
+.jtsHomeActionGrid>a strong{font:500 1.03rem Georgia,serif}
+.jtsHomeActionGrid>a small{color:#c4c4c0;font-size:.73rem;line-height:1.4}
+.jtsHomeActionGrid>a>b{position:absolute;right:15px;top:15px;color:#d9bd79}
+.jtsHomeActionGrid>a:hover,.jtsHomeActionGrid>a:focus-visible{border-color:#d4af67;background:#201c14;outline:2px solid #d4af67;outline-offset:2px}
+.jtsHomeDock{display:none}
+.jtsEditorialHome .jtsEditHeroActions{gap:14px}
+.jtsEditorialHome .jtsEditPrimary{min-height:54px;padding:0 23px;border-radius:2px;font-size:.78rem;letter-spacing:.07em}
+.jtsEditorialHome .jtsEditSecondary{color:#fff;border-color:#777}
+@media(max-width:760px){
+ .jtsEditorialHome .jtsEditHero{padding:30px 0 28px}
+ .jtsEditorialHome .jtsEditHeroGrid{grid-template-columns:1fr;gap:22px}
+ .jtsEditorialHome .jtsEditHeroArt.jtsHomeHeroArt{min-height:clamp(330px,100vw,470px);order:-1}
+ .jtsEditorialHome .jtsEditHeroCopy h1{font-size:clamp(3.1rem,13vw,5.1rem);line-height:.9}
+ .jtsEditorialHome .jtsEditHeroCopy>p{font-size:.88rem}
+ .jtsHomeActions{padding-bottom:22px}
+ .jtsHomeActionPrimary a{min-height:78px;padding:13px 15px}
+ .jtsHomeActionIcon{width:45px;height:45px}
+ .jtsHomeActionGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .jtsHomeActionGrid>a{min-height:116px;padding:14px}
+ .jtsHomeDock{position:fixed;z-index:30;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(4,1fr);padding:8px 8px calc(8px + env(safe-area-inset-bottom));background:rgba(8,8,8,.97);border-top:1px solid #62502d;backdrop-filter:blur(14px)}
+ .jtsHomeDock a{display:grid;justify-items:center;gap:3px;padding:3px;color:#c8c8c8}
+ .jtsHomeDock a span{font-size:1.2rem;color:#d9bd79}
+ .jtsHomeDock a small{font-size:.63rem;font-weight:800}
+ .jtsHomeDock a:focus-visible{outline:2px solid #d9bd79;outline-offset:2px}
+ .jtsEditorialHome{padding-bottom:72px}
+}
+@media(prefers-reduced-motion:reduce){.jtsHomeHeroMedia video{display:none}}
