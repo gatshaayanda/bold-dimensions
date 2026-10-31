@@ -585,3 +585,14 @@ The account should feel like a personal JTS style studio, not a generic dashboar
 - On mobile, keep the quick dock limited to Home, Book, Account and Studio. Keep admin discreet in the footer only.
 - Preserve all booking, account, service-media, owner style-feed, install, offline and admin behavior. Homepage visual work must not alter appointment truth, authentication, Firestore permissions or customer data visibility.
 - When changing the homepage shell, increment the service-worker cache namespace in `src/config/brand.ts` and `public/sw-jts.js` together.
+
+
+## JTS compact customer app and category media — current approved implementation
+- The customer homepage is a focused app dashboard, not a long-form landing page. Keep it to the JTS hero/identity, one dominant booking action, four destinations (appointments, services, Style Studio, location), a compact install prompt and discreet footer/admin access.
+- Full service catalogue, Style Studio and other explanatory content live on focused destination screens. Do not embed all service descriptions, booking instructions, portfolio feed and game in one long homepage.
+- The hero must use the first available authorized category cover or service media. Its text fallback must remain high-contrast and legible on small screens; normal text must meet WCAG AA contrast (4.5:1), large text 3:1.
+- Admin → Services & prices has a dedicated four-category cover uploader. One photo or video per category is sufficient; individual service galleries remain optional. Category cover metadata is stored in `businessSettings/publicServices.categoryMedia`.
+- Public and admin catalogue views must use the same canonical 17 supplied services, merging saved edits by stable service ID. Legacy records outside the four approved categories must not replace or hide canonical services.
+- Public categories are compact tiles. Service names and prices appear after the customer opens a category; never truncate service names or hide prices in the detail view.
+- Preserve all booking, account, auth, media upload, PWA install, offline, admin and appointment-truth behavior. Increment `src/config/brand.ts` and `public/sw-jts.js` cache namespaces together for shell changes.
+- UX basis: use progressive disclosure for the long catalogue and secondary information; keep the first screen focused on the primary task. See NN/G progressive disclosure and mobile focus guidance, Apple HIG layout guidance, and WCAG 2.2 AA contrast.
