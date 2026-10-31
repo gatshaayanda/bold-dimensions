@@ -578,3 +578,10 @@ The account should feel like a personal JTS style studio, not a generic dashboar
 - Service edits use a compact, keyboard-dismissable modal. Service-specific photo/video uploads stay in that editor, support multiple files with per-file progress/errors, and only publish after saving the service record.
 - Confirm destructive service, portfolio-post and customer-look deletions. Provide visible, dismissible status feedback; errors must explain the next useful step.
 - Keep the public catalogue, booking choices and customer account inspiration reading the same `businessSettings/publicServices.services[]` source of truth. Do not change protected PWA install/handoff behavior.
+
+## App-like JTS public homepage — approved visual direction
+- The homepage lead visual reads the first available authorized image/video attached to the public service catalogue. If none exists, it uses a restrained JTS typographic fallback; never fabricate portfolio work.
+- Keep one dominant booking action, followed by shortcuts for My appointments, Services & prices, Style Studio and salon location.
+- On mobile, keep the quick dock limited to Home, Book, Account and Studio. Keep admin discreet in the footer only.
+- Preserve all booking, account, service-media, owner style-feed, install, offline and admin behavior. Homepage visual work must not alter appointment truth, authentication, Firestore permissions or customer data visibility.
+- When changing the homepage shell, increment the service-worker cache namespace in `src/config/brand.ts` and `public/sw-jts.js` together.
