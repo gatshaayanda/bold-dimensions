@@ -155,8 +155,10 @@ function Dashboard() {
 
   useEffect(() => {
     const stopServices = onSnapshot(doc(db, "businessSettings", "publicServices"), snapshot => {
-      if (!snapshot.exists()) { setServices(DEFAULT_PUBLIC_SERVICES); return; }
-      setServices(normalizePublicServices(snapshot.data().services));
+      const data = snapshot.data();
+      setServices(mergePublicServices(data?.services));
+      const savedCategoryMedia = data?.categoryMedia;
+      setCategoryMedia(savedCategoryMedia && typeof savedCategoryMedia === "object" ? savedCategoryMedia as Record<string, PublicServiceMedia> : {});
     }, () => setNotice("Public services could not be loaded. Check Firebase access and connection."));
     const stopStylePosts = onSnapshot(collection(db, "styleFeed"), snapshot => {
       setStylePosts(snapshot.docs.map(item => ({ id: item.id, ...item.data() } as OwnerStylePost))
