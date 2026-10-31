@@ -1503,3 +1503,33 @@ input, select, textarea, button {
  .jtsCategoryModalList a b{grid-column:1/-1}
  .jtsAdminCategoryMediaGrid{grid-template-columns:1fr}
 }
+
+
+/* Booking service picker: keep the long catalogue behind one focused dialog. */
+.jtsServicePickerSummary{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:17px;border:1px solid #655331;background:linear-gradient(120deg,#171510,#101010);min-width:0}
+.jtsServicePickerSummary>div{display:grid;gap:5px;min-width:0}
+.jtsServicePickerSummary>div>span{color:#e3d2a8;font-size:.62rem;font-weight:900;letter-spacing:.15em}
+.jtsServicePickerSummary>div>strong{color:#fff;font-size:1rem;overflow-wrap:anywhere}
+.jtsServicePickerSummary>div>small{color:#d0d0d0;font-size:.76rem;line-height:1.4}
+.jtsServicePickerTrigger{flex:0 0 auto;min-height:46px;padding:10px 14px;border:1px solid #d8bd79;background:#d8bd79;color:#080808;font-size:.78rem;font-weight:900}
+.jtsServicePickerTrigger b{margin-left:8px}
+.jtsServicePickerBackdrop{position:fixed;z-index:120;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.82);backdrop-filter:blur(8px)}
+.jtsServicePickerDialog{width:min(620px,100%);max-height:min(84dvh,780px);display:flex;flex-direction:column;overflow:hidden;border:1px solid #806b43;border-radius:8px;background:#101010;color:#fff;box-shadow:0 24px 90px #000}
+.jtsServicePickerDialog>header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:20px 22px;border-bottom:1px solid #39352d}
+.jtsServicePickerDialog>header h3{margin:8px 0 5px;color:#fff;font:500 clamp(1.5rem,5vw,2.1rem)/1.1 Georgia,serif}
+.jtsServicePickerDialog>header p{margin:0;color:#d0d0d0;font-size:.8rem}
+.jtsServicePickerDialog>header>button{flex:0 0 40px;width:40px;height:40px;border:1px solid #666;background:#191919;color:#fff;font-size:1.5rem}
+.jtsServicePickerContent{overflow-y:auto;padding:8px 22px 18px;overscroll-behavior:contain}
+.jtsServicePickerContent>section{padding:12px 0 8px}
+.jtsServicePickerContent h4{margin:0 0 8px;color:#e3d2a8;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase}
+.jtsServicePickerContent section>div{display:grid;gap:6px}
+.jtsServicePickerContent section>div>button{min-height:50px;display:grid;grid-template-columns:minmax(0,1fr) auto 18px;align-items:center;gap:12px;padding:10px 12px;border:1px solid #454545;background:#171717;color:#fff;text-align:left}
+.jtsServicePickerContent section>div>button span{font-size:.87rem;line-height:1.35}
+.jtsServicePickerContent section>div>button strong{color:#fff;white-space:nowrap;font-size:.88rem}
+.jtsServicePickerContent section>div>button>b{color:#e3d2a8}
+.jtsServicePickerContent section>div>button.selected{border-color:#d8bd79;background:#242016}
+.jtsServicePickerDialog>footer{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 22px;border-top:1px solid #39352d;background:#171717}
+.jtsServicePickerDialog>footer span{color:#d0d0d0;font-size:.72rem;line-height:1.4}
+.jtsServicePickerDialog>footer button{min-height:42px;padding:9px 18px;border:1px solid #d8bd79;background:#d8bd79;color:#090909;font-weight:900}
+.jtsServicePickerDialog button:focus-visible{outline:3px solid #fff;outline-offset:3px}
+@media(max-width:560px){.jtsServicePickerBackdrop{align-items:flex-end;padding:0}.jtsServicePickerDialog{width:100%;max-height:88dvh;border-width:1px 0 0;border-radius:12px 12px 0 0}.jtsServicePickerDialog>header{padding:17px 16px}.jtsServicePickerContent{padding:6px 16px 14px}.jtsServicePickerDialog>footer{padding:12px 16px}.jtsServicePickerSummary{align-items:flex-start;flex-direction:column}.jtsServicePickerTrigger{width:100%}}
