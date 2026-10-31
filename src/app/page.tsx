@@ -56,16 +56,7 @@ export default function Home() {
       </div>
     </section>
 
-    <section className="jtsEditAccountAccess" aria-label="Customer account shortcut">
-      <div className="jtsEditContainer jtsEditAccountAccessInner">
-        <div>
-          <span className="jtsEditEyebrow">ALREADY BOOKED WITH JTS?</span>
-          <h2>Your JTS account.</h2>
-          <p>Return to your appointment requests, booking updates, history and customer looks.</p>
-        </div>
-        <Link href="/account" className="jtsEditAccountLink">Open my account <span>↗</span></Link>
-      </div>
-    </section>
+    <section className="jtsHomeActions" aria-label="JTS quick actions"><div className="jtsEditContainer"><div className="jtsHomeActionPrimary"><Link href="/order"><span className="jtsHomeActionIcon">✳</span><span><small>START HERE</small><strong>Book an appointment</strong></span><b>↗</b></Link></div><div className="jtsHomeActionGrid"><Link href="/account"><span>◉</span><strong>My appointments</strong><small>Account & booking history</small><b>↗</b></Link><a href="#services"><span>✂</span><strong>Services & prices</strong><small>Explore the four categories</small><b>↗</b></a><a href="#style-studio"><span>✳</span><strong>Style Studio</strong><small>Play with your next look</small><b>↗</b></a><a href="#visit"><span>⌖</span><strong>Find JTS</strong><small>G West · Gaborone</small><b>↗</b></a></div></div></section>
 
     <section id="services" className="jtsEditServices">
       <div className="jtsEditContainer">
@@ -127,7 +118,7 @@ export default function Home() {
       </div>
     </section>
 
-    <section className="jtsAccountStudioIntro"><span className="jtsEyebrow">YOUR PERSONAL STYLE PLAYGROUND</span><h2>Try a new direction.</h2><p>Build a look, test it against a style brief, and carry your choices into your next appointment request.</p></section>
+    <section id="style-studio" className="jtsAccountStudioIntro"><span className="jtsEyebrow">YOUR PERSONAL STYLE PLAYGROUND</span><h2>Try a new direction.</h2><p>Build a look, test it against a style brief, and carry your choices into your next appointment request.</p></section>
     <StyleStudio />
 
     <footer className="jtsEditFooter">
@@ -136,6 +127,6 @@ export default function Home() {
         <div className="jtsEditFooterBottom"><span>© JTS STYLES · JOHN THE STYLIST BW</span><div><Link href="/account">My JTS account</Link><Link href="/admin" className="jtsAdminAccessLink" aria-label="Admin login">admin</Link></div></div>
       </div>
     </footer>
-    <div className="jtsMobileCta jtsEditMobileCta"><Link href="/order" className="jtsEditPrimary">Book an appointment <span>↗</span></Link></div>
+    <nav className="jtsHomeDock" aria-label="Quick navigation"><Link href="/"><span>⌂</span><small>Home</small></Link><Link href="/order"><span>▦</span><small>Book</small></Link><Link href="/account"><span>◉</span><small>Account</small></Link><a href="#style-studio"><span>✳</span><small>Studio</small></a></nav>
   </main>;
 }
