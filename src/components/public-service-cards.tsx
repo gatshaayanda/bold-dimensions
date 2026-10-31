@@ -16,7 +16,7 @@ function CategoryVisual({ title, media }: { title: string; media?: PublicService
 }
 
 export default function PublicServiceCards() {
-  const [services, setServices] = useState<PublicService[]>([]);
+  const [services, setServices] = useState<PublicService[]>(() => mergePublicServices(undefined));
   const [categoryMedia, setCategoryMedia] = useState<CategoryMedia>({});
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
