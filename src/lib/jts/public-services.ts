@@ -36,3 +36,26 @@ export function normalizePublicServices(value: unknown): PublicService[] {
     && typeof (item as PublicService).tag === "string"
     && typeof (item as PublicService).detail === "string");
 }
+
+
+export const PUBLIC_SERVICE_CATEGORIES = [
+  "HAIRCUTS",
+  "BLEACH SERVICES",
+  "S CURLS & CURL STYLES",
+  "BOBS & PIXIE CUTS",
+] as const;
+
+export function mergePublicServices(value: unknown): PublicService[] {
+  const saved = normalizePublicServices(value);
+  const byId = new Map(saved.map(service => [service.id, service]));
+  const canonical = DEFAULT_PUBLIC_SERVICES.map(base => ({
+    ...base,
+    ...(byId.get(base.id) || {}),
+    media: byId.get(base.id)?.media || base.media || [],
+  }));
+  const extras = saved.filter(service =>
+    !DEFAULT_PUBLIC_SERVICES.some(base => base.id === service.id)
+    && PUBLIC_SERVICE_CATEGORIES.includes(service.tag as typeof PUBLIC_SERVICE_CATEGORIES[number])
+  );
+  return [...canonical, ...extras];
+}
