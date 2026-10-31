@@ -169,8 +169,8 @@ function Dashboard() {
 
 
   async function uploadCategoryMedia(category: string, file: File) {
-    const isVideo = file.type.startsWith("video/") || /\\.(mp4|webm|mov|m4v)$/i.test(file.name);
-    const isImage = file.type.startsWith("image/") || /\\.(jpe?g|png|webp|gif|avif|heic)$/i.test(file.name);
+    const isVideo = file.type.startsWith("video/") || /\.(mp4|webm|mov|m4v)$/i.test(file.name);
+    const isImage = file.type.startsWith("image/") || /\.(jpe?g|png|webp|gif|avif|heic)$/i.test(file.name);
     const maxBytes = isVideo ? 8 * 1024 * 1024 : 4 * 1024 * 1024;
     if ((!isImage && !isVideo) || file.size > maxBytes) {
       setNotice(isVideo ? "Choose a supported video no larger than 8 MB." : "Choose an image no larger than 4 MB.");
