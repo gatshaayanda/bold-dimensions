@@ -55,7 +55,8 @@ function Dashboard() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [adminName, setAdminName] = useState("");
   const [reviews, setReviews] = useState<CustomerReview[]>([]);
-  const [services, setServices] = useState<PublicService[]>(DEFAULT_PUBLIC_SERVICES);\n  const [categoryMedia, setCategoryMedia] = useState<Record<string, PublicServiceMedia>>({});
+  const [services, setServices] = useState<PublicService[]>(DEFAULT_PUBLIC_SERVICES);
+  const [categoryMedia, setCategoryMedia] = useState<Record<string, PublicServiceMedia>>({});
   const [stylePosts, setStylePosts] = useState<OwnerStylePost[]>([]);
   const [tab, setTab] = useState<"appointments" | "availability" | "reviews" | "services" | "styleFeed">("appointments");
   const [unavailableDates, setUnavailableDates] = useState<Array<{id:string;date:string;reason:string;updatedAt?:string}>>([]);
@@ -478,7 +479,8 @@ function Dashboard() {
     </section> : tab === "services" ? <section id="admin-services" className="adminPanel">
       <div className="panelHeading"><div><span className="kicker">PUBLIC CATALOGUE</span><h2>Services & prices</h2></div><span>{services.length} listed</span></div>
       <p>These records drive the public service cards, booking choices and customer account inspiration. Add photos/videos directly to each service.</p>
-      <p className="adminServiceIntro">The 17 supplied services are maintained as one catalogue. Upload one cover per category below; individual service galleries are optional.</p>\n      <div className="jtsAdminCategoryMedia">
+      <p className="adminServiceIntro">The 17 supplied services are maintained as one catalogue. Upload one cover per category below; individual service galleries are optional.</p>
+      <div className="jtsAdminCategoryMedia">
         <div className="jtsAdminCategoryMediaIntro"><strong>Public category covers</strong><p>Upload just one strong photo or short MP4 for each category. You do not need 17 separate service photos. These covers appear on the customer-facing category tiles.</p></div>
         <div className="jtsAdminCategoryMediaGrid">{PUBLIC_SERVICE_CATEGORIES.map(category => {
           const media = categoryMedia[category];
