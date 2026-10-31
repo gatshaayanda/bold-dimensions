@@ -10,12 +10,7 @@ Home → Services → Book appointment → Date/time → Name + WhatsApp → 50%
 Customers do not need an account or password to request an appointment.
 
 ## Current supplied services
-- Pixie Cut: BWP 350–400
-- Cut + Pixie Cut: BWP 200
-- Pure White (Bleach/Color): BWP 300
-- Cut + Bleach: BWP 250
-
-Other supplied specialties include precision cuts, tinting, bobs, pixie cuts, colour, bleaching, fades and special-event styles. Services without supplied prices are not silently made bookable.
+The public catalogue is grouped into four customer-facing categories: Haircuts, Bleach Services, S Curls & Curl Styles, and Bobs & Pixie Cuts. The live catalogue in the application is the source of truth for the complete service names and prices; do not maintain a second, shortened price list here.
 
 ## Business
 - G West shops
@@ -49,3 +44,9 @@ npm run lint
 npm run build
 
 See AGENTS.md for the implementation contract.
+
+## Public service catalogue media
+- The public Services section groups the catalogue into four visual categories.
+- Upload representative category imagery or a short video through Admin → Services & prices by attaching media to a service in that category.
+- The public category card uses the first available media item within its category; media does not need to be duplicated across every service.
+- Keep service names and prices complete and readable. Customer-facing video playback is controlled by the visitor.
