@@ -79,6 +79,16 @@ The owner-supplied bookable catalogue is the 17-service list in `src/lib/jts/pub
 
 All prices are BWP. Do not invent additional catalogue prices. For unlisted styles, provide an enquiry route and make clear that John must confirm the price before the customer commits.
 
+## Public category media presentation — current approved QA slice
+- Present the 17 owner-supplied services as four customer-understandable categories: Haircuts, Bleach Services, S Curls & Curl Styles, and Bobs & Pixie Cuts.
+- The public homepage uses one shared representative photo or video per category rather than requiring 17 separate images. For the first rollout, an authorized owner can attach the category's representative media to any one service in that category using the existing Services & prices editor; the public category card selects the first available media in that category. The remaining services do not need duplicate media.
+- Keep all individual service names, exact prices and direct booking links visible within their category. Keep the full price list modal available. Do not add filters, search fields, counters or decorative accent colours.
+- Category media is genuine owner-uploaded work only. A missing category image uses a restrained branded fallback; never use generated or stock imagery as if it were John's work.
+- Videos remain customer-controlled with visible playback controls and play inline; do not autoplay with sound. Crop photos consistently without hiding the hairstyle.
+- Category descriptions and secondary captions may be shortened, but never truncate service names, prices, booking instructions or other decision-critical information.
+- This public-page-first release does not redesign the booking form or alter calendar, availability, customer details, deposit, account, Style Studio, admin authorization, PWA installation or service-worker behavior. Those are separate protected workflows and must remain intact.
+- QA this public category presentation first with no media, then with one representative photo per category, then with a video in at least one category. Confirm media displays on the public page after the owner saves it in admin, category links and all 17 service links remain correct, and mobile layouts remain readable.
+
 ## Service presentation — protected customer experience
 - The supplied 17-service catalogue in `src/lib/jts/public-services.ts` is the customer-facing source of truth for names, prices, service selection and booking.
 - The homepage may retain the three editorial featured cards (THE CUT, THE COLOUR and THE CHANGE) as the concise first presentation. Preserve their approved content, descriptions, prices, order, layout and owner-uploaded media.
