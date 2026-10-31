@@ -596,3 +596,11 @@ The account should feel like a personal JTS style studio, not a generic dashboar
 - Public categories are compact tiles. Service names and prices appear after the customer opens a category; never truncate service names or hide prices in the detail view.
 - Preserve all booking, account, auth, media upload, PWA install, offline, admin and appointment-truth behavior. Increment `src/config/brand.ts` and `public/sw-jts.js` cache namespaces together for shell changes.
 - UX basis: use progressive disclosure for the long catalogue and secondary information; keep the first screen focused on the primary task. See NN/G progressive disclosure and mobile focus guidance, Apple HIG layout guidance, and WCAG 2.2 AA contrast.
+
+
+
+## Booking service picker — approved compact flow
+- The booking page presents the selected service in one compact summary row; the 17-service catalogue opens in an accessible, scrollable modal grouped under the four canonical service categories.
+- Every canonical service name and exact price remains visible and selectable in the modal. Selecting a service closes the modal and updates the booking summary and 50% deposit calculation.
+- Preserve direct `/order?service=<id>` preselection, date/time constraints, unavailable-date checks, guest booking, customer details, offline handling, Firestore submission, Orange Money guidance and request-vs-confirmation wording.
+- The modal must remain keyboard dismissible, mobile-friendly and readable. Do not add filters, search, counters or colour-coded categories.
