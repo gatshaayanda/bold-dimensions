@@ -50,7 +50,7 @@ export default function PublicServiceCards(){
       <ul className="jtsCategoryServiceList">{group.services.map(service=><li key={service.id}>
        <span>{service.name}</span><strong>{service.display}</strong><Link href={"/order?service="+encodeURIComponent(service.id)} aria-label={"Choose "+service.name}>Choose ↗</Link>
       </li>)}</ul>
-      <Link className="jtsCategoryBookLink" href={"/order?category="+encodeURIComponent(group.tag)}>Explore booking <span>↗</span></Link>
+      <Link className="jtsCategoryBookLink" href={"/order?service="+encodeURIComponent(group.services[0]?.id || "")}>Book this category <span>↗</span></Link>
      </div>
     </article>;
    })}
