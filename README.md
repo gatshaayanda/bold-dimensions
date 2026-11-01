@@ -1,6 +1,6 @@
 # John The Stylist Bw
 
-**JTS Styles — hairstyling, colour, cuts and barbering in G West, Gaborone.**
+**John The Stylist Bw — hairstyling, colour, cuts and barbering in G West, Gaborone.**
 
 Customer-first appointment PWA for John The Stylist Bw. The current site is a **demo operation** while the business prepares its paid live launch.
 
