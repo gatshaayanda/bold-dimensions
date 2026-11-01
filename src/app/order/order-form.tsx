@@ -29,7 +29,7 @@ export default function OrderForm(){
  async function uploadStyleReference(file:File){
   setStyleUploading(true);setStyleUploadPercent(0);setError("");
   try{
-   const uploaded=await uploadFiles("customerStyleMedia",{files:[file],onUploadProgress:percent=>setStyleUploadPercent(percent)});
+   const user=auth.currentUser??(await signInAnonymously(auth)).user; const token=await user.getIdToken(); const isVideo=file.type.startsWith("video/"); const maxBytes=isVideo?8*1024*1024:4*1024*1024; if((!isVideo&&!file.type.startsWith("image/"))||file.size>maxBytes)throw new Error(isVideo?"Choose a video no larger than 8 MB.":"Choose an image no larger than 4 MB."); const uploaded=await uploadFiles("customerStyleMedia",{files:[file],headers:{Authorization:`Bearer ${token}`},onUploadProgress:({progress})=>setStyleUploadPercent(Math.max(0,Math.min(100,Math.round(progress))))});
    const item=uploaded[0];
    if(!item?.ufsUrl&&!item?.url)throw new Error("The upload did not return a media link.");
    setStyleMedia(current=>[...current,{url:item.ufsUrl||item.url,type:file.type.startsWith("video/")?"video":"image",name:file.name,size:file.size}]);
