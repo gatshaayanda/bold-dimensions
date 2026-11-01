@@ -1646,3 +1646,40 @@ input, select, textarea, button {
 .queue{gap:7px}.queueRow{padding:10px;border-radius:9px;gap:10px}.jtsAppointmentCard{padding:11px}
 @media(max-width:760px){.jtsBookingWrap{width:calc(100% - 20px);padding-top:10px}.jtsBookingGrid{grid-template-columns:1fr}.jtsBookingMain{padding:12px}.jtsBookingSide{position:static;grid-template-columns:1fr 1fr}.jtsBookingSide .jtsSummary{grid-column:1/-1}.jtsDepositCard,.jtsLocationMini{min-width:0}.adminHeader{align-items:flex-start;flex-direction:column}.adminTabs{margin-left:-2px;margin-right:-2px}}
 @media(max-width:520px){.jtsBookingIntro{padding:10px 0 13px}.jtsBookingIntro h1{font-size:2.25rem}.jtsBookingProgress{gap:5px;font-size:.59rem}.jtsBookingProgress span{gap:4px}.jtsBookingProgress span b{width:21px;height:21px}.jtsBookingMain{padding:10px}.jtsBookingStep{margin-top:13px}.jtsBookingSide{grid-template-columns:1fr}.jtsBookingSide .jtsSummary{grid-column:auto}.jtsBookingSide .jtsLocationMini{display:none}.jtsServicePickerSummary{align-items:center;flex-direction:row}.jtsServicePickerTrigger{width:auto}.jtsDateGrid{grid-template-columns:1fr}.adminPanel{padding:11px}.adminTabs button{font-size:.66rem}}
+
+/* Private appointment messaging — private, compact and responsive. */
+.jtsAppointmentPrivate{display:grid;gap:8px;margin-top:12px}
+.jtsAppointmentPrivate>button{justify-self:start;min-height:36px;padding:8px 12px;font-size:.72rem}
+.jtsAppointmentPrivate>small{font-size:.68rem;color:#b7aea0}
+.jtsPrivateThread{display:grid;gap:10px;margin-top:10px;padding:12px;border:1px solid #4a4234;border-radius:10px;background:#0e0e0f;color:#f5f1e9;min-width:0}
+.jtsPrivateThread>header{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.jtsPrivateThread>header h4{margin:3px 0 0;font:600 1rem Georgia,serif;color:#fff}
+.jtsPrivateStatus{font-size:.65rem;color:#e4cb91;border:1px solid #625234;border-radius:20px;padding:4px 8px;white-space:nowrap}
+.jtsPrivateMessages{display:grid;gap:8px;max-height:320px;overflow:auto;padding:3px}
+.jtsPrivateEmpty{margin:0;padding:12px;border:1px dashed #514938;border-radius:8px;color:#bcb5a8;font-size:.75rem}
+.jtsPrivateMessage{max-width:min(88%,520px);padding:9px 11px;border-radius:10px;background:#202020;border:1px solid #34312b;overflow-wrap:anywhere}
+.jtsPrivateMessage.mine{justify-self:end;background:#282317;border-color:#65532f}
+.jtsPrivateMessage>span{display:block;font-size:.62rem;color:#c4b58e}
+.jtsPrivateMessage p{margin:5px 0 0;font-size:.8rem;line-height:1.5;white-space:pre-wrap}
+.jtsPrivateAttachment{display:grid;gap:5px;margin-top:7px}
+.jtsPrivateAttachment img,.jtsPrivateAttachment video{display:block;max-width:100%;max-height:230px;border-radius:7px;object-fit:contain;background:#050505}
+.jtsPrivateAttachment small{font-size:.65rem;color:#c5bba8}
+.jtsPrivateComposer{display:grid;gap:8px}
+.jtsPrivateComposer textarea{width:100%;min-height:58px;resize:vertical;padding:10px;border:1px solid #50483a;border-radius:8px;background:#171717;color:#fff;font:inherit;font-size:.8rem}
+.jtsPrivateUpload{display:inline-flex;justify-self:start;align-items:center;gap:7px;padding:7px 10px;border:1px solid #5a4b30;border-radius:7px;color:#e7d5a7;font-size:.7rem;cursor:pointer}
+.jtsPrivateUpload input{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+.jtsPrivatePending{display:flex;justify-content:space-between;gap:10px;align-items:center;font-size:.68rem;color:#d6c9a9}
+.jtsPrivatePending button{border:0;background:none;color:#e8c77d;text-decoration:underline}
+.jtsPrivateProgress{height:5px;background:#39352f;border-radius:8px;overflow:hidden}
+.jtsPrivateProgress span{display:block;height:100%;background:#c5a45e;transition:width .15s}
+.jtsPrivateComposer>button{justify-self:end;min-height:38px;padding:8px 13px;border:1px solid #9e8046;border-radius:8px;background:#c2a05a;color:#17130c;font-weight:700;font-size:.72rem}
+.jtsPrivateComposer>button:disabled,.jtsPrivateUpload:has(input:disabled){opacity:.55;cursor:not-allowed}
+.jtsAccountPrivateInbox{display:grid;gap:12px;margin:16px 0;padding:16px;border:1px solid #37322a;border-radius:13px;background:#111}
+.jtsAccountPrivateInbox h2{margin:4px 0;font:500 1.35rem Georgia,serif;color:#fff}
+.jtsAccountPrivateList{display:grid;gap:12px}
+.jtsAccountPrivateItem{min-width:0;padding:11px;border:1px solid #37322a;border-radius:10px;background:#171717}
+.jtsAccountPrivateMeta{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center}
+.jtsAccountPrivateMeta strong{font:600 .9rem Georgia,serif;color:#fff}
+.jtsAccountPrivateMeta>span{font-size:.63rem;color:#e6cb8c}
+.jtsAccountPrivateMeta small{grid-column:1/-1;font-size:.68rem;color:#aaa49a;overflow-wrap:anywhere}
+@media(max-width:560px){.jtsPrivateThread{padding:9px}.jtsPrivateMessage{max-width:96%}.jtsAccountPrivateInbox{padding:11px}.jtsPrivateThread>header h4{font-size:.9rem}}
