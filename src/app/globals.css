@@ -1611,3 +1611,38 @@ input, select, textarea, button {
  .jtsQueueCount{font-size:.68rem}
 }
 @media(prefers-reduced-motion:reduce){.jtsAppointmentCard,.adminNotice{animation:none!important}.jtsAppointmentProgress span{transition:none!important}}
+
+
+/* JTS compact booking + operations release: dense, task-first surfaces. */
+.jtsBookingWrap{width:min(900px,calc(100% - 28px));padding:16px 0 34px}
+.jtsBookingTop{margin-bottom:8px;min-height:30px}.jtsBookingTop>span{font-size:.68rem;color:#b9b2a7}
+.jtsBookingIntro{padding:14px 0 18px}.jtsBookingIntro .jtsEyebrow{font-size:.58rem;letter-spacing:.14em}
+.jtsBookingIntro h1{font:500 clamp(2rem,5vw,3rem)/1.02 Georgia,serif;letter-spacing:-.025em;text-transform:none;margin:5px 0 4px;color:#fff}
+.jtsBookingIntro>p{margin:0;color:#bdb8ad;font-size:.8rem}.jtsBookingProgress{margin:14px 0 0;max-width:520px}
+.jtsBookingGrid{display:grid;grid-template-columns:minmax(0,1fr) 245px;gap:12px;align-items:start}
+.jtsBookingMain{min-width:0;padding:16px;border:1px solid #39352f;border-radius:12px;background:#121212}
+.jtsBookingStep{display:flex;align-items:flex-start;gap:10px;margin:15px 0 8px}.jtsBookingStep:first-child{margin-top:0}
+.jtsBookingStep>span{flex:0 0 25px;width:25px;height:25px;display:grid;place-items:center;border:1px solid #79643d;border-radius:50%;color:#e8d19b;font-size:.66rem;font-weight:900}
+.jtsBookingStep h2{margin:1px 0 3px;font:600 1rem/1.2 Georgia,serif;text-transform:none;letter-spacing:0;color:#fff}
+.jtsBookingStep p{margin:0;color:#aaa49b;font-size:.7rem;line-height:1.4}
+.jtsServicePickerSummary{padding:11px 12px;border-radius:8px;gap:10px}.jtsServicePickerTrigger{min-height:38px;padding:8px 11px;font-size:.7rem}
+.jtsDateGrid{gap:10px}.jtsDateField>label,.jtsTimeFieldLabel{font-size:.74rem}.jtsDateField>p,.jtsDateField>small,.jtsTimeHint{font-size:.67rem;line-height:1.4}
+.jtsCalendar{padding:10px;border-radius:8px}.jtsCalendarHeader{margin-bottom:7px}.jtsCalendarDay{min-height:34px}.jtsCalendarLegend{margin-top:7px;font-size:.62rem}
+.jtsNearestDate{margin-top:8px;padding:8px 9px}.jtsSelectedDate{margin-top:8px;padding:9px}.jtsTimeSelectionSummary{padding:10px;border-radius:8px}
+.jtsTimeOpen{min-height:36px;padding:7px 10px;font-size:.68rem}.jtsFields{gap:9px}.jtsFields>label{gap:5px;font-size:.74rem}
+.jtsFields input,.jtsFields textarea{min-height:42px;padding:9px 10px;font-size:.84rem}.jtsFields small{font-size:.65rem}
+.jtsOptionalStyle{border-radius:8px}.jtsOptionalStyle>button{min-height:42px;padding:9px 11px}.jtsStyleReferenceUpload{padding:0 11px 10px}
+.jtsSubmit{min-height:48px;margin-top:10px;padding:11px 14px;font-size:.76rem}.jtsBookingSide{position:sticky;top:12px;display:grid;gap:9px}
+.jtsSummary,.jtsDepositCard,.jtsLocationMini{padding:13px;border-radius:10px}.jtsSummary .jtsEyebrow,.jtsDepositCard>span,.jtsLocationMini>span{font-size:.58rem;letter-spacing:.12em}
+.jtsSummary>strong{display:block;margin:7px 0 4px;font:600 1rem Georgia,serif}.jtsSummary>p,.jtsLocationMini p,.jtsDepositCard p{font-size:.7rem;line-height:1.45;margin:5px 0;color:#c4beb4}
+.jtsPriceRow{padding:6px 0;font-size:.7rem}.jtsDepositCard h3{font:600 1.05rem Georgia,serif;text-transform:none;margin:5px 0}.jtsDepositCard>strong{font-size:1.35rem;letter-spacing:.05em}.jtsDepositCard>small{font-size:.68rem}
+.jtsFormError{font-size:.74rem;padding:9px 11px}
+.adminPage{padding:14px 0 36px}.adminShell{width:min(1180px,calc(100% - 20px))}.adminHeader{align-items:center;margin-bottom:12px;gap:12px}
+.adminHeader h1{font:500 clamp(2rem,4vw,3rem)/1 Georgia,serif;text-transform:none;letter-spacing:-.02em;margin:4px 0}.adminHeader p{font-size:.76rem;line-height:1.4}
+.adminTabs{position:sticky;top:0;z-index:30;gap:6px;padding:7px 0;margin:0 0 10px;background:rgba(11,11,12,.96);backdrop-filter:blur(12px);overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none}
+.adminTabs::-webkit-scrollbar{display:none}.adminTabs button{flex:0 0 auto;min-height:38px;padding:8px 11px;border-radius:8px;font-size:.7rem}
+.jtsAdminStats{gap:8px;margin-bottom:10px}.jtsAdminStats article{padding:10px 12px;border-radius:10px}.jtsAdminStats strong{font-size:1.6rem}
+.adminPanel{padding:14px;border-radius:12px;margin-bottom:10px;scroll-margin-top:65px}.panelHeading{align-items:center;margin-bottom:10px}.panelHeading h2{font:600 1.15rem Georgia,serif;text-transform:none;margin:2px 0}
+.queue{gap:7px}.queueRow{padding:10px;border-radius:9px;gap:10px}.jtsAppointmentCard{padding:11px}
+@media(max-width:760px){.jtsBookingWrap{width:calc(100% - 20px);padding-top:10px}.jtsBookingGrid{grid-template-columns:1fr}.jtsBookingMain{padding:12px}.jtsBookingSide{position:static;grid-template-columns:1fr 1fr}.jtsBookingSide .jtsSummary{grid-column:1/-1}.jtsDepositCard,.jtsLocationMini{min-width:0}.adminHeader{align-items:flex-start;flex-direction:column}.adminTabs{margin-left:-2px;margin-right:-2px}}
+@media(max-width:520px){.jtsBookingIntro{padding:10px 0 13px}.jtsBookingIntro h1{font-size:2.25rem}.jtsBookingProgress{gap:5px;font-size:.59rem}.jtsBookingProgress span{gap:4px}.jtsBookingProgress span b{width:21px;height:21px}.jtsBookingMain{padding:10px}.jtsBookingStep{margin-top:13px}.jtsBookingSide{grid-template-columns:1fr}.jtsBookingSide .jtsSummary{grid-column:auto}.jtsBookingSide .jtsLocationMini{display:none}.jtsServicePickerSummary{align-items:center;flex-direction:row}.jtsServicePickerTrigger{width:auto}.jtsDateGrid{grid-template-columns:1fr}.adminPanel{padding:11px}.adminTabs button{font-size:.66rem}}
