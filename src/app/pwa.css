@@ -81,3 +81,11 @@ html.jts-embedded-pending body > .jtsBrowserGate{visibility:visible!important}
 .jtsBrowserGatePrimary{background:#d4af37!important;border-color:#e1c987!important;color:#050505!important}
 .jtsBrowserGatePrimary span{color:#050505!important}
 .jtsBrowserGateFallbackToggle{color:#e1c987!important}
+
+/* iPhone safe-area and notification stacking: keep fixed PWA controls distinct. */
+.offlineBanner{bottom:calc(12px + env(safe-area-inset-bottom,0px))}
+.pwaIosInstall{bottom:calc(18px + env(safe-area-inset-bottom,0px))}
+@media(max-width:699px){
+  .jtsPersistentInstall{bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+  .pwaUpdate{bottom:calc(136px + env(safe-area-inset-bottom,0px))}
+}
