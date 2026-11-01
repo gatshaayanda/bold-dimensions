@@ -1,6 +1,6 @@
 export const brand = {
   name: "John The Stylist Bw",
-  shortName: "JTS Styles",
+  shortName: "John The Stylist Bw",
   description: "Professional hairstyling, cuts, colour, bleach and special-event styles in G West, Gaborone.",
   themeColor: "#D4AF37",
   backgroundColor: "#050505",
@@ -9,5 +9,5 @@ export const brand = {
   icon192: "/icon-192.png",
   icon512: "/icon-512.png",
   manifest: "/manifest.webmanifest",
-  serviceWorkerCache: "jts-shell-v20"
+  serviceWorkerCache: "jts-shell-v21"
 } as const;
