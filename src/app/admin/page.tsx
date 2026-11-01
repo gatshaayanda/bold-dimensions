@@ -448,7 +448,8 @@ function Dashboard() {
         {appointments.map(item => {
           const status = item.status || "New";
           const serviceName = (item.items || []).map(service => service.name || "Service").join(" · ") || "Appointment request";
-          const phoneDigits = (item.phone || "").replace(/\D/g, "");
+          const rawPhoneDigits = (item.phone || "").replace(/\D/g, "");
+          const phoneDigits = rawPhoneDigits.length === 8 ? "267" + rawPhoneDigits : rawPhoneDigits;
           const guidance = status === "New" ? "Review the time and contact the customer." : status === "Reviewing" ? "Check the requested slot, then accept or confirm." : status === "Accepted" ? "Slot accepted · confirm only when the deposit is received." : status === "Confirmed" ? "Appointment confirmed · prepare for the visit." : status === "In service" ? "Customer is being served." : status === "Completed" ? "Visit completed." : "This request is closed.";
           const progress = status === "New" ? 16 : status === "Reviewing" ? 32 : status === "Accepted" ? 50 : status === "Confirmed" ? 68 : status === "In service" ? 84 : status === "Completed" ? 100 : 0;
           return <article className={"queueRow jtsAppointmentCard jtsAppointment-" + status.toLowerCase().replace(/[^a-z]+/g, "-")} key={item.id}>
