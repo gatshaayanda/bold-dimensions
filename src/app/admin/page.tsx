@@ -77,6 +77,13 @@ function Dashboard() {
 
   useEffect(() => { mediaUploadingRef.current = mediaUploading; }, [mediaUploading]);
 
+  // A tab change must move the operator to the selected work area, not leave the new panel below the fold.
+  useEffect(() => {
+    const targetId = tab === "appointments" ? "admin-appointments" : tab === "services" ? "admin-services" : tab === "availability" ? "admin-availability" : tab === "reviews" ? "admin-reviews" : "admin-style-feed";
+    const frame = window.requestAnimationFrame(() => document.getElementById(targetId)?.scrollIntoView({ behavior: "smooth", block: "start" }));
+    return () => window.cancelAnimationFrame(frame);
+  }, [tab]);
+
   // Success and informational notices fade after reading time; errors stay until dismissed.
   useEffect(() => {
     if (!notice || mediaUploading || /could not|not saved|failed|denied|expired|choose |exceeds|must be an image|enter a valid|temporarily unavailable|try again|no media was uploaded|upload failed|not be saved|could not be loaded|could not be removed|could not be deleted|could not be reopened|was not saved|was not published/i.test(notice)) return;
@@ -442,7 +449,7 @@ function Dashboard() {
       <button className={tab === "services" ? "active" : ""} onClick={() => setTab("services")}>Services & prices</button>
       <button className={tab === "styleFeed" ? "active" : ""} onClick={() => setTab("styleFeed")}>John&apos;s style feed · photos &amp; videos</button>
     </nav>
-    {loading ? <section className="adminPanel"><p>Loading JTS operations…</p></section> : tab === "appointments" ? <section id="admin-appointments" className="adminPanel">
+    {loading ? <section className="adminPanel"><p>Loading JTS operations…</p></section> : tab === "appointments" ? <section id="admin-appointments" className="adminPanel" style={{scrollMarginTop:16}}>
       <div className="panelHeading"><div><span className="kicker">THE APPOINTMENT QUEUE</span><h2>Appointments</h2></div><span className="jtsQueueCount">{openAppointments.length} active</span></div>
       {appointments.length === 0 ? <div className="emptyState"><h3>No appointment requests yet</h3><p>New requests submitted through the JTS booking form will appear here.</p></div> : <div className="queue">
         {appointments.map(item => {
@@ -489,7 +496,7 @@ function Dashboard() {
       {availabilityNotice && <p className="notice" role="status">{availabilityNotice}</p>}
       {unavailableDates.length===0 ? <div className="emptyState"><h3>No unavailable dates recorded</h3><p>All future dates remain available to request, subject to John confirming the exact time.</p></div> : <div className="queue">{unavailableDates.map(item=><article className="queueRow" key={item.id}><div><span className="kicker">UNAVAILABLE DATE</span><h3>{dateText(item.date+"T12:00:00+02:00")}</h3><p>{item.reason}</p><small>Customers cannot select this date in the booking calendar.</small></div><div className="queueActions"><button type="button" className="button buttonLight" onClick={()=>void reopenDate(item)}>Reopen date</button></div></article>)}</div>}
       <p className="availabilityFootnote">The calendar controls which dates can be requested; it does not auto-confirm time slots. Appointment requests still need your review and confirmation.</p>
-    </section> : tab === "services" ? <section id="admin-services" className="adminPanel">
+    </section> : tab === "services" ? <section id="admin-services" className="adminPanel" style={{scrollMarginTop:16}}>
       <div className="panelHeading"><div><span className="kicker">PUBLIC CATALOGUE</span><h2>Services & prices</h2></div><span>{services.length} listed</span></div>
       <p>These records drive the public service cards, booking choices and customer account inspiration. Add photos/videos directly to each service.</p>
       <p className="adminServiceIntro">The 17 supplied services are maintained as one catalogue. Upload one cover per category below; individual service galleries are optional.</p>
