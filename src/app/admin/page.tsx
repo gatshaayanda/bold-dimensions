@@ -421,7 +421,7 @@ function Dashboard() {
 
   return <main className="adminPage"><div className="adminShell">
     <header className="adminHeader">
-      <div><span className="kicker">JTS STYLES · OPERATIONS</span><h1>Run the appointments.</h1><p>Review requests, update appointment status and moderate customer looks.</p></div>
+      <div><span className="kicker">JOHN THE STYLIST BW · OPERATIONS</span><h1>Run the appointments.</h1><p>Today’s appointments, one clear action at a time.</p></div>
       <Link href="/" className="button buttonLight">View customer app</Link>
     </header>
     <section className="jtsAdminWelcome" aria-labelledby="jts-admin-welcome-title">
@@ -429,11 +429,11 @@ function Dashboard() {
       <div className="jtsAdminWelcomeActions"><button type="button" className="button buttonPrimary" onClick={() => { setTab("appointments"); track("jts_admin_priority_action", { action: "review_appointments" }); }}>Review requests ↗</button><button type="button" className="button buttonLight" onClick={() => { setTab("services"); track("jts_admin_priority_action", { action: "manage_services" }); }}>Services &amp; prices</button></div>
     </section>
     {notice && <div className={"notice adminNotice adminNotice-" + (/could not|not saved|failed|denied|expired|choose |exceeds|must be an image|enter a valid|temporarily unavailable|try again|no media was uploaded|upload failed|not be saved/i.test(notice) ? "error" : /saved|uploaded|updated|removed|published|available for|marked unavailable|reopened/i.test(notice) ? "success" : "info")} role={/could not|not saved|failed|denied|expired|choose |exceeds|must be an image|enter a valid|temporarily unavailable|try again|no media was uploaded|upload failed|not be saved/i.test(notice) ? "alert" : "status"} aria-live="polite"><span className="adminNoticeIcon" aria-hidden="true">{/could not|not saved|failed|denied|expired|choose |exceeds|must be an image|enter a valid|temporarily unavailable|try again|no media was uploaded|upload failed|not be saved/i.test(notice) ? "!" : /saved|uploaded|updated|removed|published|available for|marked unavailable|reopened/i.test(notice) ? "✓" : "i"}</span><span className="adminNoticeText">{notice}</span><button type="button" className="adminNoticeDismiss" aria-label="Dismiss notification" onClick={() => setNotice("")}>×</button></div>}
-    <section className="stats">
-      <article><span>Appointment requests</span><strong>{appointments.length}</strong></article>
-      <article><span>Needs attention</span><strong>{appointments.filter(item => !item.status || item.status === "New").length}</strong></article>
-      <article><span>Customer looks</span><strong>{reviews.length}</strong></article>
-      <article><span>Published reviews</span><strong>{reviews.filter(item => item.published !== false).length}</strong></article>
+    <section className="stats jtsAdminStats">
+      <article><span>All requests</span><strong>{appointments.length}</strong></article>
+      <article className="needsAttention"><span>New · review</span><strong>{appointments.filter(item => !item.status || item.status === "New").length}</strong></article>
+      <article><span>Open appointments</span><strong>{openAppointments.length}</strong></article>
+      <article><span>Looks to review</span><strong>{reviews.filter(item => !item.published && item.status !== "hidden").length}</strong></article>
     </section>
     <nav className="adminTabs" aria-label="Operations sections">
       <button className={tab === "appointments" ? "active" : ""} onClick={() => setTab("appointments")}>Appointment requests</button>
@@ -443,27 +443,39 @@ function Dashboard() {
       <button className={tab === "styleFeed" ? "active" : ""} onClick={() => setTab("styleFeed")}>John&apos;s style feed · photos &amp; videos</button>
     </nav>
     {loading ? <section className="adminPanel"><p>Loading JTS operations…</p></section> : tab === "appointments" ? <section id="admin-appointments" className="adminPanel">
-      <div className="panelHeading"><div><span className="kicker">THE APPOINTMENT QUEUE</span><h2>Customer requests</h2></div><span>{openAppointments.length} open</span></div>
+      <div className="panelHeading"><div><span className="kicker">THE APPOINTMENT QUEUE</span><h2>Appointments</h2></div><span className="jtsQueueCount">{openAppointments.length} active</span></div>
       {appointments.length === 0 ? <div className="emptyState"><h3>No appointment requests yet</h3><p>New requests submitted through the JTS booking form will appear here.</p></div> : <div className="queue">
-        {appointments.map(item => <article className="queueRow" key={item.id}>
-          <div>
-            <span className="kicker">#{item.id.slice(0, 8).toUpperCase()} · {item.status || "New"}</span>
-            <h3>{item.customerName || "Customer"}</h3>
-            <p>{(item.items || []).map(service => service.name || "Service").join(" · ") || "Appointment request"}</p>
-            <small>{dateText(item.scheduledFor)} · {money(item.total)}</small>
-            {item.phone && <small>Customer contact: {item.phone}</small>}
-            {item.instructions && <p>{item.instructions}</p>}
-          </div>
-          <div className="queueActions">
-            <select aria-label={"Update appointment " + item.id} value={item.status || "New"} onChange={event => void setAppointmentStatus(item, event.target.value)}>
-              <option value="New">New request</option>
-              <option value="Reviewing">Reviewing</option>
-              <option value="Accepted">Accepted</option>
-              <option value="Confirmed">Confirmed</option>
-              <option value="Cancelled">Cancelled</option>
-            </select>
-          </div>
-        </article>)}
+        {appointments.map(item => {
+          const status = item.status || "New";
+          const serviceName = (item.items || []).map(service => service.name || "Service").join(" · ") || "Appointment request";
+          const phoneDigits = (item.phone || "").replace(/\D/g, "");
+          const guidance = status === "New" ? "Review the time and contact the customer." : status === "Reviewing" ? "Check the requested slot, then accept or confirm." : status === "Accepted" ? "Slot accepted · confirm only when the deposit is received." : status === "Confirmed" ? "Appointment confirmed · prepare for the visit." : status === "In service" ? "Customer is being served." : status === "Completed" ? "Visit completed." : "This request is closed.";
+          const progress = status === "New" ? 16 : status === "Reviewing" ? 32 : status === "Accepted" ? 50 : status === "Confirmed" ? 68 : status === "In service" ? 84 : status === "Completed" ? 100 : 0;
+          return <article className={"queueRow jtsAppointmentCard jtsAppointment-" + status.toLowerCase().replace(/[^a-z]+/g, "-")} key={item.id}>
+            <div className="jtsAppointmentMain">
+              <div className="jtsAppointmentTop"><span className="kicker">#{item.id.slice(0, 8).toUpperCase()}</span><span className={"jtsAppointmentStatus status-" + status.toLowerCase().replace(/[^a-z]+/g, "-")}>{status}</span></div>
+              <h3>{item.customerName || "Customer"}</h3>
+              <p className="jtsAppointmentService">{serviceName}</p>
+              <div className="jtsAppointmentFacts"><span>◷ {dateText(item.scheduledFor)}</span><strong>{money(item.total)}</strong></div>
+              {item.phone && <a className="jtsAppointmentContact" href={phoneDigits ? "https://wa.me/" + phoneDigits : "tel:" + item.phone}>↗ WhatsApp · {item.phone}</a>}
+              <div className="jtsAppointmentProgress" aria-label={"Appointment progress: " + status}><span style={{width: progress + "%"}}/></div>
+              <small className="jtsAppointmentNext">{guidance}</small>
+              {item.instructions && <details className="jtsAppointmentDetails"><summary>View booking notes &amp; deposit</summary><p>{item.instructions}</p><small>50% deposit · Orange Money 75720306 · John Shumba</small></details>}
+            </div>
+            <div className="queueActions jtsAppointmentActions">
+              <label htmlFor={"appointment-status-" + item.id}>Update status</label>
+              <select id={"appointment-status-" + item.id} aria-label={"Update appointment " + item.id} value={status} onChange={event => void setAppointmentStatus(item, event.target.value)}>
+                <option value="New">New request</option>
+                <option value="Reviewing">Reviewing</option>
+                <option value="Accepted">Accepted</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="In service">In service</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </div>
+          </article>;
+        })}
       </div>}
     </section> : tab === "availability" ? <section id="admin-availability" className="adminPanel">
       <div className="panelHeading"><div><span className="kicker">CUSTOMER BOOKING CALENDAR</span><h2>Manage unavailable dates</h2></div><span>{unavailableDates.length} closed date{unavailableDates.length===1?"":"s"}</span></div>
