@@ -25,7 +25,7 @@ function detectContext(userAgent:string):HandoffContext {
  return "browser";
 }
 export const metadata:Metadata={metadataBase:new URL(siteUrl),title:{default:brand.name,template:"%s | "+brand.name},description:brand.description,applicationName:brand.name,keywords:["John The Stylist Bw","hairstylist","barber shop","Gaborone","G West","Botswana"],alternates:{canonical:"/"},openGraph:{type:"website",url:siteUrl,siteName:"John The Stylist Bw",title:"John The Stylist Bw",description:"Book your next hairstyle with John The Stylist Bw.",images:[{url:brand.logo,alt:"John The Stylist Bw"}]},twitter:{card:"summary",title:"John The Stylist Bw",description:"Book your next hairstyle with John The Stylist Bw.",images:[brand.logo]},icons:{icon:[{url:brand.iconSvg,type:"image/svg+xml"},{url:brand.icon192,sizes:"192x192",type:"image/png"}],apple:brand.icon192},appleWebApp:{capable:true,title:"John The Stylist Bw",statusBarStyle:"black-translucent"}};
-export const viewport:Viewport={themeColor:brand.themeColor,colorScheme:"light"};
+export const viewport:Viewport={themeColor:brand.themeColor,colorScheme:"light",viewportFit:"cover"};
 
 export default async function RootLayout({children}:{children:React.ReactNode}){
  const requestHeaders=await headers();
