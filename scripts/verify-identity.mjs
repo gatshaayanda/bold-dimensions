@@ -24,7 +24,7 @@ const required=[
   ["src/app/manifest.ts","brand.iconSvg"],
   ["src/app/manifest.ts","brand.icon512"],
   ["src/app/manifest.ts","name: brand.name"],
-  ["src/config/brand.ts",'name: "John The Stylist Bw"'],
+  ["src/config/brand.ts",'name: "John The Stylist Bw"'],\n  ["src/config/brand.ts",'shortName: "John The Stylist Bw"'],
   ["src/config/brand.ts",'logo: "/jts.jpg"'],
   ["src/config/brand.ts",'iconSvg: "/jts-logo.svg"'],
   ["src/config/brand.ts",'icon192: "/icon-192.png"'],
