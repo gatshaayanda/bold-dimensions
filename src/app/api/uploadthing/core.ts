@@ -44,6 +44,22 @@ export const ourFileRouter = {
     imageUrl: file.ufsUrl || file.url,
     imageKey: file.key,
   })),
+  customerStyleMedia: f({
+    image: { maxFileSize: "4MB", maxFileCount: 1 },
+    video: { maxFileSize: "8MB", maxFileCount: 1 },
+  }).middleware(async ({ req }) => {
+    const match = (req.headers.get("authorization") || "").match(/^Bearer\\s+(.+)$/i);
+    if (!match) throw new Error("Sign in to upload a hairstyle reference.");
+    const decoded = await getAuth(getAdminApp()).verifyIdToken(match[1]);
+    if (!decoded.uid) throw new Error("Customer identity could not be verified.");
+    return { customerId: decoded.uid };
+  }).onUploadComplete(async ({ metadata, file }) => ({
+    customerId: metadata.customerId,
+    mediaUrl: file.ufsUrl || file.url,
+    mediaType: file.type.startsWith("video/") ? "video" : "image",
+    fileName: file.name,
+    fileSize: file.size,
+  })),
   adminStyleMedia: f({
     image: { maxFileSize: "4MB", maxFileCount: 1 },
     video: { maxFileSize: "8MB", maxFileCount: 1 },
