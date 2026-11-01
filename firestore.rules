@@ -192,7 +192,7 @@ service cloud.firestore {
     match /conversations/{conversationId} {
       allow create: if (isAdmin() || (signedIn() && request.resource.data.customerId == request.auth.uid))
         && request.resource.data.keys().hasOnly(['customerId','customerName','bookingId','title','status','createdAt','updatedAt','lastMessageAt','lastMessagePreview','unreadForCustomer','unreadForAdmin'])
-        && request.resource.data.customerId == request.auth.uid
+        && request.resource.data.customerId is string
         && request.resource.data.title is string
         && request.resource.data.title.size() <= 120
         && (!request.resource.data.keys().hasAny(['bookingId']) || request.resource.data.bookingId is string)
