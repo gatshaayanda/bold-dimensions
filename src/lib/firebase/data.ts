@@ -81,3 +81,23 @@ export async function getBusinessSettings():Promise<BusinessSettings|null>{const
 export async function saveBusinessSettings(settings:BusinessSettings){await setDoc(doc(settingsCollection,"main"),settings)}
 export async function getDailyReconciliation(date:string):Promise<DailyReconciliation|null>{const snapshot=await getDoc(doc(reconciliationCollection,date));return snapshot.exists()?{date:snapshot.id,...snapshot.data() as Omit<DailyReconciliation,"date">}:null}
 export async function saveDailyReconciliation(record:DailyReconciliation){await setDoc(doc(reconciliationCollection,record.date),record)}
+
+export async function ensureBookingConversation(bookingId:string,customerId:string,customerName:string):Promise<string>{
+ const id="booking-"+bookingId;
+ const reference=doc(db,"conversations",id);
+ const existing=await getDoc(reference);
+ if(!existing.exists()){
+  const now=new Date().toISOString();
+  await setDoc(reference,{customerId,customerName:customerName.trim()||"JTS Styles customer",bookingId,title:"Appointment #"+bookingId.slice(0,8).toUpperCase(),status:"open",createdAt:now,updatedAt:now,lastMessageAt:now,lastMessagePreview:"Private appointment conversation opened.",unreadForCustomer:false,unreadForAdmin:false});
+ }else if(existing.data().customerId!==customerId){throw new Error("This conversation does not belong to the booking customer.");}
+ return id;
+}
+export async function sendConversationMessage(id:string,senderId:string,role:"customer"|"admin",text:string,attachment?:ConversationAttachment){
+ const clean=text.trim();
+ if(!clean&&!attachment)throw new Error("Write a message or attach a photo/video.");
+ if(clean.length>2000)throw new Error("Messages must be 2,000 characters or fewer.");
+ const now=new Date().toISOString();
+ const payload:Omit<ConversationMessage,"id">={senderId,senderRole:role,text:clean,createdAt:now,...(attachment?{attachment}:{})};
+ await addDoc(collection(db,"conversations",id,"messages"),payload);
+ await updateDoc(doc(db,"conversations",id),{updatedAt:now,lastMessageAt:now,lastMessagePreview:(clean||("Shared "+attachment?.type)).slice(0,160),...(role==="customer"?{unreadForAdmin:true,unreadForCustomer:false,status:"open"}:{unreadForCustomer:true,unreadForAdmin:false,status:"waiting"})});
+}
