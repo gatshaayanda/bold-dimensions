@@ -337,7 +337,7 @@ This section supersedes conflicting older install UX notes above. Do not remove 
 The public experience should follow The Plug's editorial discipline without copying its retail model. The Plug is a curated storefront and customer relationship loop; JTS is a stylist-led service and appointment relationship. Translate the principles, not the features.
 
 ### Brand and positioning
-- Position JTS Styles as a distinctive professional hairstyling/barbering service in G West, Gaborone, Botswana. The known differentiators are John's supplied service list, precision cuts/colour/bleach and statement styles, the purple-door location landmark, clear appointment rules, and direct contact.
+- Position John The Stylist Bw as a distinctive professional hairstyling/barbering service in G West, Gaborone, Botswana. The known differentiators are John's supplied service list, precision cuts/colour/bleach and statement styles, the purple-door location landmark, clear appointment rules, and direct contact.
 - Do not infer John's nationality, ethnicity, biography, client base, or reputation from his name or from unrelated search results. Public research reviewed for this revamp did not establish a reliable source for his country of origin. Keep the experience locally grounded in the verified business facts without making claims about John's personal background.
 - Use an editorial, mobile-first art direction: warm paper, deep plum, violet and a sharp lime accent; concise copy; confident typography; clear service and booking hierarchy. Do not retain BOEMO's food-brand identity or default black/gold/cyan treatment as the defining JTS brand.
 - Never fabricate portfolio photography, client transformations, reviews, ratings, demand, testimonials, discounts, availability, or prices. Add real portfolio work only when the owner supplies authentic images and has permission to publish them.
@@ -402,7 +402,7 @@ The public experience should follow The Plug's editorial discipline without copy
 
 
 ## Browser install parity with The Plug — 2026-10-11
-- In a normal browser, JTS must offer a persistent, branded “Install JTS Styles” entry point, matching The Plug's working pattern: call the native browser install prompt directly from a user click when available; otherwise show a concise, platform-specific install guide.
+- In a normal browser, JTS must offer a persistent, branded “Install John The Stylist Bw” entry point, matching The Plug's working pattern: call the native browser install prompt directly from a user click when available; otherwise show a concise, platform-specific install guide.
 - The install panel is secondary and dismissible; it must never block browsing or booking, and it must not replace the server-first embedded-browser handoff gate.
 - Hide the persistent install entry when the app is already running in standalone/installed mode. Keep the contextual “Keep JTS close” section and its button in the homepage.
 - Preserve the captured `beforeinstallprompt` event and the existing `window.jtsInstallApp` action. Never show a dead install button.
