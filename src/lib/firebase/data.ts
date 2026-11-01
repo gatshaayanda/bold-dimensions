@@ -99,5 +99,5 @@ export async function sendConversationMessage(id:string,senderId:string,role:"cu
  const now=new Date().toISOString();
  const payload:Omit<ConversationMessage,"id">={senderId,senderRole:role,text:clean,createdAt:now,...(attachment?{attachment}:{})};
  await addDoc(collection(db,"conversations",id,"messages"),payload);
- await updateDoc(doc(db,"conversations",id),{updatedAt:now,lastMessageAt:now,lastMessagePreview:(clean||("Shared "+attachment?.type)).slice(0,160),...(role==="customer"?{unreadForAdmin:true,unreadForCustomer:false,status:"open"}:{unreadForCustomer:true,unreadForAdmin:false,status:"waiting"})});
+ await updateDoc(doc(db,"conversations",id),{updatedAt:now,lastMessageAt:now,lastMessagePreview:(clean||("Shared "+attachment?.type)).slice(0,160),...(role==="customer"?{unreadForAdmin:true,unreadForCustomer:false}:{unreadForCustomer:true,unreadForAdmin:false})});
 }
