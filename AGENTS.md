@@ -609,3 +609,10 @@ The account should feel like a personal JTS style studio, not a generic dashboar
 - Every canonical service name and exact price remains visible and selectable in the modal. Selecting a service closes the modal and updates the booking summary and 50% deposit calculation.
 - Preserve direct `/order?service=<id>` preselection, date/time constraints, unavailable-date checks, guest booking, customer details, offline handling, Firestore submission, Orange Money guidance and request-vs-confirmation wording.
 - The modal must remain keyboard dismissible, mobile-friendly and readable. Do not add filters, search, counters or colour-coded categories.
+
+## Release QA gate — booking and operations admin
+- The current release is awaiting product-owner QA of the complete customer booking journey and the authorized operations admin.
+- Customer QA must cover service selection/preselection, date and time constraints, required customer details, optional hairstyle details, request submission, booking reference, deposit guidance and request-versus-confirmation wording on Android Chrome and iPhone Safari/PWA where available.
+- Admin QA must cover authorized access, appointment queue ordering, status transitions, direct WhatsApp contact, booking notes/deposit details, service and availability controls, and visible success/error feedback.
+- Treat device/browser checks as NOT RUN until physically tested. Do not claim a release is fully QA-approved based on source inspection or a successful build alone.
+- Do not enable or configure customer/staff notifications until the product owner has QA'd and explicitly approved both booking and admin.
