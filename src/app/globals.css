@@ -1533,3 +1533,26 @@ input, select, textarea, button {
 .jtsServicePickerDialog>footer button{min-height:42px;padding:9px 18px;border:1px solid #d8bd79;background:#d8bd79;color:#090909;font-weight:900}
 .jtsServicePickerDialog button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 @media(max-width:560px){.jtsServicePickerBackdrop{align-items:flex-end;padding:0}.jtsServicePickerDialog{width:100%;max-height:88dvh;border-width:1px 0 0;border-radius:12px 12px 0 0}.jtsServicePickerDialog>header{padding:17px 16px}.jtsServicePickerContent{padding:6px 16px 14px}.jtsServicePickerDialog>footer{padding:12px 16px}.jtsServicePickerSummary{align-items:flex-start;flex-direction:column}.jtsServicePickerTrigger{width:100%}}
+
+
+/* Compact booking guidance: visual progress and optional details disclosure. */
+.jtsBookingProgress{display:flex;align-items:center;gap:9px;max-width:620px;margin:24px 0 0;color:#a9aaa5;font-size:.7rem;font-weight:800}
+.jtsBookingProgress span{display:flex;align-items:center;gap:7px;white-space:nowrap}
+.jtsBookingProgress span b{width:25px;height:25px;display:grid;place-items:center;border:1px solid #555;background:#151515;border-radius:50%;color:#ddd;font-size:.68rem;transition:background .2s ease,border-color .2s ease,color .2s ease}
+.jtsBookingProgress span.complete{color:#f1d99b}
+.jtsBookingProgress span.complete b{border-color:#d8bd79;background:#d8bd79;color:#090909}
+.jtsBookingProgress>i{height:1px;min-width:10px;flex:1;background:#414141;transition:background .2s ease}
+.jtsBookingProgress>i.complete{background:#d8bd79}
+.jtsOptionalStyle{grid-column:1/-1;border:1px solid #353535;background:#101010}
+.jtsOptionalStyle>button{width:100%;min-height:50px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border:0;background:transparent;color:#f2f2ee;text-align:left;cursor:pointer}
+.jtsOptionalStyle>button span{font-size:.78rem;font-weight:800}
+.jtsOptionalStyle>button small{color:#aaa;font-size:.68rem;text-align:right}
+.jtsOptionalStyle>label{padding:0 14px 14px}
+.jtsOptionalStyle textarea{margin-top:5px}
+.jtsServicePickerDialog,.jtsTimePickerDialog{animation:jtsBookingEnter .18s ease-out both}
+.jtsServicePickerContent section>div>button,.jtsTimeSlot{transition:border-color .16s ease,background .16s ease,transform .16s ease}
+.jtsServicePickerContent section>div>button:active,.jtsTimeSlot:active{transform:scale(.985)}
+.jtsBookingMain input:focus-visible,.jtsBookingMain textarea:focus-visible,.jtsBookingMain button:focus-visible{outline:2px solid #e1c987;outline-offset:3px}
+@keyframes jtsBookingEnter{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:560px){.jtsBookingProgress{gap:6px;font-size:.62rem}.jtsBookingProgress span{gap:5px}.jtsBookingProgress span b{width:23px;height:23px}.jtsBookingProgress>i{min-width:5px}.jtsOptionalStyle>button{align-items:flex-start;flex-direction:column;gap:4px}.jtsBookingIntro{padding:40px 0 28px}}
+@media(prefers-reduced-motion:reduce){.jtsBookingProgress span b,.jtsBookingProgress>i,.jtsServicePickerDialog,.jtsTimePickerDialog,.jtsServicePickerContent section>div>button,.jtsTimeSlot{animation:none!important;transition:none!important}.jtsServicePickerContent section>div>button:active,.jtsTimeSlot:active{transform:none}}
