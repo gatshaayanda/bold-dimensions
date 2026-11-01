@@ -2,11 +2,11 @@ importScripts("https://www.gstatic.com/firebasejs/11.9.0/firebase-app-compat.js"
 
 firebase.initializeApp({apiKey:"AIzaSyD5_rgSQq1-ZlBH6GlkAmX88MvTId8bNog",authDomain:"stylist-36204.firebaseapp.com",projectId:"stylist-36204",storageBucket:"stylist-36204.firebasestorage.app",messagingSenderId:"622468889009",appId:"1:622468889009:web:0579e49d766c6e81a1a590",measurementId:"G-5LDNFHCC53"});
 
-const CACHE_VERSION="jts-shell-v20";
+const CACHE_VERSION="jts-shell-v21";
 const SHELL=["/offline","/manifest.webmanifest","/icon-192.png","/icon-512.png","/jts.jpg","/jts-logo.svg"];
 
 firebase.messaging().onBackgroundMessage((payload)=>{
- const title=payload.notification?.title||payload.data?.title||"JTS Styles";
+ const title=payload.notification?.title||payload.data?.title||"John The Stylist Bw";
  const body=payload.notification?.body||payload.data?.body||"You have an appointment update.";
  const link=payload.fcmOptions?.link||payload.data?.link||"/account";
  self.registration.showNotification(title,{body,icon:"/jts.jpg",badge:"/jts-logo.svg",tag:payload.data?.appointmentId?"jts-appointment-"+payload.data.appointmentId:"jts-notification",data:{link}});
