@@ -109,7 +109,7 @@ function Dashboard() {
     const done = () => { ready += 1; if (ready >= 2) setLoading(false); };
     const stopAppointments: Unsubscribe = onSnapshot(collection(db, "orders"), snapshot => {
       setAppointments(snapshot.docs.map(item => ({ id: item.id, ...item.data() } as Appointment))
-        .sort((a, b) => (a.scheduledFor || "").localeCompare(b.scheduledFor || "")));
+        .sort((a, b) => { const rank = (value?: string) => ({ New: 0, Reviewing: 1, Accepted: 2, Confirmed: 3, "In service": 4, Completed: 5, Cancelled: 6 }[value || "New"] ?? 7); return rank(a.status) - rank(b.status) || (a.scheduledFor || "").localeCompare(b.scheduledFor || ""); }));
       done();
     }, () => { setNotice("Appointment requests could not be loaded. Check Firebase access and connection."); done(); });
     const stopReviews: Unsubscribe = onSnapshot(collection(db, "customerStyleReviews"), snapshot => {
