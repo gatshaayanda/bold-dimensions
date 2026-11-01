@@ -27,9 +27,9 @@ function firebaseErrorCode(cause: unknown) {
 }
 function googleErrorMessage(code: string) {
   if (code === "auth/popup-closed-by-user" || code === "auth/cancelled-popup-request") return { error: "", message: "Google connection was cancelled. Your current booking session is unchanged." };
-  if (code === "auth/popup-blocked") return { error: "Your browser blocked the Google sign-in window. Allow pop-ups for JTS Styles, then try again.", message: "" };
+  if (code === "auth/popup-blocked") return { error: "Your browser blocked the Google sign-in window. Allow pop-ups for John The Stylist Bw, then try again.", message: "" };
   if (code === "auth/unauthorized-domain") return { error: "Google sign-in is not enabled for this website address yet. Your bookings are unchanged; please try again later.", message: "" };
-  if (code === "auth/operation-not-allowed") return { error: "Google sign-in is not enabled for JTS Styles yet. Your bookings are unchanged; please try again later.", message: "" };
+  if (code === "auth/operation-not-allowed") return { error: "Google sign-in is not enabled for John The Stylist Bw yet. Your bookings are unchanged; please try again later.", message: "" };
   if (code === "auth/network-request-failed" || code === "auth/timeout") return { error: "The connection was interrupted. Check your internet connection and try Google again; your booking session is unchanged.", message: "" };
   if (code === "auth/credential-already-in-use" || code === "auth/account-exists-with-different-credential" || code === "auth/email-already-in-use") return { error: "That Google account already has a separate JTS sign-in. Your current booking history has not been merged automatically. Keep this session available and contact John before switching accounts.", message: "" };
   if (code === "auth/invalid-credential" || code === "auth/invalid-oauth-client-id") return { error: "Google sign-in could not be verified. Your bookings are unchanged; please try again later.", message: "" };
@@ -151,7 +151,7 @@ export default function AccountPage() {
   );
 
   return <main className="jtsBookingPage jtsStyleAccount"><div className="jtsContainer jtsBookingWrap">
-    <div className="jtsBookingTop"><Link href="/" className="jtsBack">← JTS Styles</Link><div className="jtsAccountTopLinks"><Link href="/feed" className="jtsGhost">Style feed ↗</Link><Link href="/order" className="jtsGhost">Book appointment</Link></div></div>
+    <div className="jtsBookingTop"><Link href="/" className="jtsBack">← John The Stylist Bw</Link><div className="jtsAccountTopLinks"><Link href="/feed" className="jtsGhost">Style feed ↗</Link><Link href="/order" className="jtsGhost">Book appointment</Link></div></div>
 
     <section className="jtsPersonalWelcome" aria-labelledby="jts-personal-welcome-title">
       <span className="jtsEyebrow">YOUR JTS STYLE JOURNEY</span>
