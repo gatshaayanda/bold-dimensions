@@ -1556,3 +1556,58 @@ input, select, textarea, button {
 @keyframes jtsBookingEnter{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:560px){.jtsBookingProgress{gap:6px;font-size:.62rem}.jtsBookingProgress span{gap:5px}.jtsBookingProgress span b{width:23px;height:23px}.jtsBookingProgress>i{min-width:5px}.jtsOptionalStyle>button{align-items:flex-start;flex-direction:column;gap:4px}.jtsBookingIntro{padding:40px 0 28px}}
 @media(prefers-reduced-motion:reduce){.jtsBookingProgress span b,.jtsBookingProgress>i,.jtsServicePickerDialog,.jtsTimePickerDialog,.jtsServicePickerContent section>div>button,.jtsTimeSlot{animation:none!important;transition:none!important}.jtsServicePickerContent section>div>button:active,.jtsTimeSlot:active{transform:none}}
+
+
+/* John The Stylist Bw operations: scan-first queue, visible state and action feedback. */
+.jtsAdminStats article{min-width:0;background:linear-gradient(145deg,#191919,#101010);border-color:#49402f}
+.jtsAdminStats article.needsAttention{border-color:#9a7435;background:linear-gradient(145deg,#292113,#14110c)}
+.jtsAdminStats article strong{color:#f0d58a}
+.jtsQueueCount{padding:8px 12px;border:1px solid #6b5631;background:#211b10;color:#f0d58a;font-size:.75rem;font-weight:900;white-space:nowrap}
+.jtsAppointmentCard{grid-template-columns:minmax(0,1fr) 190px;align-items:center;gap:18px;animation:jtsAdminCardIn .22s ease both;transition:border-color .18s ease,background .18s ease}
+.jtsAppointmentCard:hover{border-color:#79643d;background:#15130f}
+.jtsAppointmentMain{min-width:0}
+.jtsAppointmentTop{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.jtsAppointmentStatus{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border:1px solid #5c5140;background:#211d16;color:#e9d39e;border-radius:999px;font-size:.68rem;font-weight:900}
+.jtsAppointmentStatus:before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.jtsAppointmentStatus.status-new{color:#f1d18a;border-color:#8a6b32}
+.jtsAppointmentStatus.status-reviewing{color:#c9d8f0;border-color:#50647f}
+.jtsAppointmentStatus.status-accepted{color:#e6d7b1;border-color:#8b7444}
+.jtsAppointmentStatus.status-confirmed,.jtsAppointmentStatus.status-completed{color:#bfe2c2;border-color:#4d7854}
+.jtsAppointmentStatus.status-cancelled{color:#e5aaaa;border-color:#805050}
+.jtsAppointmentCard h3{margin:9px 0 3px;font:500 1.25rem Georgia,serif;color:#fff}
+.jtsAppointmentService{margin:0 0 10px;color:#e2d2ad;font-size:.88rem;font-weight:800}
+.jtsAppointmentFacts{display:flex;align-items:center;gap:16px;flex-wrap:wrap;color:#c9c5bd;font-size:.78rem}
+.jtsAppointmentFacts strong{color:#fff;font-size:.92rem}
+.jtsAppointmentContact{display:inline-flex;margin-top:9px;color:#f0d58a;font-size:.76rem;font-weight:800;text-decoration:none}
+.jtsAppointmentContact:hover{text-decoration:underline}
+.jtsAppointmentProgress{height:4px;max-width:440px;margin:13px 0 7px;overflow:hidden;border-radius:9px;background:#37332c}
+.jtsAppointmentProgress span{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,#a47b30,#f0d58a);transition:width .35s ease}
+.jtsAppointmentNext{display:block;color:#c6c1b7;font-size:.72rem;line-height:1.4}
+.jtsAppointmentDetails{margin-top:11px;max-width:620px;border-top:1px solid #39352f;padding-top:9px}
+.jtsAppointmentDetails summary{width:fit-content;color:#e6d19c;font-size:.73rem;font-weight:800;cursor:pointer}
+.jtsAppointmentDetails p{margin:9px 0;color:#d4d0c8;font-size:.76rem;line-height:1.55;overflow-wrap:anywhere}
+.jtsAppointmentDetails small{color:#c9b88d;font-size:.72rem}
+.jtsAppointmentActions{display:grid;justify-items:stretch;align-content:center;gap:7px}
+.jtsAppointmentActions label{color:#c9c1b4;font-size:.66rem;font-weight:900;text-transform:uppercase;letter-spacing:.08em}
+.jtsAppointmentActions select{width:100%;min-height:45px;padding:10px 12px;border-color:#8c713e;background:#211b10;color:#fff;font-weight:800;cursor:pointer}
+.jtsAppointmentActions select:focus-visible{outline:2px solid #f0d58a;outline-offset:3px}
+.adminNotice{position:fixed!important;top:auto!important;bottom:calc(18px + env(safe-area-inset-bottom,0px));left:50%;width:min(560px,calc(100% - 28px));z-index:150;transform:translateX(-50%);display:flex;align-items:center;gap:11px;padding:13px 15px;border:1px solid #77613a;border-radius:13px;background:#17140e;color:#fff;box-shadow:0 16px 45px rgba(0,0,0,.55);animation:jtsToastIn .2s ease-out both}
+.adminNotice .adminNoticeText{flex:1;min-width:0;font-size:.8rem;line-height:1.4}
+.adminNotice .adminNoticeIcon{flex:0 0 26px;width:26px;height:26px;display:grid;place-items:center;border-radius:50%;background:#d8bd79;color:#111;font-weight:1000}
+.adminNotice.adminNotice-success{border-color:#567b55}
+.adminNotice.adminNotice-success .adminNoticeIcon{background:#b8d9b5}
+.adminNotice.adminNotice-error{border-color:#a45d5d;background:#211212}
+.adminNotice.adminNotice-error .adminNoticeIcon{background:#e3a4a4}
+.adminNotice .adminNoticeDismiss{width:30px;height:30px;border:0;background:transparent;color:#fff;font-size:1.35rem;cursor:pointer}
+@keyframes jtsAdminCardIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+@keyframes jtsToastIn{from{opacity:0;transform:translate(-50%,12px)}to{opacity:1;transform:translate(-50%,0)}}
+@media(max-width:700px){
+ .jtsAppointmentCard{grid-template-columns:1fr;gap:12px;padding:13px}
+ .jtsAppointmentActions{grid-template-columns:auto minmax(150px,1fr);align-items:center}
+ .jtsAppointmentActions label{font-size:.62rem}
+ .jtsAdminStats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .jtsAdminStats article{padding:12px}
+ .jtsAdminStats span{font-size:.62rem}
+ .jtsQueueCount{font-size:.68rem}
+}
+@media(prefers-reduced-motion:reduce){.jtsAppointmentCard,.adminNotice{animation:none!important}.jtsAppointmentProgress span{transition:none!important}}
