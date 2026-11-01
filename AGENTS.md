@@ -1,5 +1,10 @@
 # JOHN THE STYLIST BW — Agent Operating Contract
 
+## Public brand and search identity
+- The only customer-facing business/app name is **John The Stylist Bw**. Do not display “JTS Styles” as a brand, business name, app name or install label; that name is associated with an unrelated shoe-selling business.
+- Keep accurate salon/search terms such as hairstylist, barber, haircuts, colour, G West, Gaborone and Botswana in SEO metadata where relevant. Do not preserve unrelated shoe-retail keywords or misleading structured data.
+- Technical identifiers, route names, filenames and historical internal references may retain `jts` where renaming them could break saved links, installed apps, service workers, integrations or customer records. Prefer customer-visible rebranding over risky infrastructure renames.
+
 ## Product
 John The Stylist Bw is a real customer-facing appointment PWA for a hairstylist/barber business in G West, Gaborone. It is a real customer-facing demo operation for John The Stylist Bw while the business prepares its paid live launch. It is not generic SaaS.
 
