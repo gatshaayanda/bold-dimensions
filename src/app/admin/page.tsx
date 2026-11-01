@@ -7,13 +7,16 @@ import { track } from "@vercel/analytics";
 import { collection, onSnapshot, updateDoc, doc, setDoc, deleteDoc, type Unsubscribe } from "firebase/firestore";
 import AdminGate from "@/app/admin/admin-gate";
 import JtsStyleGuide from "@/components/JtsStyleGuide";
+import ConversationThread from "@/components/ConversationThread";
 import { auth, db } from "@/lib/firebase/client";
 import { uploadFiles } from "@/lib/uploadthing";
 import { DEFAULT_PUBLIC_SERVICES, mergePublicServices, PUBLIC_SERVICE_CATEGORIES, type PublicService, type PublicServiceMedia } from "@/lib/jts/public-services";
+import { ensureBookingConversation } from "@/lib/firebase/data";
 
 type Appointment = {
   id: string;
   customerName?: string;
+  customerId?: string;
   phone?: string;
   scheduledFor?: string;
   createdAt?: string;
@@ -71,6 +74,8 @@ function Dashboard() {
   const [uploadProgress, setUploadProgress] = useState("");
   const [uploadPercent, setUploadPercent] = useState(0);
   const [deleteTarget, setDeleteTarget] = useState<DeleteTarget | null>(null);
+  const [privateThreads, setPrivateThreads] = useState<Record<string,string>>({});
+  const [threadOpening, setThreadOpening] = useState<string>("");
   const mediaUploadingRef = useRef(false);
   const serviceEditorOpen = Boolean(serviceDraft);
   const deleteDialogOpen = Boolean(deleteTarget);
@@ -401,6 +406,20 @@ function Dashboard() {
     }
   }
 
+  async function openPrivateThread(item: Appointment) {
+    const staff = auth.currentUser;
+    if (!staff) { setNotice("Your staff session has expired. Sign in again to reply."); return; }
+    if (!item.customerId) { setNotice("This booking has no verified customer identity, so a private in-app thread cannot be opened."); return; }
+    setThreadOpening(item.id); setNotice("");
+    try {
+      const id = await ensureBookingConversation(item.id, item.customerId, item.customerName || "JTS Styles customer");
+      setPrivateThreads(current => ({ ...current, [item.id]: id }));
+      setNotice("Private appointment conversation opened. Only this customer and authorized JTS staff can read it.");
+    } catch (cause) {
+      setNotice(cause instanceof Error ? cause.message : "The private conversation could not be opened. Try again.");
+    } finally { setThreadOpening(""); }
+  }
+
   async function setAppointmentStatus(item: Appointment, status: string) {
     setNotice("");
     try {
@@ -469,6 +488,11 @@ function Dashboard() {
               <div className="jtsAppointmentProgress" aria-label={"Appointment progress: " + status}><span style={{width: progress + "%"}}/></div>
               <small className="jtsAppointmentNext">{guidance}</small>
               {item.instructions && <details className="jtsAppointmentDetails"><summary>View booking notes &amp; deposit</summary><p>{item.instructions}</p><small>50% deposit · Orange Money 75720306 · John Shumba</small></details>}
+              <div className="jtsAppointmentPrivate">
+                <button type="button" className="button buttonLight" disabled={threadOpening===item.id||!item.customerId} onClick={()=>void openPrivateThread(item)}>{threadOpening===item.id?"Opening…":privateThreads[item.id]?"Open private reply":"Reply privately ↗"}</button>
+                {!item.customerId&&<small>Private reply unavailable: customer identity missing from this booking.</small>}
+                {privateThreads[item.id]&&auth.currentUser&&<ConversationThread conversationId={privateThreads[item.id]} role="admin" userId={auth.currentUser.uid} title={"Private reply · "+(item.customerName||"Customer")}/>}
+              </div>
             </div>
             <div className="queueActions jtsAppointmentActions">
               <label htmlFor={"appointment-status-" + item.id}>Update status</label>
