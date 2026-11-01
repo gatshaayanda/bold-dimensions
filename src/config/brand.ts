@@ -9,5 +9,5 @@ export const brand = {
   icon192: "/icon-192.png",
   icon512: "/icon-512.png",
   manifest: "/manifest.webmanifest",
-  serviceWorkerCache: "jts-shell-v21"
+  serviceWorkerCache: "jts-shell-v22"
 } as const;
