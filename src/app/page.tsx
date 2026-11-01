@@ -5,9 +5,9 @@ import JtsInstallButton from "@/app/jts-install-button";
 import JtsHomeHeroVisual from "@/components/jts-home-hero-visual";
 
 function Logo() {
-  return <Link href="/" className="jtsAppLogo" aria-label="JTS Styles home">
+  return <Link href="/" className="jtsAppLogo" aria-label="John The Stylist Bw home">
     <img src="/jts.jpg" alt="" />
-    <span><b>JTS STYLES</b><small>JOHN THE STYLIST BW</small></span>
+    <span><b>JOHN THE STYLIST BW</b><small>JOHN THE STYLIST BW</small></span>
   </Link>;
 }
 
@@ -22,7 +22,7 @@ export default function Home() {
     <section className="jtsAppHero">
       <div className="jtsAppHeroVisual"><JtsHomeHeroVisual /></div>
       <div className="jtsAppHeroCopy">
-        <span className="jtsAppKicker">JTS STYLES · G WEST</span>
+        <span className="jtsAppKicker">JOHN THE STYLIST BW · G WEST</span>
         <h1>Your look.<br /><em>Your signature.</em></h1>
         <p>Precision cuts, colour and statement styles by John.</p>
         <Link href="/order" className="jtsAppBook"><span>▦</span><strong>Book an appointment</strong><b>↗</b></Link>
@@ -37,7 +37,7 @@ export default function Home() {
     </section>
 
     <section className="jtsAppInstall">
-      <div><span className="jtsAppKicker">KEEP JTS CLOSE</span><strong>Your next appointment, one tap away.</strong><small>Install JTS Styles on your home screen.</small></div>
+      <div><span className="jtsAppKicker">KEEP JTS CLOSE</span><strong>Your next appointment, one tap away.</strong><small>Install John The Stylist Bw on your home screen.</small></div>
       <JtsInstallButton />
     </section>
 
