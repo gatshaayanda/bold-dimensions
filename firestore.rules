@@ -190,7 +190,7 @@ service cloud.firestore {
     }
 
     match /conversations/{conversationId} {
-      allow create: if signedIn()
+      allow create: if (isAdmin() || signedIn())
         && request.resource.data.keys().hasOnly(['customerId','customerName','bookingId','title','status','createdAt','updatedAt','lastMessageAt','lastMessagePreview','unreadForCustomer','unreadForAdmin'])
         && request.resource.data.customerId == request.auth.uid
         && request.resource.data.title is string
