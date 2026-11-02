@@ -39,7 +39,7 @@ export async function saveNotificationPreferences(uid:string,prefs:NotificationP
 export async function saveNotificationToken(uid:string,token:string,admin:boolean){const encoded=encodeURIComponent(token);await setDoc(doc(db,"notificationTokens",uid,"tokens",encoded),{token,admin,updatedAt:new Date().toISOString()} as NotificationToken,{merge:true})}
 
 export type ConversationAttachment={url:string;name:string;type:string;size:number};
-export type Conversation={id:string;customerId:string;customerName?:string;title:string;status:"open"|"waiting"|"resolved";createdAt:string;updatedAt:string;lastMessageAt:string;lastMessagePreview:string;unreadForCustomer:boolean;unreadForAdmin:boolean;customerLastReadAt?:string;adminLastReadAt?:string};
+export type Conversation={id:string;customerId:string;customerName?:string;bookingId?:string;title:string;status:"open"|"waiting"|"resolved";createdAt:string;updatedAt:string;lastMessageAt:string;lastMessagePreview:string;unreadForCustomer:boolean;unreadForAdmin:boolean;customerLastReadAt?:string;adminLastReadAt?:string};
 export type ConversationMessage={id:string;senderId:string;senderRole:"customer"|"admin";text:string;attachment?:ConversationAttachment|null;createdAt:string};
 
 const conversationsCollection=collection(db,"conversations");
