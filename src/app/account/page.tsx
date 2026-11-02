@@ -90,7 +90,7 @@ export default function AccountPage() {
 
   // Recover a booking's private proof thread if the initial post-submit setup was interrupted.
   useEffect(() => {
-    if (!ready || !userId || !user || user.isAnonymous !== auth.currentUser?.isAnonymous) return;
+    if (!ready || !userId || !user) return;
     let cancelled = false;
     const knownBookingIds = new Set(conversations.map(item => item.bookingId).filter((id): id is string => Boolean(id)));
     const missing = orders.filter(order => order.customerId === userId && !knownBookingIds.has(order.id));
