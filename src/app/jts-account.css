@@ -182,3 +182,19 @@
  .jtsStyleAccount .jtsWeatherHeader{gap:10px}
  .jtsStyleAccount .jtsWeatherDay>strong{font-size:1.35rem}
 }
+
+/* All account children receive an intentional position; unknown optional modules stay below core tasks. */
+.jtsStyleAccount .jtsBookingWrap>*{order:10}
+.jtsStyleAccount .jtsBookingTop{order:0}
+.jtsStyleAccount .jtsPersonalWelcome{order:1}
+.jtsStyleAccount .jtsAccountUtilityAuth{order:2}
+.jtsStyleAccount .jtsStyleNext{order:3}
+.jtsStyleAccount .jtsDepositReminder{order:3}
+.jtsStyleAccount .jtsAccountNotifications{order:4}
+.jtsStyleAccount .jtsAccountPrivateInbox{order:5}
+.jtsStyleAccount .jtsStyleStats{order:6}
+.jtsStyleAccount .jtsStyleHistory{order:7}
+.jtsStyleAccount .jtsWeatherCard{order:8}
+.jtsStyleAccount .jtsStyleFeedInvite{order:9}
+.jtsStyleAccount .jtsAccountGame{order:11}
+.jtsStyleAccount .jtsAccountNote{order:12}
