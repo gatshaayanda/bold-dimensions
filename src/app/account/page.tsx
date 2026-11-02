@@ -9,7 +9,7 @@ import CustomerStyleInspiration from "@/components/customer-style-inspiration";
 import ConversationThread from "@/components/ConversationThread";
 import JtsWeather from "@/components/JtsWeather";
 import JtsStyleGuide from "@/components/JtsStyleGuide";
-import { getCustomerOrders, subscribeToCustomerOrders, subscribeToCustomerConversations, type Conversation, type FoodOrder } from "@/lib/firebase/data";
+import { getCustomerOrders, subscribeToCustomerOrders, subscribeToCustomerConversations, ensureBookingConversation, type Conversation, type FoodOrder } from "@/lib/firebase/data";
 
 const INITIAL_BOOKINGS_VISIBLE = 3;
 
@@ -87,6 +87,24 @@ export default function AccountPage() {
     track("jts_account_viewed", { session_type: !user ? "no_session" : user.isAnonymous ? "guest" : "connected" });
   }, [ready, user]);
 
+
+  // Recover a booking's private proof thread if the initial post-submit setup was interrupted.
+  useEffect(() => {
+    if (!ready || !userId || !user || user.isAnonymous !== auth.currentUser?.isAnonymous) return;
+    let cancelled = false;
+    const knownBookingIds = new Set(conversations.map(item => item.bookingId).filter((id): id is string => Boolean(id)));
+    const missing = orders.filter(order => order.customerId === userId && !knownBookingIds.has(order.id));
+    if (missing.length) {
+      void Promise.all(missing.map(order => ensureBookingConversation(order.id, userId, order.customerName || "JTS customer")))
+        .catch(cause => {
+          if (!cancelled) {
+            console.error("[JTS account] private booking thread recovery failed", cause);
+            setError("A private booking upload space could not be restored yet. Check your connection and refresh My Account to retry.");
+          }
+        });
+    }
+    return () => { cancelled = true; };
+  }, [ready, userId, user, orders, conversations]);
 
   useEffect(() => {
     if (!userId) return;
