@@ -11,7 +11,7 @@ import ConversationThread from "@/components/ConversationThread";
 import { auth, db } from "@/lib/firebase/client";
 import { uploadFiles } from "@/lib/uploadthing";
 import { DEFAULT_PUBLIC_SERVICES, mergePublicServices, PUBLIC_SERVICE_CATEGORIES, type PublicService, type PublicServiceMedia } from "@/lib/jts/public-services";
-import { ensureBookingConversation } from "@/lib/firebase/data";
+import { ensureBookingConversation, subscribeToAdminConversations, type Conversation } from "@/lib/firebase/data";
 
 type Appointment = {
   id: string;
@@ -75,6 +75,7 @@ function Dashboard() {
   const [uploadPercent, setUploadPercent] = useState(0);
   const [deleteTarget, setDeleteTarget] = useState<DeleteTarget | null>(null);
   const [privateThreads, setPrivateThreads] = useState<Record<string,string>>({});
+  const [adminConversations, setAdminConversations] = useState<Conversation[]>([]);
   const [threadOpening, setThreadOpening] = useState<string>("");
   const mediaUploadingRef = useRef(false);
   const serviceEditorOpen = Boolean(serviceDraft);
@@ -97,6 +98,8 @@ function Dashboard() {
   }, [notice, mediaUploading]);
 
   useEffect(() => onAuthStateChanged(auth, user => setAdminName(user?.displayName?.trim().split(" ")[0] || "")), []);
+
+  useEffect(() => subscribeToAdminConversations(setAdminConversations, () => setNotice("The private customer inbox could not be refreshed. Check your connection.")), []);
 
   useEffect(() => {
     if (!serviceEditorOpen && !deleteDialogOpen) return;
@@ -489,8 +492,9 @@ function Dashboard() {
               <small className="jtsAppointmentNext">{guidance}</small>
               {item.instructions && <details className="jtsAppointmentDetails"><summary>View booking notes &amp; deposit</summary><p>{item.instructions}</p><small>50% deposit · Orange Money 75720306 · John Shumba</small></details>}
               <div className="jtsAppointmentPrivate">
-                <button type="button" className="button buttonLight" disabled={threadOpening===item.id||!item.customerId} onClick={()=>void openPrivateThread(item)}>{threadOpening===item.id?"Opening…":privateThreads[item.id]?"Open private reply":"Reply privately ↗"}</button>
+                <button type="button" className="button buttonLight" disabled={threadOpening===item.id||!item.customerId} onClick={()=>void openPrivateThread(item)}>{threadOpening===item.id?"Opening…":adminConversations.some(conversation=>conversation.bookingId===item.id&&conversation.unreadForAdmin)?"Review new customer upload ↗":privateThreads[item.id]?"Open private reply":"Reply privately ↗"}</button>
                 {!item.customerId&&<small>Private reply unavailable: customer identity missing from this booking.</small>}
+                {adminConversations.some(conversation=>conversation.bookingId===item.id&&conversation.unreadForAdmin)&&<small className="jtsPaymentProofAlert" role="status">New private customer message or deposit screenshot — review this booking thread.</small>}
                 {privateThreads[item.id]&&auth.currentUser&&<ConversationThread conversationId={privateThreads[item.id]} role="admin" userId={auth.currentUser.uid} title={"Private reply · "+(item.customerName||"Customer")}/>}
               </div>
             </div>
