@@ -190,7 +190,16 @@ service cloud.firestore {
     }
 
     match /conversations/{conversationId} {
-      allow create: if (isAdmin() || (signedIn() && request.resource.data.customerId == request.auth.uid))
+      // Staff may create only the deterministic private thread for the customer
+      // already attached to the referenced booking. Customers may create their own threads.
+      allow create: if (
+          (isAdmin()
+            && request.resource.data.bookingId is string
+            && conversationId == 'booking-' + request.resource.data.bookingId
+            && exists(/databases/$(database)/documents/orders/$(request.resource.data.bookingId))
+            && get(/databases/$(database)/documents/orders/$(request.resource.data.bookingId)).data.customerId == request.resource.data.customerId)
+          || (signedIn() && request.resource.data.customerId == request.auth.uid)
+        )
         && request.resource.data.keys().hasOnly(['customerId','customerName','bookingId','title','status','createdAt','updatedAt','lastMessageAt','lastMessagePreview','unreadForCustomer','unreadForAdmin'])
         && request.resource.data.customerId is string
         && request.resource.data.title is string
