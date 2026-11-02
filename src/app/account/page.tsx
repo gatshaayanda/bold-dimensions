@@ -157,7 +157,7 @@ export default function AccountPage() {
     [orders]
   );
   const nextPaymentConversation = nextOrder ? conversations.find(item => item.bookingId === nextOrder.id) : undefined;
-  const nextDepositProofSent = Boolean(nextPaymentConversation?.lastMessagePreview.startsWith("DEPOSIT PROOF SUBMITTED"));
+  const nextDepositProofSent = Boolean(nextPaymentConversation?.depositProofSubmittedAt);
 
   return <main className="jtsBookingPage jtsStyleAccount"><div className="jtsContainer jtsBookingWrap">
     <div className="jtsBookingTop"><Link href="/" className="jtsBack">← John The Stylist Bw</Link><div className="jtsAccountTopLinks"><Link href="/feed" className="jtsGhost">Style feed ↗</Link><Link href="/order" className="jtsGhost">Book appointment</Link></div></div>
