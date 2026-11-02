@@ -17,7 +17,6 @@ export default function ConversationThread({conversationId,role,userId,title="Pr
  const [sending,setSending]=useState(false);
  const [error,setError]=useState("");
  const [notice,setNotice]=useState("");
- const [expanded,setExpanded]=useState(true);
 
  useEffect(()=>{
   return subscribeToConversation(conversationId,next=>setConversation(next),next=>setMessages(next),()=>setError("This private conversation could not be loaded. Check your connection and try again."));
@@ -54,24 +53,30 @@ export default function ConversationThread({conversationId,role,userId,title="Pr
   catch(cause){setError(cause instanceof Error?cause.message:"Your message could not be sent. Try again.");}
   finally{setSending(false);}
  }
- return <section className="jtsPrivateThread" aria-label={title}>
-  <header><div><span className="jtsEyebrow">PRIVATE · ONLY CUSTOMER & JTS STAFF</span><h4>{title}</h4></div><div style={{display:"flex",alignItems:"center",gap:8}}><span className="jtsPrivateStatus">{conversation?.status==="resolved"?"Resolved":conversation?.status==="waiting"?"Staff replied":"Open"}</span><button type="button" onClick={()=>setExpanded(value=>!value)} aria-expanded={expanded} aria-label={expanded?"Close private reply":"Open private reply"} style={{minHeight:32,padding:"6px 10px",border:"1px solid #625234",borderRadius:7,background:"#211b10",color:"#f0d58a",fontSize:".7rem",fontWeight:700,cursor:"pointer"}}>{expanded?"Close":"Open"}</button></div></header>
-  {expanded&&<>
-  <div className="jtsPrivateMessages" aria-live="polite">
-   {!messages.length?<p className="jtsPrivateEmpty">No messages yet. Send a private message about this appointment.</p>:messages.map(message=><article key={message.id} className={"jtsPrivateMessage "+(message.senderRole===role?"mine":"theirs")}>
-    <span>{message.senderRole==="admin"?"JTS staff":"You"} · {new Date(message.createdAt).toLocaleString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}</span>
-    {message.text&&<p>{message.text}</p>}
-    {message.attachment&&<div className="jtsPrivateAttachment">{message.attachment.type==="video"?<video src={message.attachment.url} controls playsInline preload="metadata"/>:<a href={message.attachment.url} target="_blank" rel="noreferrer"><img src={message.attachment.url} alt={message.attachment.name}/></a>}<small>{message.attachment.name}</small></div>}
-   </article>)}
+ const statusLabel=conversation?.status==="resolved"?"Resolved":conversation?.status==="waiting"?(role==="admin"?"Awaiting customer":"JTS replied"):messages.length?(role==="admin"?"Customer replied":"Awaiting JTS"):"New conversation";
+ return <details className="jtsPrivateThread" open>
+  <summary className="jtsPrivateThreadSummary">
+   <span className="jtsPrivateThreadHeading"><span className="jtsEyebrow">PRIVATE · ONLY CUSTOMER & JTS STAFF</span><strong>{title}</strong></span>
+   <span className={"jtsPrivateStatus "+(conversation?.status==="resolved"?"isResolved":"")}><i aria-hidden="true"/>{statusLabel}</span>
+   <span className="jtsPrivateToggle jtsPrivateToggleOpen">Close private reply <span aria-hidden="true">−</span></span>
+   <span className="jtsPrivateToggle jtsPrivateToggleClosed">Open private reply <span aria-hidden="true">＋</span></span>
+  </summary>
+  <div className="jtsPrivateThreadBody">
+   <div className="jtsPrivateMessages" aria-live="polite">
+    {!messages.length?<p className="jtsPrivateEmpty">No messages yet. Send a private message about this appointment.</p>:messages.map(message=><article key={message.id} className={"jtsPrivateMessage "+(message.senderRole===role?"mine":"theirs")}>
+     <span>{message.senderRole==="admin"?"JTS staff":"You"} · {new Date(message.createdAt).toLocaleString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}</span>
+     {message.text&&<p>{message.text}</p>}
+     {message.attachment&&<div className="jtsPrivateAttachment">{message.attachment.type==="video"?<video src={message.attachment.url} controls playsInline preload="metadata"/>:<a href={message.attachment.url} target="_blank" rel="noreferrer"><img src={message.attachment.url} alt={message.attachment.name}/></a>}<small>{message.attachment.name}</small></div>}
+    </article>)}
+   </div>
+   <form onSubmit={submit} className="jtsPrivateComposer">
+    <label className="jtsPrivateUpload">＋ {purpose==="deposit-proof"?"Payment screenshot":"Photo/video"}<input type="file" accept={purpose==="deposit-proof"?"image/*":"image/*,video/mp4,video/webm,video/quicktime"} disabled={uploading||sending} onChange={event=>{void attach(event.target.files?.[0]);event.currentTarget.value="";}}/></label>
+    <textarea value={draft} onChange={event=>setDraft(event.target.value)} rows={2} maxLength={2000} placeholder="Write a private message…" aria-label="Private message" disabled={sending}/>
+    {attachment&&<div className="jtsPrivatePending"><span>{attachment.name} ready to send</span><button type="button" onClick={()=>setAttachment(null)}>Remove</button></div>}
+    {uploading&&<div className="jtsPrivateProgress"><span style={{width:progress+"%"}}/></div>}
+    {(error||notice)&&<p className={error?"jtsFormError":"jtsStyleStatus"} role="status">{error||notice}</p>}
+    <button type="submit" disabled={sending||uploading||(!draft.trim()&&!attachment)}>{sending?"Sending…":purpose==="deposit-proof"?"Send payment proof for review ↗":"Send privately ↗"}</button>
+   </form>
   </div>
-  <form onSubmit={submit} className="jtsPrivateComposer">
-   <label className="jtsPrivateUpload">＋ {purpose==="deposit-proof"?"Payment screenshot":"Photo/video"}<input type="file" accept={purpose==="deposit-proof"?"image/*":"image/*,video/mp4,video/webm,video/quicktime"} disabled={uploading||sending} onChange={event=>{void attach(event.target.files?.[0]);event.currentTarget.value="";}}/></label>
-   <textarea value={draft} onChange={event=>setDraft(event.target.value)} rows={2} maxLength={2000} placeholder="Write a private message…" aria-label="Private message" disabled={sending}/>
-   {attachment&&<div className="jtsPrivatePending"><span>{attachment.name} ready to send</span><button type="button" onClick={()=>setAttachment(null)}>Remove</button></div>}
-   {uploading&&<div className="jtsPrivateProgress"><span style={{width:progress+"%"}}/></div>}
-   {(error||notice)&&<p className={error?"jtsFormError":"jtsStyleStatus"} role="status">{error||notice}</p>}
-   <button type="submit" disabled={sending||uploading||(!draft.trim()&&!attachment)}>{sending?"Sending…":purpose==="deposit-proof"?"Send payment proof for review ↗":"Send privately ↗"}</button>
-  </form>
-  </>}
- </section>;
+ </details>;
 }
