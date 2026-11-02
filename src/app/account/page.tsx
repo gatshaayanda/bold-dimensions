@@ -156,6 +156,8 @@ export default function AccountPage() {
     () => [...orders].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 3),
     [orders]
   );
+  const nextPaymentConversation = nextOrder ? conversations.find(item => item.bookingId === nextOrder.id) : undefined;
+  const nextDepositProofSent = Boolean(nextPaymentConversation?.lastMessagePreview.startsWith("DEPOSIT PROOF SUBMITTED"));
 
   return <main className="jtsBookingPage jtsStyleAccount"><div className="jtsContainer jtsBookingWrap">
     <div className="jtsBookingTop"><Link href="/" className="jtsBack">← John The Stylist Bw</Link><div className="jtsAccountTopLinks"><Link href="/feed" className="jtsGhost">Style feed ↗</Link><Link href="/order" className="jtsGhost">Book appointment</Link></div></div>
@@ -192,7 +194,7 @@ export default function AccountPage() {
       <p className="jtsAccountNotificationNote">These are in-app booking updates, not a promise of push notifications. Appointment requests remain unconfirmed until John confirms the slot and deposit.</p>
     </section>
 
-    <section className="jtsAccountPrivateInbox" aria-labelledby="account-private-title">
+    <section id="account-payment-proof" className="jtsAccountPrivateInbox" aria-labelledby="account-private-title">
       <div className="jtsAccountUtilityHeading"><div><span className="jtsEyebrow">03 · PRIVATE APPOINTMENT MESSAGES</span><h2 id="account-private-title">Booking messages &amp; payment proof.</h2></div><span className="jtsAccountLiveDot">Private inbox</span></div>
       {!user ? <div className="jtsStyleEmpty"><p>Open your guest booking session or connect Google above to see private replies linked to your bookings.</p></div>
       : conversations.length===0 ? <div className="jtsStyleEmpty"><p>Your appointment conversations appear here. Open the relevant booking thread to send a deposit screenshot if you did not upload it after booking.</p></div>
@@ -205,7 +207,7 @@ export default function AccountPage() {
 
     <header className="jtsAccountHero jtsAccountUtilityHero"><span className="jtsEyebrow">YOUR JTS STYLE JOURNEY</span><p>Manage appointments, keep your booking references close, and return to your style inspiration whenever you&apos;re ready.</p><div className="jtsAccountHeroActions"><Link href="/order" className="jtsButton jtsButtonGold">Plan my next look ↗</Link><Link href="/feed" className="jtsGhost">Explore the JTS feed</Link></div></header>
 
-    {nextOrder && <section className="jtsStyleNext"><div><span className="jtsEyebrow">UP NEXT</span><h2>{nextOrder.items.map(item => item.name).join(" · ")}</h2><p>{dateText(nextOrder.scheduledFor)} · {label(nextOrder.status)}</p><small>Reference #{nextOrder.id.slice(0, 8).toUpperCase()} · A request is not confirmed until John confirms the slot and deposit.</small></div><Link href={"/orders/" + nextOrder.id} className="jtsButton jtsButtonGold">View booking ↗</Link></section>}
+    {nextOrder && <section className="jtsStyleNext"><div><span className="jtsEyebrow">UP NEXT</span><h2>{nextOrder.items.map(item => item.name).join(" · ")}</h2><p>{dateText(nextOrder.scheduledFor)} · {label(nextOrder.status)}</p><small>Reference #{nextOrder.id.slice(0, 8).toUpperCase()} · A request is not confirmed until John confirms the slot and deposit.</small></div><Link href={"/orders/" + nextOrder.id} className="jtsButton jtsButtonGold">View booking ↗</Link></section><section className="jtsDepositReminder" aria-live="polite"><div><span className="jtsEyebrow">APPOINTMENT DEPOSIT</span><strong>{nextDepositProofSent?"Screenshot submitted · awaiting John’s review":"Your 50% deposit is still to be reviewed"}</strong><p>{nextDepositProofSent?"John will check the transfer against the Orange Money account. You do not need to send another screenshot.": "Send the 50% deposit to Orange Money 75720306 · John SHUMBA, then upload your screenshot in your private booking conversation."}</p></div><Link href="#account-payment-proof" className="jtsButton jtsButtonGold">{nextDepositProofSent?"View payment update":"Upload screenshot ↗"}</Link></section>}
 
     <section className="jtsStyleStats" aria-label="Your style summary"><article><span>BOOKINGS</span><strong>{orders.length}</strong><small>Requests in this account</small></article><article><span>PAST DATES</span><strong>{pastOrders.length}</strong><small>Previous appointment dates</small></article><article><span>ACCOUNT</span><strong>{user && !user.isAnonymous ? "SAVED" : "GUEST"}</strong><small>{user && !user.isAnonymous ? "Connected sign-in" : "This device session"}</small></article></section>
 
