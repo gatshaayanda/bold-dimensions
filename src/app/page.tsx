@@ -7,7 +7,7 @@ import JtsHomeHeroVisual from "@/components/jts-home-hero-visual";
 function Logo() {
   return <Link href="/" className="jtsAppLogo" aria-label="John The Stylist Bw home">
     <img src="/jts.jpg" alt="" />
-    <span><b>JOHN THE STYLIST BW</b><small>JOHN THE STYLIST BW</small></span>
+    <span><b>JOHN THE STYLIST BW</b><small>CUTS · COLOUR · STYLE</small></span>
   </Link>;
 }
 
