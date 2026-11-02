@@ -1713,3 +1713,39 @@ input, select, textarea, button {
 .jtsDepositReminder p{margin:0;color:#bdb5a8;font-size:.72rem;line-height:1.45}
 .jtsDepositReminder .jtsButton{flex:0 0 auto;min-height:39px;padding:8px 11px;font-size:.68rem}
 @media(max-width:620px){.jtsDepositReminder{align-items:stretch;flex-direction:column}.jtsDepositReminder .jtsButton{width:100%}}
+
+
+/* Private reply: native disclosure control with reliable mobile touch targets. */
+.jtsPrivateThread{display:block;min-width:0;overflow:hidden}
+.jtsPrivateThreadSummary{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px 14px;min-height:58px;list-style:none;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.jtsPrivateThreadSummary::-webkit-details-marker{display:none}
+.jtsPrivateThreadSummary::marker{content:""}
+.jtsPrivateThreadHeading{display:grid;gap:4px;min-width:0}
+.jtsPrivateThreadHeading .jtsEyebrow{font-size:.58rem;line-height:1.35}
+.jtsPrivateThreadHeading strong{font:600 1rem/1.25 Georgia,serif;color:#fff;overflow-wrap:anywhere}
+.jtsPrivateStatus{display:inline-flex;align-items:center;justify-self:end;gap:6px;white-space:nowrap;font-size:.65rem;color:#e4cb91;border:1px solid #625234;border-radius:20px;padding:6px 9px}
+.jtsPrivateStatus i{width:7px;height:7px;flex:0 0 7px;border-radius:50%;background:#d4b46d;box-shadow:0 0 0 3px rgba(212,180,109,.12)}
+.jtsPrivateStatus.isResolved i{background:#91c69a;box-shadow:0 0 0 3px rgba(145,198,154,.12)}
+.jtsPrivateToggle{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:44px;padding:10px 14px;border:1px solid #806b42;border-radius:9px;background:#211b10;color:#f0d58a;font-size:.76rem;font-weight:800;line-height:1.2;text-align:center}
+.jtsPrivateToggle span{font-size:1rem;line-height:1}
+.jtsPrivateToggleClosed{display:none}
+.jtsPrivateThread:not([open]) .jtsPrivateToggleOpen{display:none}
+.jtsPrivateThread:not([open]) .jtsPrivateToggleClosed{display:flex}
+.jtsPrivateThreadBody{display:grid;gap:10px;margin-top:10px;min-width:0}
+.jtsPrivateThread:not([open]) .jtsPrivateThreadBody{display:none}
+.jtsPrivateThreadSummary:focus-visible{outline:2px solid #f0d58a;outline-offset:3px;border-radius:8px}
+.jtsPrivateComposer textarea{min-width:0;max-width:100%;box-sizing:border-box}
+.jtsPrivateComposer>button{min-height:44px;touch-action:manipulation}
+@media(max-width:560px){
+ .jtsPrivateThread{padding:10px}
+ .jtsPrivateThreadSummary{grid-template-columns:minmax(0,1fr) auto;gap:9px 8px;min-height:0}
+ .jtsPrivateThreadHeading strong{font-size:.92rem}
+ .jtsPrivateStatus{font-size:.59rem;padding:5px 7px}
+ .jtsPrivateToggle{min-height:48px;font-size:.75rem}
+ .jtsPrivateThreadBody{margin-top:11px}
+ .jtsPrivateMessages{max-height:min(42vh,320px);overscroll-behavior:contain}
+ .jtsPrivateComposer{width:100%;min-width:0}
+ .jtsPrivateComposer textarea{width:100%;font-size:16px}
+ .jtsPrivateComposer>button{width:100%;justify-self:stretch}
+ .jtsPrivateUpload{min-height:42px;align-items:center}
+}
