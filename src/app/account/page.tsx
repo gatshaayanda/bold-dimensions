@@ -198,7 +198,7 @@ export default function AccountPage() {
       : conversations.length===0 ? <div className="jtsStyleEmpty"><p>Your appointment conversations appear here. Open the relevant booking thread to send a deposit screenshot if you did not upload it after booking.</p></div>
       : <div className="jtsAccountPrivateList">{conversations.map(conversation=><article className="jtsAccountPrivateItem" key={conversation.id}>
         <div className="jtsAccountPrivateMeta"><strong>{conversation.title}</strong><span>{conversation.unreadForCustomer?"New reply":"Private thread"}</span><small>{conversation.lastMessagePreview||"Conversation opened"} · {dateText(conversation.lastMessageAt)}</small></div>
-        <ConversationThread conversationId={conversation.id} role="customer" userId={user.uid} title="Message John privately"/>
+        <ConversationThread conversationId={conversation.id} role="customer" userId={user.uid} title="Booking conversation" purpose={conversation.bookingId?"deposit-proof":undefined}/>
       </article>)}</div>}
       <p className="jtsAccountNotificationNote">Deposit screenshots and messages are private to you and authorized JTS staff. Uploading a screenshot does not verify payment; John checks the Orange Money account before marking a deposit received.</p>
     </section>
