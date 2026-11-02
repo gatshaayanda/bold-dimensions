@@ -246,6 +246,17 @@ Canonical visual reference: the owner-supplied `public/jts.jpg` logo. Its palett
 - Use `brand.logo` and `brand.iconSvg` for canonical brand references. Do not assume a JPEG is a valid PNG. Verify icon file signatures, dimensions and rendered appearance before calling PWA icons correct.
 - Brand metadata/theme color, manifest, browser handoff, install panel, offline UI, favicon/share assets and notification imagery must agree with the canonical logo.
 
+## Customer account workspace — Iteration 13 compact redesign (2026-11-02)
+- My Account is a task-first customer dashboard, not a long-form marketing page. Prioritize the next appointment/request, truthful status, next required customer action, private messages/payment proof and book-again route.
+- Reduce reading and scrolling with concise headings, compact rows/cards, grouped information and progressive disclosure. Do not repeat the JTS journey introduction, duplicate booking CTAs or restate appointment truth in multiple prominent panels.
+- Preserve guest sessions, optional Google linking, customer-scoped Firestore bookings, live subscriptions, booking references/detail links, private conversations, deposit-proof upload/recovery, unread state, booking history, weather/date links, style feed/inspiration and Style Studio.
+- Payment screenshot submission never marks a deposit as received. Only authorized staff manually verify the Orange Money account and update payment state. Appointment requests remain unconfirmed until John confirms the slot and deposit.
+- Weather is supporting planning context, never a proxy for availability. Keep it secondary and concise; retain attribution and forecast uncertainty language.
+- Optional entertainment and inspiration stay below operational account tasks.
+- Use the canonical black, metallic-gold, white and silver JTS palette. No generic dashboard theme, decorative colour status coding, fake reviews or fabricated customer metrics.
+- Account analytics must not expose one customer's bookings, names, phone numbers, messages, payment screenshots or identity to other customers or public visitors.
+- Any account visual refactor must be regression-checked against guest and Google-linked sessions, booking recovery, live updates, private thread ownership, attachment upload and account links. Do not change Firebase rules/schema/auth or PWA install/offline behavior as part of visual work.
+
 ## Accessibility and form quality
 - visible labels;
 - keyboard-compatible controls;
