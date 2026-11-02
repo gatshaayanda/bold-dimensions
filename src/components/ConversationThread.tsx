@@ -5,9 +5,9 @@ import { auth } from "@/lib/firebase/client";
 import { sendConversationMessage, subscribeToConversation, updateConversationRead, type Conversation, type ConversationAttachment, type ConversationMessage } from "@/lib/firebase/data";
 import { uploadFiles } from "@/lib/uploadthing";
 
-type Props={conversationId:string;role:"customer"|"admin";userId:string;title?:string};
+type Props={conversationId:string;role:"customer"|"admin";userId:string;title?:string;purpose?:"deposit-proof"};
 
-export default function ConversationThread({conversationId,role,userId,title="Private appointment conversation"}:Props){
+export default function ConversationThread({conversationId,role,userId,title="Private appointment conversation",purpose}:Props){
  const [conversation,setConversation]=useState<Conversation|null>(null);
  const [messages,setMessages]=useState<ConversationMessage[]>([]);
  const [draft,setDraft]=useState("");
@@ -29,6 +29,7 @@ export default function ConversationThread({conversationId,role,userId,title="Pr
   if(!file)return;
   const video=file.type.startsWith("video/");
   if(!video&&!file.type.startsWith("image/")){setError("Choose a photo or video.");return;}
+  if(purpose==="deposit-proof"&&video){setError("For payment review, upload a screenshot or photo rather than a video.");return;}
   if(file.size>(video?8:4)*1024*1024){setError(video?"Videos must be 8 MB or smaller.":"Photos must be 4 MB or smaller.");return;}
   const current=auth.currentUser;
   if(!current||current.uid!==userId){setError("Your sign-in session has changed. Refresh the page and try again.");return;}
@@ -46,8 +47,9 @@ export default function ConversationThread({conversationId,role,userId,title="Pr
  async function submit(event:FormEvent<HTMLFormElement>){
   event.preventDefault();setError("");setNotice("");
   if(!draft.trim()&&!attachment){setError("Write a message or attach a photo/video.");return;}
+  if(purpose==="deposit-proof"&&(!attachment||attachment.type!=="image")){setError("Attach a screenshot or photo of the payment confirmation before sending.");return;}
   setSending(true);
-  try{await sendConversationMessage(conversationId,userId,role,draft,attachment||undefined);setDraft("");setAttachment(null);setNotice("Private message sent.");}
+  try{await sendConversationMessage(conversationId,userId,role,purpose==="deposit-proof"?"DEPOSIT PROOF SUBMITTED — please verify the transfer in the Orange Money account. "+draft:draft,attachment||undefined);setDraft("");setAttachment(null);setNotice("Private message sent.");}
   catch(cause){setError(cause instanceof Error?cause.message:"Your message could not be sent. Try again.");}
   finally{setSending(false);}
  }
@@ -61,12 +63,12 @@ export default function ConversationThread({conversationId,role,userId,title="Pr
    </article>)}
   </div>
   <form onSubmit={submit} className="jtsPrivateComposer">
-   <label className="jtsPrivateUpload">＋ Photo/video<input type="file" accept="image/*,video/mp4,video/webm,video/quicktime" disabled={uploading||sending} onChange={event=>{void attach(event.target.files?.[0]);event.currentTarget.value="";}}/></label>
+   <label className="jtsPrivateUpload">＋ {purpose==="deposit-proof"?"Payment screenshot":"Photo/video"}<input type="file" accept={purpose==="deposit-proof"?"image/*":"image/*,video/mp4,video/webm,video/quicktime"} disabled={uploading||sending} onChange={event=>{void attach(event.target.files?.[0]);event.currentTarget.value="";}}/></label>
    <textarea value={draft} onChange={event=>setDraft(event.target.value)} rows={2} maxLength={2000} placeholder="Write a private message…" aria-label="Private message" disabled={sending}/>
    {attachment&&<div className="jtsPrivatePending"><span>{attachment.name} ready to send</span><button type="button" onClick={()=>setAttachment(null)}>Remove</button></div>}
    {uploading&&<div className="jtsPrivateProgress"><span style={{width:progress+"%"}}/></div>}
    {(error||notice)&&<p className={error?"jtsFormError":"jtsStyleStatus"} role="status">{error||notice}</p>}
-   <button type="submit" disabled={sending||uploading||(!draft.trim()&&!attachment)}>{sending?"Sending…":"Send privately ↗"}</button>
+   <button type="submit" disabled={sending||uploading||(!draft.trim()&&!attachment)}>{sending?"Sending…":purpose==="deposit-proof"?"Send payment proof for review ↗":"Send privately ↗"}</button>
   </form>
  </section>;
 }
