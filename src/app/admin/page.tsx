@@ -492,9 +492,9 @@ function Dashboard() {
               <small className="jtsAppointmentNext">{guidance}</small>
               {item.instructions && <details className="jtsAppointmentDetails"><summary>View booking notes &amp; deposit</summary><p>{item.instructions}</p><small>50% deposit · Orange Money 75720306 · John Shumba</small></details>}
               <div className="jtsAppointmentPrivate">
-                <button type="button" className="button buttonLight" disabled={threadOpening===item.id||!item.customerId} onClick={()=>void openPrivateThread(item)}>{threadOpening===item.id?"Opening…":adminConversations.some(conversation=>conversation.bookingId===item.id&&conversation.unreadForAdmin)?"Review new customer upload ↗":privateThreads[item.id]?"Open private reply":"Reply privately ↗"}</button>
+                <button type="button" className="button buttonLight" disabled={threadOpening===item.id||!item.customerId} onClick={()=>void openPrivateThread(item)}>{threadOpening===item.id?"Opening…":adminConversations.some(conversation=>conversation.bookingId===item.id&&conversation.unreadForAdmin&&conversation.lastMessagePreview.startsWith("DEPOSIT PROOF SUBMITTED"))?"Review new customer upload ↗":privateThreads[item.id]?"Open private reply":"Reply privately ↗"}</button>
                 {!item.customerId&&<small>Private reply unavailable: customer identity missing from this booking.</small>}
-                {adminConversations.some(conversation=>conversation.bookingId===item.id&&conversation.unreadForAdmin)&&<small className="jtsPaymentProofAlert" role="status">New private customer message or deposit screenshot — review this booking thread.</small>}
+                {adminConversations.some(conversation=>conversation.bookingId===item.id&&conversation.unreadForAdmin)&&<small className="jtsPaymentProofAlert" role="status">New deposit screenshot submitted — check the Orange Money account, then update the deposit and appointment manually.</small>}
                 {privateThreads[item.id]&&auth.currentUser&&<ConversationThread conversationId={privateThreads[item.id]} role="admin" userId={auth.currentUser.uid} title={"Private reply · "+(item.customerName||"Customer")}/>}
               </div>
             </div>
