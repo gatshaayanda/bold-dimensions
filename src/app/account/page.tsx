@@ -4,11 +4,7 @@ import { GoogleAuthProvider, linkWithPopup, onAuthStateChanged, signInAnonymousl
 import { useEffect, useMemo, useState } from "react";
 import { track } from "@vercel/analytics";
 import { auth } from "@/lib/firebase/client";
-import StyleStudio from "@/app/style-studio";
-import CustomerStyleInspiration from "@/components/customer-style-inspiration";
 import ConversationThread from "@/components/ConversationThread";
-import JtsWeather from "@/components/JtsWeather";
-import JtsStyleGuide from "@/components/JtsStyleGuide";
 import { getCustomerOrders, subscribeToCustomerOrders, subscribeToCustomerConversations, ensureBookingConversation, type Conversation, type FoodOrder } from "@/lib/firebase/data";
 
 const INITIAL_BOOKINGS_VISIBLE = 3;
@@ -180,65 +176,52 @@ export default function AccountPage() {
   return <main className="jtsBookingPage jtsStyleAccount"><div className="jtsContainer jtsBookingWrap">
     <div className="jtsBookingTop"><Link href="/" className="jtsBack">← John The Stylist Bw</Link><div className="jtsAccountTopLinks"><Link href="/feed" className="jtsGhost">Style feed ↗</Link><Link href="/order" className="jtsGhost">Book appointment</Link></div></div>
 
-    <section className="jtsPersonalWelcome" aria-labelledby="jts-personal-welcome-title">
-      <span className="jtsEyebrow">YOUR JTS STYLE JOURNEY</span>
-      <h2 id="jts-personal-welcome-title">{(() => { const hour = Number(new Intl.DateTimeFormat("en-GB", { timeZone: "Africa/Gaborone", hour: "2-digit", hourCycle: "h23" }).format(new Date())); const time = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening"; const firstName = user && !user.isAnonymous ? user.displayName?.trim().split(/\s+/)[0] : ""; return firstName ? time + ", " + firstName + "." : "Dumela. Your next look starts here."; })()}</h2>
-      <p>{nextOrder ? "You have a booking request coming up. Check its status below, or browse a fresh style idea while you plan." : orders.length ? "Your booking history and style references are together here, ready whenever you want to plan your next visit." : "Explore John’s work, check the week’s forecast, and request a day that fits your plans. No pressure to book before you’re ready."}</p>
-      <div className="jtsPersonalWelcomeActions"><Link href="/order" className="jtsButton jtsButtonGold" onClick={() => track("jts_account_primary_action", { action: "request_appointment" })}>Plan my next look ↗</Link><Link href="/feed" className="jtsGhost" onClick={() => track("jts_account_primary_action", { action: "browse_style_feed" })}>Find inspiration</Link></div>
-    </section>
+    <header className="jtsAccountHero jtsAccountUtilityHero">
+      <span className="jtsEyebrow">MY JTS ACCOUNT</span>
+      <h1>Your appointments.</h1>
+      <p>Booking details, updates and private messages—all in one place.</p>
+      <div className="jtsAccountHeroActions"><Link href="/order" className="jtsButton jtsButtonGold">Request an appointment ↗</Link><Link href="/feed" className="jtsGhost">Browse styles</Link></div>
+    </header>
+
+    {(error || message) && <p className={error ? "jtsFormError" : "jtsStyleStatus"} role="status" aria-live="polite">{error || message}</p>}
 
     <section className="jtsStylePanel jtsAccountUtilityAuth" aria-labelledby="account-connection-title">
-      <div className="jtsAccountUtilityHeading"><span className="jtsEyebrow">01 · ACCOUNT ACCESS</span><span className={user && !user.isAnonymous ? "jtsStyleConnected" : "jtsAccountGuestBadge"}>{user && !user.isAnonymous ? "✓ Connected" : user ? "Guest session" : "Optional"}</span></div>
-      <h1 id="account-connection-title">Your account.<br /><em>Your history.</em></h1>
+      <div className="jtsAccountUtilityHeading"><span className="jtsEyebrow">ACCOUNT ACCESS</span><span className={user && !user.isAnonymous ? "jtsStyleConnected" : "jtsAccountGuestBadge"}>{user && !user.isAnonymous ? "✓ Google connected" : user ? "Guest session" : "Not connected"}</span></div>
+      <h2 id="account-connection-title">{user && !user.isAnonymous ? "Your history is saved." : "Keep your bookings together."}</h2>
       {user && !user.isAnonymous
-        ? <><p>Your Google sign-in is connected. Keep using it to access bookings saved to this account.</p><span className="jtsStyleConnected">Google account connected</span></>
+        ? <p>You're signed in with Google. Use the same account when you return.</p>
         : user
-          ? <><p>Connect Google to keep this existing guest booking identity and its history. This will not confirm or change any appointment.</p><button className="googleSignInButton jtsAccountGoogleButton" type="button" onClick={() => void connectGoogle()} disabled={busy}><GoogleBrandMark />{busy ? "Connecting…" : "Continue with Google"}</button></>
-          : <><p>Sign in with Google to save new bookings to your account. If you already have a guest booking session on this device, it will be preserved when it is available to link.</p><button className="googleSignInButton jtsAccountGoogleButton" type="button" onClick={() => void connectGoogle()} disabled={!ready || busy}><GoogleBrandMark />{busy ? "Connecting…" : "Continue with Google"}</button><div className="jtsAccountAuthFallback"><span>Prefer not to sign in?</span><button type="button" className="jtsStyleTextLink" onClick={() => void startGuest()} disabled={!ready || busy}>Open guest booking history</button></div></>}
-      {(error || message) && <p className={error ? "jtsFormError" : "jtsStyleStatus"} role="status" aria-live="polite">{error || message}</p>}
+          ? <><p>Connect Google to keep this guest booking identity and its history.</p><button className="googleSignInButton jtsAccountGoogleButton" type="button" onClick={() => void connectGoogle()} disabled={busy}><GoogleBrandMark />{busy ? "Connecting…" : "Continue with Google"}</button></>
+          : <><p>Sign in to access saved bookings, or continue with a guest session on this device.</p><button className="googleSignInButton jtsAccountGoogleButton" type="button" onClick={() => void connectGoogle()} disabled={!ready || busy}><GoogleBrandMark />{busy ? "Connecting…" : "Continue with Google"}</button><div className="jtsAccountAuthFallback"><span>Prefer not to sign in?</span><button type="button" className="jtsStyleTextLink" onClick={() => void startGuest()} disabled={!ready || busy}>Open guest booking history</button></div></>}
     </section>
 
-    <JtsWeather />
-
-    <section className="jtsAccountNotifications" aria-labelledby="account-notifications-title">
-      <div className="jtsAccountUtilityHeading"><div><span className="jtsEyebrow">02 · NOTIFICATIONS & UPDATES</span><h2 id="account-notifications-title">Your latest activity.</h2></div><span className="jtsAccountLiveDot">Live when connected</span></div>
-      {!user
-        ? <div className="jtsStyleEmpty"><p>Open your account or guest booking session to see updates linked privately to this device.</p></div>
-        : !ready
-          ? <div className="jtsStyleEmpty">Checking your latest booking updates…</div>
-          : updates.length
-            ? <div className="jtsAccountUpdateList">{updates.map(order => <article key={order.id} className="jtsAccountUpdate"><span className="jtsAccountUpdateMark" aria-hidden="true">•</span><div><strong>{label(order.status)}</strong><p>{order.items.map(item => item.name).join(" · ")}</p><small>{dateText(order.scheduledFor)} · Ref #{order.id.slice(0, 8).toUpperCase()}</small></div><Link href={"/orders/" + order.id} className="jtsStyleTextLink">Details ↗</Link></article>)}</div>
-            : <div className="jtsStyleEmpty"><p>No booking updates yet. When you request an appointment, its latest status will appear here.</p><Link href="/order" className="jtsButton jtsButtonGold">Request an appointment ↗</Link></div>}
-      <p className="jtsAccountNotificationNote">These are in-app booking updates, not a promise of push notifications. Appointment requests remain unconfirmed until John confirms the slot and deposit.</p>
+    <section className="jtsStyleNext" aria-labelledby="account-next-title">
+      <div><span className="jtsEyebrow">NEXT APPOINTMENT</span>
+        {nextOrder ? <><h2 id="account-next-title">{nextOrder.items.map(item => item.name).join(" · ")}</h2><p>{dateText(nextOrder.scheduledFor)} · {label(nextOrder.status)}</p><small>Ref #{nextOrder.id.slice(0, 8).toUpperCase()} · Requests are not confirmed until John confirms the slot and deposit.</small></>
+        : <><h2 id="account-next-title">Nothing scheduled yet.</h2><p>When you request an appointment, its status will appear here.</p></>}
+      </div>
+      <Link href={nextOrder ? "/orders/" + nextOrder.id : "/order"} className="jtsButton jtsButtonGold">{nextOrder ? "View appointment ↗" : "Book an appointment ↗"}</Link>
     </section>
 
-    <section id="account-payment-proof" className="jtsAccountPrivateInbox" aria-labelledby="account-private-title">
-      <div className="jtsAccountUtilityHeading"><div><span className="jtsEyebrow">03 · PRIVATE APPOINTMENT MESSAGES</span><h2 id="account-private-title">Booking messages &amp; payment proof.</h2></div><span className="jtsAccountLiveDot">Private inbox</span></div>
-      {!user ? <div className="jtsStyleEmpty"><p>Open your guest booking session or connect Google above to see private replies linked to your bookings.</p></div>
-      : conversations.length===0 ? <div className="jtsStyleEmpty"><p>Your appointment conversations appear here. Open the relevant booking thread to send a deposit screenshot if you did not upload it after booking.</p></div>
-      : <div className="jtsAccountPrivateList">{conversations.map(conversation=><article className="jtsAccountPrivateItem" key={conversation.id}>
-        <div className="jtsAccountPrivateMeta"><strong>{conversation.title}</strong><span>{conversation.unreadForCustomer?"New reply":"Private thread"}</span><small>{conversation.lastMessagePreview||"Conversation opened"} · {dateText(conversation.lastMessageAt)}</small></div>
-        <ConversationThread conversationId={conversation.id} role="customer" userId={user.uid} title="Booking conversation" purpose={conversation.bookingId?"deposit-proof":undefined}/>
-      </article>)}</div>}
-      <p className="jtsAccountNotificationNote">Deposit screenshots and messages are private to you and authorized JTS staff. Uploading a screenshot does not verify payment; John checks the Orange Money account before marking a deposit received.</p>
+    <section className="jtsAccountPrivateInbox" id="account-payment-proof" aria-labelledby="account-private-title">
+      <div className="jtsAccountUtilityHeading"><div><span className="jtsEyebrow">PRIVATE INBOX</span><h2 id="account-private-title">Messages &amp; payment proof</h2></div><span className="jtsAccountLiveDot">Private</span></div>
+      {!user ? <div className="jtsStyleEmpty"><p>Connect your account or open your guest booking history to see private appointment conversations.</p></div>
+      : !ready ? <div className="jtsStyleEmpty">Loading your appointment messages…</div>
+      : conversations.length === 0 ? <div className="jtsStyleEmpty"><p>Your private appointment conversations will appear here.</p></div>
+      : <div className="jtsAccountPrivateList">{conversations.map(conversation => <details className="jtsAccountPrivateItem" key={conversation.id}>
+          <summary className="jtsAccountPrivateMeta"><strong>{conversation.title}</strong><span>{conversation.unreadForCustomer ? "New reply" : "Open conversation"}</span><small>{conversation.lastMessagePreview || "No messages yet"} · {dateText(conversation.lastMessageAt)}</small></summary>
+          <ConversationThread conversationId={conversation.id} role="customer" userId={user.uid} title="Booking conversation" purpose={conversation.bookingId ? "deposit-proof" : undefined} />
+        </details>)}</div>}
+      <p className="jtsAccountNotificationNote">Messages and payment screenshots are private to you and authorized JTS staff. A screenshot is not payment verification; John checks the Orange Money account.</p>
     </section>
 
-    <header className="jtsAccountHero jtsAccountUtilityHero"><span className="jtsEyebrow">YOUR JTS STYLE JOURNEY</span><p>Manage appointments, keep your booking references close, and return to your style inspiration whenever you&apos;re ready.</p><div className="jtsAccountHeroActions"><Link href="/order" className="jtsButton jtsButtonGold">Plan my next look ↗</Link><Link href="/feed" className="jtsGhost">Explore the JTS feed</Link></div></header>
-
-    {nextOrder && <><section className="jtsStyleNext"><div><span className="jtsEyebrow">UP NEXT</span><h2>{nextOrder.items.map(item => item.name).join(" · ")}</h2><p>{dateText(nextOrder.scheduledFor)} · {label(nextOrder.status)}</p><small>Reference #{nextOrder.id.slice(0, 8).toUpperCase()} · A request is not confirmed until John confirms the slot and deposit.</small></div><Link href={"/orders/" + nextOrder.id} className="jtsButton jtsButtonGold">View booking ↗</Link></section>{nextOrder.status!=="Confirmed"&&<section className="jtsDepositReminder" aria-live="polite"><div><span className="jtsEyebrow">APPOINTMENT DEPOSIT</span><strong>{nextDepositProofSent?"Screenshot submitted · awaiting John’s review":"Your 50% deposit is still to be reviewed"}</strong><p>{nextDepositProofSent?"John will check the transfer against the Orange Money account. You do not need to send another screenshot.": "Send the 50% deposit to Orange Money 75720306 · John SHUMBA, then upload your screenshot in your private booking conversation."}</p></div><Link href="#account-payment-proof" className="jtsButton jtsButtonGold">{nextDepositProofSent?"View payment update":"Upload screenshot ↗"}</Link></section>}</>}
-
-    <section className="jtsStyleStats" aria-label="Your style summary"><article><span>BOOKINGS</span><strong>{orders.length}</strong><small>Requests in this account</small></article><article><span>PAST DATES</span><strong>{pastOrders.length}</strong><small>Previous appointment dates</small></article><article><span>ACCOUNT</span><strong>{user && !user.isAnonymous ? "SAVED" : "GUEST"}</strong><small>{user && !user.isAnonymous ? "Connected sign-in" : "This device session"}</small></article></section>
-
-    <section className="jtsStyleHistory"><div className="jtsStyleSectionHead"><div><span className="jtsEyebrow">YOUR PERSONAL RECORD</span><h2>Booking history.</h2><p>Showing {Math.min(INITIAL_BOOKINGS_VISIBLE, recentOrders.length)} recent {recentOrders.length === 1 ? "booking" : "bookings"} first, so the important details stay easy to scan.</p></div><Link href="/order" className="jtsStyleTextLink">New booking ↗</Link></div>
-      {user && !ready ? <div className="jtsStyleEmpty">Loading your bookings…</div> : user && orders.length > 0 ? <><div className="jtsStyleBookingList">{visibleOrders.map(order => <article key={order.id} className="jtsBookingRow jtsStyleBookingRow"><div><span className="jtsEyebrow">{label(order.status)}</span><h3>{order.items.map(item => item.name).join(" · ")}</h3><p>{dateText(order.scheduledFor)}</p><small>Reference #{order.id.slice(0, 8).toUpperCase()} · {order.status}</small></div><Link href={"/orders/" + order.id} className="jtsGhost">View booking ↗</Link></article>)}</div>{recentOrders.length > INITIAL_BOOKINGS_VISIBLE && <button type="button" className="jtsAccountShowBookings" onClick={() => setShowAllBookings(value => !value)}>{showAllBookings ? "Show only the 3 most recent" : "View all " + recentOrders.length + " bookings"}</button>}</> : user ? <div className="jtsStyleEmpty"><span className="jtsEyebrow">NO BOOKINGS YET</span><h3>Your first look starts here.</h3><p>Choose a service, request a future date and keep your reference here.</p><Link href="/order" className="jtsButton jtsButtonGold">Book your first look ↗</Link></div> : <div className="jtsStyleEmpty"><p>Open your private booking session above to load its history.</p></div>}
+    <section className="jtsStyleHistory" aria-labelledby="account-history-title"><div className="jtsStyleSectionHead"><div><span className="jtsEyebrow">YOUR RECORD</span><h2 id="account-history-title">Booking history</h2><p>{orders.length} {orders.length === 1 ? "request" : "requests"} on this account.</p></div><Link href="/order" className="jtsStyleTextLink">New booking ↗</Link></div>
+      {!user ? <div className="jtsStyleEmpty"><p>Open your private booking session above to load your history.</p></div>
+      : !ready ? <div className="jtsStyleEmpty">Loading your bookings…</div>
+      : orders.length > 0 ? <><div className="jtsStyleBookingList">{visibleOrders.map(order => <article key={order.id} className="jtsBookingRow jtsStyleBookingRow"><div><span className="jtsEyebrow">{label(order.status)}</span><h3>{order.items.map(item => item.name).join(" · ")}</h3><p>{dateText(order.scheduledFor)}</p><small>Reference #{order.id.slice(0, 8).toUpperCase()} · {order.status}</small></div><Link href={"/orders/" + order.id} className="jtsGhost">Details ↗</Link></article>)}</div>{recentOrders.length > INITIAL_BOOKINGS_VISIBLE && <button type="button" className="jtsAccountShowBookings" onClick={() => setShowAllBookings(value => !value)}>{showAllBookings ? "Show recent bookings" : "View all " + recentOrders.length + " bookings"}</button>}</>
+      : <div className="jtsStyleEmpty"><h3>Your first appointment starts here.</h3><p>Choose a service and request a date that works for you.</p><Link href="/order" className="jtsButton jtsButtonGold">Request your first appointment ↗</Link></div>}
     </section>
 
-    <section className="jtsStyleFeedInvite"><div><span className="jtsEyebrow">INSPIRATION BETWEEN VISITS</span><h2>See what’s next.</h2><p>Explore John’s work, share your own photo and keep a record of how happy you are with each look.</p></div><Link href="/feed" className="jtsButton jtsButtonGold">Share a look & review ↗</Link></section>
-
-    <CustomerStyleInspiration />
-    <JtsStyleGuide />
-
-    <section className="jtsAccountGame"><section className="jtsAccountStudioIntro"><span className="jtsEyebrow">OPTIONAL · STYLE STUDIO</span><h2>Try a new direction.</h2><p>A creative playground when you&apos;re in the mood to experiment. Your bookings and account tools stay first.</p></section><StyleStudio /></section>
-    <div className="jtsAccountNote"><strong>Appointment truth:</strong> submitting a request does not confirm the slot or mean a deposit has been received. John confirms the appointment and deposit separately. For help, use your JTS booking history and appointment request details.</div>
+    <p className="jtsAccountNote"><strong>Appointment information:</strong> a request is not confirmed until John confirms the appointment and deposit separately.</p>
   </div></main>;
 }
