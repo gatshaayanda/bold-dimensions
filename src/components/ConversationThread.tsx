@@ -17,6 +17,7 @@ export default function ConversationThread({conversationId,role,userId,title="Pr
  const [sending,setSending]=useState(false);
  const [error,setError]=useState("");
  const [notice,setNotice]=useState("");
+ const [expanded,setExpanded]=useState(true);
 
  useEffect(()=>{
   return subscribeToConversation(conversationId,next=>setConversation(next),next=>setMessages(next),()=>setError("This private conversation could not be loaded. Check your connection and try again."));
@@ -54,7 +55,8 @@ export default function ConversationThread({conversationId,role,userId,title="Pr
   finally{setSending(false);}
  }
  return <section className="jtsPrivateThread" aria-label={title}>
-  <header><div><span className="jtsEyebrow">PRIVATE · ONLY CUSTOMER & JTS STAFF</span><h4>{title}</h4></div><span className="jtsPrivateStatus">{conversation?.status==="resolved"?"Resolved":conversation?.status==="waiting"?"Staff replied":"Open"}</span></header>
+  <header><div><span className="jtsEyebrow">PRIVATE · ONLY CUSTOMER & JTS STAFF</span><h4>{title}</h4></div><div style={{display:"flex",alignItems:"center",gap:8}}><span className="jtsPrivateStatus">{conversation?.status==="resolved"?"Resolved":conversation?.status==="waiting"?"Staff replied":"Open"}</span><button type="button" onClick={()=>setExpanded(value=>!value)} aria-expanded={expanded} aria-label={expanded?"Close private reply":"Open private reply"} style={{minHeight:32,padding:"6px 10px",border:"1px solid #625234",borderRadius:7,background:"#211b10",color:"#f0d58a",fontSize:".7rem",fontWeight:700,cursor:"pointer"}}>{expanded?"Close":"Open"}</button></div></header>
+  {expanded&&<>
   <div className="jtsPrivateMessages" aria-live="polite">
    {!messages.length?<p className="jtsPrivateEmpty">No messages yet. Send a private message about this appointment.</p>:messages.map(message=><article key={message.id} className={"jtsPrivateMessage "+(message.senderRole===role?"mine":"theirs")}>
     <span>{message.senderRole==="admin"?"JTS staff":"You"} · {new Date(message.createdAt).toLocaleString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}</span>
@@ -70,5 +72,6 @@ export default function ConversationThread({conversationId,role,userId,title="Pr
    {(error||notice)&&<p className={error?"jtsFormError":"jtsStyleStatus"} role="status">{error||notice}</p>}
    <button type="submit" disabled={sending||uploading||(!draft.trim()&&!attachment)}>{sending?"Sending…":purpose==="deposit-proof"?"Send payment proof for review ↗":"Send privately ↗"}</button>
   </form>
+  </>}
  </section>;
 }
