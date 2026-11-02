@@ -4,7 +4,7 @@ import type {Unsubscribe} from "firebase/firestore";
 import {db} from "@/lib/firebase/client";
 
 export const ORDER_STATUSES=["New","Accepted","Preparing","Ready","Delivering","Collected","Delivered","Cancelled"] as const;
-export type OrderStatus=typeof ORDER_STATUSES[number];
+export type OrderStatus=typeof ORDER_STATUSES[number]|"Reviewing"|"Confirmed"|"In service"|"Completed";
 export type PaymentMethod="unpaid"|"cash"|"etransfer"|"other";
 export type PaymentStatus="unpaid"|"paid"|"partial";
 export type OrderItem={name:string;price:number;quantity:number};
