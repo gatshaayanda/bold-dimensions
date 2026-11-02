@@ -16,9 +16,6 @@ function dateText(value: string) {
   const d = new Date(value);
   return Number.isFinite(d.getTime()) ? d.toLocaleString("en-GB", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : value;
 }
-function isPastAppointment(order: FoodOrder) {
-  return new Date(order.scheduledFor).getTime() < Date.now() && order.status !== "Cancelled";
-}
 function firebaseErrorCode(cause: unknown) {
   return typeof cause === "object" && cause && "code" in cause ? String((cause as { code?: unknown }).code ?? "") : "";
 }
@@ -156,7 +153,6 @@ export default function AccountPage() {
     }
   }
 
-  const pastOrders = useMemo(() => orders.filter(isPastAppointment), [orders]);
   const nextOrder = useMemo(
     () => orders.filter(order => new Date(order.scheduledFor).getTime() >= Date.now() && !["Cancelled", "Collected", "Delivered"].includes(order.status)).sort((a, b) => a.scheduledFor.localeCompare(b.scheduledFor))[0],
     [orders]
@@ -166,10 +162,6 @@ export default function AccountPage() {
     [orders]
   );
   const visibleOrders = showAllBookings ? recentOrders : recentOrders.slice(0, INITIAL_BOOKINGS_VISIBLE);
-  const updates = useMemo(
-    () => [...orders].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 3),
-    [orders]
-  );
   const nextPaymentConversation = nextOrder ? conversations.find(item => item.bookingId === nextOrder.id) : undefined;
   const nextDepositProofSent = Boolean(nextPaymentConversation?.depositProofSubmittedAt);
 
