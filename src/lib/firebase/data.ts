@@ -39,7 +39,7 @@ export async function saveNotificationPreferences(uid:string,prefs:NotificationP
 export async function saveNotificationToken(uid:string,token:string,admin:boolean){const encoded=encodeURIComponent(token);await setDoc(doc(db,"notificationTokens",uid,"tokens",encoded),{token,admin,updatedAt:new Date().toISOString()} as NotificationToken,{merge:true})}
 
 export type ConversationAttachment={url:string;name:string;type:string;size:number};
-export type Conversation={id:string;customerId:string;customerName?:string;bookingId?:string;title:string;status:"open"|"waiting"|"resolved";createdAt:string;updatedAt:string;lastMessageAt:string;lastMessagePreview:string;unreadForCustomer:boolean;unreadForAdmin:boolean;customerLastReadAt?:string;adminLastReadAt?:string};
+export type Conversation={id:string;customerId:string;customerName?:string;bookingId?:string;title:string;status:"open"|"waiting"|"resolved";createdAt:string;updatedAt:string;lastMessageAt:string;lastMessagePreview:string;unreadForCustomer:boolean;unreadForAdmin:boolean;depositProofSubmittedAt?:string;customerLastReadAt?:string;adminLastReadAt?:string};
 export type ConversationMessage={id:string;senderId:string;senderRole:"customer"|"admin";text:string;attachment?:ConversationAttachment|null;createdAt:string};
 
 const conversationsCollection=collection(db,"conversations");
@@ -99,5 +99,5 @@ export async function sendConversationMessage(id:string,senderId:string,role:"cu
  const now=new Date().toISOString();
  const payload:Omit<ConversationMessage,"id">={senderId,senderRole:role,text:clean,createdAt:now,...(attachment?{attachment}:{})};
  await addDoc(collection(db,"conversations",id,"messages"),payload);
- await updateDoc(doc(db,"conversations",id),{updatedAt:now,lastMessageAt:now,lastMessagePreview:(clean||("Shared "+attachment?.type)).slice(0,160),...(role==="customer"?{unreadForAdmin:true,unreadForCustomer:false,status:"open"}:{unreadForCustomer:true,unreadForAdmin:false,status:"waiting"})});
+ await updateDoc(doc(db,"conversations",id),{updatedAt:now,lastMessageAt:now,lastMessagePreview:(clean||("Shared "+attachment?.type)).slice(0,160),...(role==="customer"?{unreadForAdmin:true,unreadForCustomer:false,status:"open",...(clean.startsWith("DEPOSIT PROOF SUBMITTED")?{depositProofSubmittedAt:now}:{})}:{unreadForCustomer:true,unreadForAdmin:false,status:"waiting"})});
 }
