@@ -664,3 +664,10 @@ The account should feel like a personal JTS style studio, not a generic dashboar
 - The booking detail route header now uses the John The Stylist Bw identity rather than the inherited BOEMO `B` mark / `JTS Styles` label.
 - The homepage brand lockup displays the full business name once; the second line is a concise service descriptor, not a repeated business name. Keep each route header to one brand identity and one task/location label at most.
 - Last code checkpoint pushed to `main`: `38d1cd2e87a753f0973eb5d27d3888239728f719` (deposit reminder styling). Vercel had an earlier build error on `f0dca7279cedb6e03fc8c0468fa87d99be1a03f8` caused by the new admin conversation lookup referencing the missing `Conversation.bookingId` type; that type has since been added. Verify a fresh build/deployment before asking the owner to QA. No end-to-end payment or device notification test is claimed.
+
+
+### Deposit-proof recovery hardening — 2026-11-02
+- A booking confirmation must not silently omit the screenshot-upload path when initial private conversation creation fails. Keep a visible, retryable recovery action on the confirmation screen; never mark the booking or deposit confirmed because of this retry.
+- My Account must self-heal missing booking-linked private threads for the authenticated owner, using the deterministic `booking-<bookingId>` ID and the same customer UID. Existing threads are reused; ownership mismatches must remain errors and must never be overwritten.
+- Offline requests remain pending until they sync. Do not attempt to create a cloud conversation for a booking before its order exists in Firestore; once the order appears in the customer's account, recovery can create/reuse the thread.
+- Release gate remains: verify screenshot upload, private customer return path, admin unread/review against the correct appointment, attachment access and manual Orange Money verification. A successful source edit or build is not end-to-end QA.
