@@ -1696,3 +1696,13 @@ input, select, textarea, button {
 .jtsDepositProof h3{margin:0;font:600 1rem Georgia,serif;text-transform:none;color:#fff}
 .jtsDepositProof>p{margin:0;color:#bdb5a8;font-size:.74rem;line-height:1.45}
 .jtsPaymentProofAlert{display:block;padding:8px 10px;border:1px solid #8a6d35;border-radius:8px;background:#211b10;color:#f0d69a!important;font-size:.7rem;line-height:1.4}
+
+/* Progressive appointment stages: compact completed summaries, one working area at a time. */
+.jtsBookingStep{display:grid;grid-template-columns:30px minmax(0,1fr);align-items:start;gap:4px 10px}
+.jtsBookingStep>span{grid-column:1;grid-row:1;font-size:.66rem;color:#d1b476;letter-spacing:.08em;padding-top:4px}
+.jtsBookingStep>div{grid-column:2;grid-row:1;min-width:0}
+.jtsBookingStageBody{grid-column:1/-1;min-width:0;width:100%;padding-top:10px}
+.jtsBookingStageBody[hidden]{display:none!important}
+.jtsStageEdit{justify-self:start;margin-top:4px;padding:4px 0;border:0;background:none;color:#d8bd83;font-size:.68rem;text-decoration:underline;cursor:pointer}
+.jtsBookingStep:has(.jtsBookingStageBody[hidden]){padding:8px 0;border-bottom:1px solid #302b24}
+.jtsBookingStep:has(.jtsBookingStageBody:not([hidden])){padding-bottom:5px}
