@@ -138,7 +138,7 @@ export default function AccountPage() {
       } else {
         const result = await signInWithPopup(auth, provider);
         setUser(result.user);
-        setMessage("You're signed in with Google. New bookings can be saved to this account.");
+        setMessage("You&apos;re signed in with Google. New bookings can be saved to this account.");
         track("jts_google_account_connected", { method: "new_sign_in" });
       }
     } catch (cause) {
@@ -162,8 +162,6 @@ export default function AccountPage() {
     [orders]
   );
   const visibleOrders = showAllBookings ? recentOrders : recentOrders.slice(0, INITIAL_BOOKINGS_VISIBLE);
-  const nextPaymentConversation = nextOrder ? conversations.find(item => item.bookingId === nextOrder.id) : undefined;
-  const nextDepositProofSent = Boolean(nextPaymentConversation?.depositProofSubmittedAt);
 
   return <main className="jtsBookingPage jtsStyleAccount"><div className="jtsContainer jtsBookingWrap">
     <div className="jtsBookingTop"><Link href="/" className="jtsBack">← John The Stylist Bw</Link><div className="jtsAccountTopLinks"><Link href="/feed" className="jtsGhost">Style feed ↗</Link><Link href="/order" className="jtsGhost">Book appointment</Link></div></div>
@@ -181,7 +179,7 @@ export default function AccountPage() {
       <div className="jtsAccountUtilityHeading"><span className="jtsEyebrow">ACCOUNT ACCESS</span><span className={user && !user.isAnonymous ? "jtsStyleConnected" : "jtsAccountGuestBadge"}>{user && !user.isAnonymous ? "✓ Google connected" : user ? "Guest session" : "Not connected"}</span></div>
       <h2 id="account-connection-title">{user && !user.isAnonymous ? "Your history is saved." : "Keep your bookings together."}</h2>
       {user && !user.isAnonymous
-        ? <p>You're signed in with Google. Use the same account when you return.</p>
+        ? <p>You&apos;re signed in with Google. Use the same account when you return.</p>
         : user
           ? <><p>Connect Google to keep this guest booking identity and its history.</p><button className="googleSignInButton jtsAccountGoogleButton" type="button" onClick={() => void connectGoogle()} disabled={busy}><GoogleBrandMark />{busy ? "Connecting…" : "Continue with Google"}</button></>
           : <><p>Sign in to access saved bookings, or continue with a guest session on this device.</p><button className="googleSignInButton jtsAccountGoogleButton" type="button" onClick={() => void connectGoogle()} disabled={!ready || busy}><GoogleBrandMark />{busy ? "Connecting…" : "Continue with Google"}</button><div className="jtsAccountAuthFallback"><span>Prefer not to sign in?</span><button type="button" className="jtsStyleTextLink" onClick={() => void startGuest()} disabled={!ready || busy}>Open guest booking history</button></div></>}
