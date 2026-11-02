@@ -1683,3 +1683,16 @@ input, select, textarea, button {
 .jtsAccountPrivateMeta>span{font-size:.63rem;color:#e6cb8c}
 .jtsAccountPrivateMeta small{grid-column:1/-1;font-size:.68rem;color:#aaa49a;overflow-wrap:anywhere}
 @media(max-width:560px){.jtsPrivateThread{padding:9px}.jtsPrivateMessage{max-width:96%}.jtsAccountPrivateInbox{padding:11px}.jtsPrivateThread>header h4{font-size:.9rem}}
+
+/* Appointment deposit follow-up: payment is a post-request task, never the booking-page hero. */
+.jtsDepositFollowup{display:grid;gap:12px;margin:18px 0;padding:clamp(16px,3vw,24px);border:1px solid #665536;border-radius:14px;background:linear-gradient(145deg,#17140f,#101011 72%);box-shadow:0 14px 34px rgba(0,0,0,.22)}
+.jtsDepositFollowupHead{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.jtsDepositStatus{display:inline-flex;align-items:center;min-height:27px;padding:5px 9px;border:1px solid #655431;border-radius:99px;color:#e5ce99;font-size:.66rem}
+.jtsDepositFollowup h2{margin:0;font:600 clamp(1.2rem,3vw,1.65rem)/1.2 Georgia,serif;text-transform:none;letter-spacing:0;color:#fff}
+.jtsDepositFollowup>p{margin:0;color:#c8c0b2;font-size:.82rem;line-height:1.55}
+.jtsDepositFollowup>p strong{color:#f3dfae;letter-spacing:.04em}
+.jtsDepositTruth{padding:10px 12px;border-left:2px solid #9e8046;background:rgba(255,255,255,.035);font-size:.74rem!important}
+.jtsDepositProof{display:grid;gap:7px;padding-top:10px;border-top:1px solid #3b3428}
+.jtsDepositProof h3{margin:0;font:600 1rem Georgia,serif;text-transform:none;color:#fff}
+.jtsDepositProof>p{margin:0;color:#bdb5a8;font-size:.74rem;line-height:1.45}
+.jtsPaymentProofAlert{display:block;padding:8px 10px;border:1px solid #8a6d35;border-radius:8px;background:#211b10;color:#f0d69a!important;font-size:.7rem;line-height:1.4}
