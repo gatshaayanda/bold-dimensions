@@ -193,14 +193,14 @@ export default function AccountPage() {
     </section>
 
     <section className="jtsAccountPrivateInbox" aria-labelledby="account-private-title">
-      <div className="jtsAccountUtilityHeading"><div><span className="jtsEyebrow">03 · PRIVATE APPOINTMENT MESSAGES</span><h2 id="account-private-title">Messages from John.</h2></div><span className="jtsAccountLiveDot">Private inbox</span></div>
+      <div className="jtsAccountUtilityHeading"><div><span className="jtsEyebrow">03 · PRIVATE APPOINTMENT MESSAGES</span><h2 id="account-private-title">Booking messages &amp; payment proof.</h2></div><span className="jtsAccountLiveDot">Private inbox</span></div>
       {!user ? <div className="jtsStyleEmpty"><p>Open your guest booking session or connect Google above to see private replies linked to your bookings.</p></div>
-      : conversations.length===0 ? <div className="jtsStyleEmpty"><p>No private replies yet. If John opens a conversation about one of your appointment requests, it will appear here.</p></div>
+      : conversations.length===0 ? <div className="jtsStyleEmpty"><p>Your appointment conversations appear here. Open the relevant booking thread to send a deposit screenshot if you did not upload it after booking.</p></div>
       : <div className="jtsAccountPrivateList">{conversations.map(conversation=><article className="jtsAccountPrivateItem" key={conversation.id}>
         <div className="jtsAccountPrivateMeta"><strong>{conversation.title}</strong><span>{conversation.unreadForCustomer?"New reply":"Private thread"}</span><small>{conversation.lastMessagePreview||"Conversation opened"} · {dateText(conversation.lastMessageAt)}</small></div>
         <ConversationThread conversationId={conversation.id} role="customer" userId={user.uid} title="Message John privately"/>
       </article>)}</div>}
-      <p className="jtsAccountNotificationNote">Messages and attachments are private to the booking customer and authorized JTS staff. This is not a public review or portfolio post.</p>
+      <p className="jtsAccountNotificationNote">Deposit screenshots and messages are private to you and authorized JTS staff. Uploading a screenshot does not verify payment; John checks the Orange Money account before marking a deposit received.</p>
     </section>
 
     <header className="jtsAccountHero jtsAccountUtilityHero"><span className="jtsEyebrow">YOUR JTS STYLE JOURNEY</span><p>Manage appointments, keep your booking references close, and return to your style inspiration whenever you&apos;re ready.</p><div className="jtsAccountHeroActions"><Link href="/order" className="jtsButton jtsButtonGold">Plan my next look ↗</Link><Link href="/feed" className="jtsGhost">Explore the JTS feed</Link></div></header>
