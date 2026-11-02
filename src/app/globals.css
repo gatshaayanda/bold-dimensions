@@ -1706,3 +1706,10 @@ input, select, textarea, button {
 .jtsStageEdit{justify-self:start;margin-top:4px;padding:4px 0;border:0;background:none;color:#d8bd83;font-size:.68rem;text-decoration:underline;cursor:pointer}
 .jtsBookingStep:has(.jtsBookingStageBody[hidden]){padding:8px 0;border-bottom:1px solid #302b24}
 .jtsBookingStep:has(.jtsBookingStageBody:not([hidden])){padding-bottom:5px}
+
+.jtsDepositReminder{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:10px 0 16px;padding:13px 15px;border:1px solid #655333;border-radius:11px;background:linear-gradient(120deg,#1c1810,#111)}
+.jtsDepositReminder>div{display:grid;gap:5px;min-width:0}
+.jtsDepositReminder strong{font:600 .95rem Georgia,serif;color:#f3e8ce}
+.jtsDepositReminder p{margin:0;color:#bdb5a8;font-size:.72rem;line-height:1.45}
+.jtsDepositReminder .jtsButton{flex:0 0 auto;min-height:39px;padding:8px 11px;font-size:.68rem}
+@media(max-width:620px){.jtsDepositReminder{align-items:stretch;flex-direction:column}.jtsDepositReminder .jtsButton{width:100%}}
