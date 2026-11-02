@@ -682,3 +682,19 @@ The account should feel like a personal JTS style studio, not a generic dashboar
 - My Account must self-heal missing booking-linked private threads for the authenticated owner, using the deterministic `booking-<bookingId>` ID and the same customer UID. Existing threads are reused; ownership mismatches must remain errors and must never be overwritten.
 - Offline requests remain pending until they sync. Do not attempt to create a cloud conversation for a booking before its order exists in Firestore; once the order appears in the customer's account, recovery can create/reuse the thread.
 - Release gate remains: verify screenshot upload, private customer return path, admin unread/review against the correct appointment, attachment access and manual Orange Money verification. A successful source edit or build is not end-to-end QA.
+
+
+## Analytics measurement contract — 2026-11-02
+
+The detailed measurement specification is [docs/ANALYTICS-MEASUREMENT-PLAN.md](./docs/ANALYTICS-MEASUREMENT-PLAN.md). Read it before adding analytics, counters, public social proof or admin reporting.
+
+- Vercel Analytics measures coarse website behaviour; authorized booking/admin records are the source of truth for requests, customers, appointment outcomes and money.
+- Never infer bookings, unique customers, deposits or revenue from page views.
+- Public visitors may see only privacy-safe aggregate facts. Customers may see only their own UID-scoped records. Admin/staff reporting requires the existing authorization boundary.
+- Never send names, emails, phone numbers, Firebase UIDs, appointment IDs/references, messages, free text, media URLs, exact dates/times or payment data to analytics.
+- Analytics is best-effort and must never block booking, auth, uploads, messaging or admin actions. Do not add another analytics vendor or a client-writable public Firestore event collection.
+- A request sequence number/community count must not be shown until a trusted, atomic, idempotent server-side allocator and owner-scoped read path have been implemented and tested. Never calculate it in browser code or fabricate social proof.
+- Keep request, confirmed appointment, completed appointment, deposit proof, verified deposit, completed service value and actual collected money distinct. Never label requested/confirmed service price as revenue.
+- The booking collection and status vocabulary still contain legacy food-order compatibility. Audit and map real records before calculating appointment KPIs; unknown legacy values must not silently count as completed/confirmed.
+- Build the admin action queue and trustworthy period summaries before customer/public social-proof surfaces. Reconcile every metric against source records and test public/customer/staff access separately.
+- Do not weaken Firestore/Storage rules or alter PWA/offline behavior to implement analytics.
