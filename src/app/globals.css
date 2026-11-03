@@ -1928,3 +1928,95 @@ input, select, textarea, button {
  .adminPage .stats strong{font-size:1.3rem}
  .adminPage .adminTabs{grid-template-columns:minmax(0,1fr)}
 }
+
+
+/* JTS Operations compact workspace — task-first layout inspired by the canonical mobile reference. */
+.adminPage{padding:10px 0 26px}
+.adminShell{width:min(1120px,calc(100% - 28px))}
+.adminAccountBar{min-height:38px;padding:6px 0;font-size:.68rem}
+.adminAccountBar>.button{min-height:32px;padding:6px 10px;font-size:.65rem}
+.adminHeader{display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:12px;margin:0 0 9px;padding:0 0 9px}
+.adminHeader h1{font-size:clamp(1.35rem,3vw,1.9rem);margin:3px 0}
+.adminHeader p{margin:0;font-size:.72rem}
+.adminHeader>.button{min-height:36px;padding:7px 11px;font-size:.65rem}
+.jtsOpsPriority{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:8px 0 10px;padding:10px 12px;border:1px solid #37383a;border-radius:10px;background:linear-gradient(105deg,#151515,#0b0c0e)}
+.jtsOpsPriority>div:first-child{display:flex;flex-direction:column;gap:3px;min-width:0}
+.jtsOpsPriority .jtsEyebrow{font-size:.56rem;letter-spacing:.13em;color:#b9a36b}
+.jtsOpsPriority strong{font:600 .95rem Georgia,serif;color:#f5f3ed}
+.jtsOpsPriorityActions{display:flex;gap:7px;flex-wrap:wrap}
+.jtsOpsPriorityActions .button{min-height:34px;padding:7px 10px;font-size:.62rem}
+.adminPage .stats.jtsAdminStats{margin:8px 0;gap:7px}
+.adminPage .stats.jtsAdminStats article{padding:8px 10px;border-radius:9px}
+.adminPage .stats.jtsAdminStats span{font-size:.57rem}
+.adminPage .stats.jtsAdminStats strong{font-size:1.25rem;margin-top:3px}
+.adminPage .adminTabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin:8px 0 10px}
+.adminPage .adminTabs button{min-height:37px;padding:7px 8px;font-size:.62rem;line-height:1.2}
+.adminPage .adminPanel.jtsOpsOverview{padding:14px}
+.jtsOpsSectionHead{display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:0}
+.jtsOpsSectionHead h2{margin:3px 0 0;font:600 1.18rem/1.15 Georgia,serif;color:#f7f7f5}
+.jtsOpsSectionHead .kicker{font-size:.56rem}
+.jtsOpsLiveLabel{font-size:.62rem;color:#9a9b97;white-space:nowrap}
+.jtsOpsLiveLabel i{display:inline-block;width:6px;height:6px;margin:0 5px 1px 0;border-radius:50%;background:#a8bd8a}
+.jtsOpsMetricGrid,.jtsOpsFinanceGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:9px}
+.jtsOpsMetricGrid article,.jtsOpsFinanceGrid article{display:flex;flex-direction:column;gap:4px;min-width:0;padding:9px 10px;border:1px solid #292b2f;border-radius:9px;background:#090a0b}
+.jtsOpsMetricGrid span,.jtsOpsFinanceGrid span{font-size:.59rem;line-height:1.25;color:#9b9d99}
+.jtsOpsMetricGrid strong,.jtsOpsFinanceGrid strong{font:600 1.22rem/1.1 Georgia,serif;color:#f1eee6;overflow-wrap:anywhere}
+.jtsOpsSubhead{margin-top:17px}
+.jtsOpsTextAction{border:0;background:none;color:#d8c28a;font-size:.66rem;font-weight:800;cursor:pointer;padding:6px}
+.jtsOpsActionGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:8px}
+.jtsOpsActionGrid button{display:flex;align-items:center;gap:9px;min-width:0;padding:8px 10px;text-align:left;border:1px solid #34363a;border-radius:9px;background:#111214;color:#eee;cursor:pointer}
+.jtsOpsActionGrid button:focus-visible,.jtsOpsTextAction:focus-visible{outline:2px solid #d8c28a;outline-offset:2px}
+.jtsOpsActionGrid button strong{font:600 1.25rem Georgia,serif;color:#d8c28a;flex:0 0 auto}
+.jtsOpsActionGrid button span{font-size:.6rem;line-height:1.25;color:#c1c1bd}
+.jtsOpsOutstanding{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:8px 0 0;padding:8px 10px;border-left:2px solid #9b8657;background:#111214}
+.jtsOpsOutstanding strong{font-size:.7rem;color:#e8e3d7}
+.jtsOpsOutstanding span{font-size:.6rem;color:#969793}
+.jtsOpsLowerGrid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(220px,.8fr);gap:9px;margin-top:17px}
+.jtsOpsTrendSection,.jtsOpsRelationship{min-width:0;padding:11px;border:1px solid #292b2f;border-radius:10px;background:#090a0b}
+.jtsOpsTrendSection .jtsOpsSectionHead{margin-bottom:8px}
+.jtsOpsTrendList{list-style:none;margin:0;padding:0}
+.jtsOpsTrendList li{display:grid;grid-template-columns:22px minmax(0,1fr) auto;align-items:center;gap:8px;padding:7px 0;border-top:1px solid #222428}
+.jtsOpsRank{display:grid;place-items:center;width:20px;height:20px;border-radius:6px;background:#1b1b1b;color:#d8c28a;font-size:.63rem;font-weight:800}
+.jtsOpsTrendList li>div{display:flex;flex-direction:column;gap:2px;min-width:0}
+.jtsOpsTrendList li strong{font-size:.7rem;line-height:1.25;overflow-wrap:anywhere}
+.jtsOpsTrendList li small{font-size:.59rem;color:#92948f}
+.jtsOpsTrendList li>b{font-size:.68rem;color:#d7d2c7}
+.jtsOpsRelationship h2{margin:4px 0;font:600 1.08rem Georgia,serif}
+.jtsOpsRepeatCount{display:block;font:600 2rem Georgia,serif;color:#d8c28a}
+.jtsOpsRelationship p{margin:4px 0;font-size:.67rem;line-height:1.45;color:#d2d0c9}
+.jtsOpsRelationship>small{font-size:.58rem;line-height:1.4;color:#888b86}
+.jtsOpsMuted{font-size:.7rem;color:#969793}
+.jtsOpsDefinitions{margin-top:12px;border-top:1px solid #292b2f;padding-top:8px}
+.jtsOpsDefinitions summary{font-size:.64rem;font-weight:800;color:#b9a36b;cursor:pointer}
+.jtsOpsDefinitions p{max-width:900px;font-size:.62rem;line-height:1.5;color:#92948f}
+@media(max-width:760px){
+ .adminPage{padding:8px 0 22px}
+ .adminShell{width:calc(100% - 20px)}
+ .adminHeader{flex-direction:row;align-items:center}
+ .adminHeader h1{font-size:1.35rem}
+ .adminHeader p{font-size:.66rem}
+ .adminHeader>.button{width:auto}
+ .jtsOpsPriority{align-items:flex-start;flex-direction:column;gap:8px}
+ .jtsOpsPriorityActions{width:100%;display:grid;grid-template-columns:1fr 1fr}
+ .jtsOpsPriorityActions .button{width:100%}
+ .adminPage .adminTabs{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+ .adminPage .adminTabs button{min-height:40px;padding:7px 5px;font-size:.6rem}
+ .jtsOpsMetricGrid,.jtsOpsFinanceGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .jtsOpsActionGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .jtsOpsLowerGrid{grid-template-columns:minmax(0,1fr)}
+}
+@media(max-width:420px){
+ .adminShell{width:calc(100% - 16px)}
+ .adminAccountBar{width:calc(100% - 16px)}
+ .adminHeader h1{font-size:1.18rem}
+ .adminHeader p{max-width:210px}
+ .adminHeader>.button{min-height:34px;padding:6px 8px;font-size:.58rem}
+ .jtsOpsPriority{padding:9px}
+ .adminPage .stats.jtsAdminStats article{padding:7px}
+ .adminPage .stats.jtsAdminStats span{font-size:.54rem}
+ .adminPage .stats.jtsAdminStats strong{font-size:1.12rem}
+ .adminPage .adminTabs{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .jtsOpsSectionHead h2{font-size:1.05rem}
+ .jtsOpsActionGrid button{padding:8px}
+ .jtsOpsOutstanding{align-items:flex-start;flex-direction:column;gap:3px}
+}
