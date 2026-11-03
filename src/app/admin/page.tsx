@@ -422,9 +422,12 @@ function Dashboard() {
       cancelled: recent.filter(item => item.status === "Cancelled").length,
       completedCount: completed.length,
       returningCustomers: [...customerVisits.values()].filter(count => count > 1).length,
-      serviceCounts: [...serviceCounts.entries()].map(([name,data]) => ({name,...data})).sort((a,b) => b.count-a.count).slice(0,5)
+      serviceCounts: [...serviceCounts.entries()].map(([name,data]) => ({name,...data})).sort((a,b) => b.count-a.count).slice(0,5),
+      unreadMessages: adminConversations.filter(item => item.unreadForAdmin && !item.lastMessagePreview.startsWith("DEPOSIT PROOF SUBMITTED")).length,
+      proofsAwaitingReview: adminConversations.filter(item => item.unreadForAdmin && item.lastMessagePreview.startsWith("DEPOSIT PROOF SUBMITTED")).length,
+      todayConfirmed: appointments.filter(item => item.status === "Confirmed" && item.scheduledFor && new Intl.DateTimeFormat("en-CA",{timeZone:"Africa/Gaborone"}).format(new Date(item.scheduledFor)) === new Intl.DateTimeFormat("en-CA",{timeZone:"Africa/Gaborone"}).format(new Date())).length
     };
-  }, [appointments]);
+  }, [appointments, adminConversations]);
 
   async function confirmDeleteTarget() {
     const target = deleteTarget;
@@ -529,6 +532,11 @@ function Dashboard() {
       <div className="stats jtsAdminStats">
         <article><span>New requests</span><strong>{analytics.newRequests}</strong></article><article><span>Confirmed / in service</span><strong>{analytics.confirmed}</strong></article><article><span>Completed visits</span><strong>{analytics.completedCount}</strong></article><article><span>Cancelled</span><strong>{analytics.cancelled}</strong></article>
       </div>
+      <div className="panelHeading" style={{marginTop:24}}><div><span className="kicker">WHAT NEEDS YOUR ATTENTION</span><h2>Today&apos;s action queue</h2></div></div>
+      <div className="stats jtsAdminStats">
+        <article><span>New requests to review</span><strong>{analytics.newRequests}</strong></article><article><span>Deposit proofs to check</span><strong>{analytics.proofsAwaitingReview}</strong></article><article><span>Unread customer replies</span><strong>{analytics.unreadMessages}</strong></article><article><span>Confirmed today</span><strong>{analytics.todayConfirmed}</strong></article>
+      </div>
+      <div className="queueActions"><button type="button" className="button buttonPrimary" onClick={() => setTab("appointments")}>Open appointment queue ↗</button></div>
       <div className="panelHeading" style={{marginTop:24}}><div><span className="kicker">FINANCIAL RECONCILIATION · BWP</span><h2>Requested vs collected</h2></div></div>
       <div className="stats jtsAdminStats">
         <article><span>Requested service value*</span><strong>{money(analytics.requestedValue)}</strong></article><article><span>50% deposits expected*</span><strong>{money(analytics.expectedDeposits)}</strong></article><article><span>Deposit recorded received</span><strong>{money(analytics.recordedDeposits)}</strong></article><article><span>Balance recorded received</span><strong>{money(analytics.recordedBalances)}</strong></article>
