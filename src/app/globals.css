@@ -2250,3 +2250,55 @@ input, select, textarea, button {
  .jtsAccountUnread,.jtsAccountReadState{font-size:.6rem;padding:4px 7px}
  .jtsStyleAccount .jtsAccountLivingHero{padding:26px 0 18px}
 }
+
+
+/* Iteration 13 mobile-app composition adapted to the JTS account workspace.
+.jtsAccountAppBar{align-items:center;gap:12px;padding:8px 0 16px;border-bottom:1px solid rgba(212,175,55,.18);margin-bottom:18px}
+.jtsAccountWordmark{display:inline-flex;align-items:center;gap:10px;color:#f7f5ef;text-decoration:none;font-size:11px;font-weight:800;letter-spacing:.13em}
+.jtsAccountWordmarkMark{display:grid;place-items:center;width:34px;height:34px;border:1px solid rgba(212,175,55,.72);border-radius:50%;color:#d8b85a;font-family:Georgia,serif;font-size:21px;letter-spacing:0}
+.jtsAccountWordmark small{color:#c9b36e;font-size:9px;letter-spacing:.2em;margin-left:3px}
+.jtsAccountAppBar .jtsAccountTopLinks{display:flex;align-items:center;gap:10px}
+.jtsAccountAppBar .jtsButton{min-height:42px;padding:10px 15px}
+.jtsAccountCompactHero{display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:unset;padding:20px 22px;margin-bottom:12px;border:1px solid rgba(212,175,55,.25);border-radius:18px;background:radial-gradient(ellipse at 82% 10%,rgba(190,157,73,.16),transparent 42%),linear-gradient(125deg,#171717,#090909 72%);box-shadow:0 14px 36px rgba(0,0,0,.22)}
+.jtsAccountCompactHero h1{margin:5px 0 2px;font-size:clamp(30px,5vw,42px);letter-spacing:-.045em}
+.jtsAccountCompactHero h1 span{color:#d8b85a}
+.jtsAccountCompactHero p{margin:0;color:#c5c2bb;font-size:13px}
+.jtsAccountHeroSeal{display:flex;align-items:center;gap:8px;flex:none;color:#c8aa58}
+.jtsAccountHeroSeal>span{display:grid;place-items:center;width:50px;height:50px;border:1px solid rgba(212,175,55,.55);border-radius:50%;font:italic 30px Georgia,serif}
+.jtsAccountHeroSeal small{font-size:8px;line-height:1.45;letter-spacing:.14em}
+.jtsAccountLaunchGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0 0 16px}
+.jtsAccountLaunchCard{display:flex;align-items:center;gap:11px;min-height:70px;padding:12px 14px;border:1px solid rgba(212,175,55,.23);border-radius:14px;background:linear-gradient(135deg,#1a1a1a,#0c0c0d);color:#f7f5ef;text-decoration:none;transition:border-color .18s ease,transform .18s ease}
+.jtsAccountLaunchCard:hover{border-color:rgba(212,175,55,.62);transform:translateY(-1px)}
+.jtsAccountLaunchIcon{display:grid;place-items:center;width:36px;height:36px;flex:none;border-radius:11px;background:rgba(212,175,55,.11);color:#d9bb68;font-size:20px}
+.jtsAccountLaunchCard>span:nth-child(2){display:grid;gap:3px;min-width:0}
+.jtsAccountLaunchCard strong{font-size:12px;letter-spacing:.015em}
+.jtsAccountLaunchCard small{color:#aaa69c;font-size:10px}
+.jtsAccountLaunchCard>b{margin-left:auto;color:#d9bb68;font-size:16px}
+.jtsAccountFocus{position:relative;overflow:hidden;border:1px solid rgba(212,175,55,.45)!important;border-radius:18px!important;background:radial-gradient(ellipse at 100% 0%,rgba(212,175,55,.12),transparent 48%),linear-gradient(145deg,#1b1a17,#0b0b0c 68%)!important;box-shadow:0 16px 38px rgba(0,0,0,.25)}
+.jtsAccountFocus:before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:linear-gradient(#f1d98a,#98752d);pointer-events:none}
+.jtsAccountFocus .jtsAccountNextHeading h2{font-size:clamp(20px,3vw,27px);letter-spacing:-.025em}
+.jtsAccountFocus .jtsAccountNextActions .jtsButton{min-height:48px;padding:13px 20px;box-shadow:0 5px 18px rgba(190,151,54,.2)}
+.jtsAccountSecondarySection{margin-top:18px;padding-top:18px;border-top:1px solid rgba(212,175,55,.18)}
+.jtsAccountUtilityAuth{padding:13px 16px!important;border-radius:14px!important;background:linear-gradient(110deg,rgba(255,255,255,.045),rgba(255,255,255,.018))!important}
+.jtsAccountUtilityAuth h2{font-size:16px!important;margin:7px 0 3px!important}
+.jtsAccountUtilityAuth p{font-size:12px!important;margin:0!important}
+.jtsAccountPrivateInbox .jtsAccountUtilityHeading h2,.jtsStyleHistory .jtsStyleSectionHead h2{font-size:22px}
+.jtsAccountConversationCard{border-radius:13px!important}
+.jtsAccountAppBar a:focus-visible,.jtsAccountLaunchCard:focus-visible{outline:2px solid #d8b85a;outline-offset:3px}
+@media(max-width:560px){
+ .jtsAccountAppBar{align-items:flex-start}
+ .jtsAccountWordmark{font-size:9px;letter-spacing:.1em}
+ .jtsAccountWordmarkMark{width:30px;height:30px;font-size:19px}
+ .jtsAccountAppBar .jtsAccountTopLinks{gap:6px}
+ .jtsAccountAppBar .jtsAccountTopLinks .jtsGhost{font-size:11px;padding:8px 5px}
+ .jtsAccountAppBar .jtsButton{font-size:11px;min-height:38px;padding:8px 10px}
+ .jtsAccountCompactHero{padding:17px 16px}
+ .jtsAccountHeroSeal{gap:5px}
+ .jtsAccountHeroSeal>span{width:42px;height:42px;font-size:25px}
+ .jtsAccountLaunchGrid{gap:8px}
+ .jtsAccountLaunchCard{min-height:66px;padding:10px 9px;gap:8px}
+ .jtsAccountLaunchIcon{width:31px;height:31px;font-size:17px}
+ .jtsAccountLaunchCard strong{font-size:11px}
+ .jtsAccountLaunchCard small{font-size:9px}
+}
+@media(prefers-reduced-motion:reduce){.jtsAccountLaunchCard{transition:none}}
