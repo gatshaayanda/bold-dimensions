@@ -183,7 +183,7 @@ export default function AccountPage() {
   const visibleOrders = showAllBookings ? recentOrders : recentOrders.slice(0, INITIAL_BOOKINGS_VISIBLE);
 
   return <main className="jtsBookingPage jtsStyleAccount"><div className="jtsContainer jtsBookingWrap">
-    <div className="jtsBookingTop jtsAccountAppBar"><Link href="/" className="jtsAccountWordmark"><span className="jtsAccountWordmarkMark">J</span><span>JOHN THE STYLIST <small>BW</small></span></Link><div className="jtsAccountTopLinks"><Link href="/feed" className="jtsGhost">Style feed ↗</Link><Link href="/order" className="jtsButton jtsButtonGold">Book appointment <span aria-hidden="true">↗</span></Link></div></div>
+    <div className="jtsBookingTop jtsAccountAppBar"><Link href="/" className="jtsAccountWordmark"><span>JOHN THE STYLIST <small>BW</small></span></Link><div className="jtsAccountTopLinks"><Link href="/feed" className="jtsGhost">Style feed ↗</Link><Link href="/order" className="jtsButton jtsButtonGold">Book appointment <span aria-hidden="true">↗</span></Link></div></div>
 
     <header className="jtsAccountHero jtsAccountUtilityHero jtsAccountLivingHero jtsAccountCompactHero">
       <div><span className="jtsEyebrow">YOUR PERSONAL SALON SPACE</span><h1>My JTS<span>.</span></h1><p>Your appointments, messages and style history.</p></div>
