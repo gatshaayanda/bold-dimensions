@@ -27,8 +27,8 @@ function dateText(value: string) {
 }
 function progressStage(status: string) {
   if (status === "Cancelled") return -1;
-  if (["Collected", "Delivered", "Completed"].includes(status)) return 3;
-  if (["Preparing", "Ready", "Delivering", "In service"].includes(status)) return 2;
+  if (["Collected", "Delivered", "Completed"].includes(status)) return 4;
+  if (["Preparing", "Ready", "Delivering", "In service"].includes(status)) return 3;
   if (["Accepted", "Confirmed"].includes(status)) return 2;
   if (status === "Reviewing") return 1;
   return 0;
@@ -210,8 +210,7 @@ export default function AccountPage() {
         : <><h2 id="account-next-title">Your next style starts here.</h2><p>Choose a service and request a date that works for you.</p></>}
       </div>
       {nextOrder && <div className="jtsAccountProgress" aria-label={"Appointment progress: " + label(nextOrder.status)}>
-        {["Request received", "Being reviewed", "Confirmed", "Completed"].map((step, index) => <div className={index <= nextOrderStage ? "isReached" : ""} key={step}><i aria-hidden="true"/><span>{step}</span></div>)}
-        {nextOrder.status === "Cancelled" && <p>This request was cancelled. It is kept in your history.</p>}
+        {["Request received", "Being reviewed", "Confirmed", "In service", "Completed"].map((step, index) => <div className={index <= nextOrderStage ? "isReached" : ""} key={step}><i aria-hidden="true"/><span>{step}</span></div>)}
       </div>}
       <div className="jtsAccountNextActions"><Link href={nextOrder ? "/orders/" + nextOrder.id : "/order"} className="jtsButton jtsButtonGold">{nextOrder ? "Open this request ↗" : "Request an appointment ↗"}</Link>{nextOrder && <a href="https://wa.me/26778053564" className="jtsGhost">Message John on WhatsApp ↗</a>}</div>
       <p className="jtsAccountTruth">A request is not confirmed until John confirms the slot and verifies the deposit.</p>
