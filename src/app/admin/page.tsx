@@ -23,6 +23,7 @@ type Appointment = {
   status?: string;
   items?: Array<{ name?: string; price?: number; quantity?: number }>;
   total?: number;
+  reconciliation?: { depositReceived?: number; balanceReceived?: number; updatedAt?: string };
   instructions?: string;
   deliveryLocation?: string;
 };
@@ -61,7 +62,7 @@ function Dashboard() {
   const [services, setServices] = useState<PublicService[]>(DEFAULT_PUBLIC_SERVICES);
   const [categoryMedia, setCategoryMedia] = useState<Record<string, PublicServiceMedia>>({});
   const [stylePosts, setStylePosts] = useState<OwnerStylePost[]>([]);
-  const [tab, setTab] = useState<"appointments" | "availability" | "reviews" | "services" | "styleFeed">("appointments");
+  const [tab, setTab] = useState<"overview" | "appointments" | "availability" | "reviews" | "services" | "styleFeed">("overview");
   const [unavailableDates, setUnavailableDates] = useState<Array<{id:string;date:string;reason:string;updatedAt?:string}>>([]);
   const [closureDate, setClosureDate] = useState("");
   const [closureReason, setClosureReason] = useState("");
@@ -86,7 +87,7 @@ function Dashboard() {
 
   // A tab change must move the operator to the selected work area, not leave the new panel below the fold.
   useEffect(() => {
-    const targetId = tab === "appointments" ? "admin-appointments" : tab === "services" ? "admin-services" : tab === "availability" ? "admin-availability" : tab === "reviews" ? "admin-reviews" : "admin-style-feed";
+    const targetId = tab === "overview" ? "admin-overview" : tab === "appointments" ? "admin-appointments" : tab === "services" ? "admin-services" : tab === "availability" ? "admin-availability" : tab === "reviews" ? "admin-reviews" : "admin-style-feed";
     const frame = window.requestAnimationFrame(() => document.getElementById(targetId)?.scrollIntoView({ behavior: "smooth", block: "start" }));
     return () => window.cancelAnimationFrame(frame);
   }, [tab]);
@@ -393,6 +394,37 @@ function Dashboard() {
   }
 
   const openAppointments = useMemo(() => appointments.filter(item => !["Cancelled", "Completed"].includes(item.status || "")), [appointments]);
+  const analytics = useMemo(() => {
+    const now = Date.now();
+    const recent = appointments.filter(item => {
+      const created = Date.parse(item.createdAt || "");
+      return Number.isFinite(created) && created >= now - 30 * 24 * 60 * 60 * 1000;
+    });
+    const completed = recent.filter(item => item.status === "Completed");
+    const customerVisits = new Map<string, number>();
+    completed.forEach(item => { if (item.customerId) customerVisits.set(item.customerId, (customerVisits.get(item.customerId) || 0) + 1); });
+    const serviceCounts = new Map<string, { count: number; value: number }>();
+    recent.forEach(item => (item.items || []).forEach(service => {
+      const name = service.name || "Unspecified service";
+      const entry = serviceCounts.get(name) || { count: 0, value: 0 };
+      entry.count += Math.max(1, Number(service.quantity) || 1);
+      entry.value += Math.max(0, Number(service.price) || 0) * Math.max(1, Number(service.quantity) || 1);
+      serviceCounts.set(name, entry);
+    }));
+    const requestedValue = recent.filter(item => item.status !== "Cancelled").reduce((sum, item) => sum + Math.max(0, Number(item.total) || 0), 0);
+    const expectedDeposits = recent.filter(item => item.status !== "Cancelled").reduce((sum, item) => sum + Math.round(Math.max(0, Number(item.total) || 0) * 0.5), 0);
+    const recordedDeposits = recent.reduce((sum, item) => sum + Math.max(0, Number(item.reconciliation?.depositReceived) || 0), 0);
+    const recordedBalances = recent.reduce((sum, item) => sum + Math.max(0, Number(item.reconciliation?.balanceReceived) || 0), 0);
+    return { recent, requestedValue, expectedDeposits, recordedDeposits, recordedBalances,
+      outstandingRecorded: Math.max(0, requestedValue - recordedDeposits - recordedBalances),
+      newRequests: recent.filter(item => !item.status || item.status === "New").length,
+      confirmed: recent.filter(item => ["Confirmed", "In service"].includes(item.status || "")).length,
+      cancelled: recent.filter(item => item.status === "Cancelled").length,
+      completedCount: completed.length,
+      returningCustomers: [...customerVisits.values()].filter(count => count > 1).length,
+      serviceCounts: [...serviceCounts.entries()].map(([name,data]) => ({name,...data})).sort((a,b) => b.count-a.count).slice(0,5)
+    };
+  }, [appointments]);
 
   async function confirmDeleteTarget() {
     const target = deleteTarget;
@@ -435,6 +467,24 @@ function Dashboard() {
     }
   }
 
+  async function recordCollection(item: Appointment, part: "deposit" | "balance") {
+    const total = Math.max(0, Number(item.total) || 0);
+    const amount = part === "deposit" ? Math.round(total * 0.5) : Math.max(0, total - (Number(item.reconciliation?.depositReceived) || 0));
+    if (!total || !amount) { setNotice("This request has no valid service total to reconcile."); return; }
+    setNotice("");
+    try {
+      const now = new Date().toISOString();
+      await updateDoc(doc(db, "orders", item.id), {
+        [part === "deposit" ? "reconciliation.depositReceived" : "reconciliation.balanceReceived"]: amount,
+        "reconciliation.updatedAt": now
+      });
+      track("jts_admin_collection_recorded", { collection_part: part });
+      setNotice("Recorded P" + amount.toFixed(0) + " as " + (part === "deposit" ? "deposit" : "balance") + " received. This is an admin-entered reconciliation record; check the Orange Money account before recording.");
+    } catch {
+      setNotice("The collection record was not saved. Check Firebase permissions and try again.");
+    }
+  }
+
   async function setReviewPublished(item: CustomerReview, published: boolean) {
     setNotice("");
     try {
@@ -465,14 +515,32 @@ function Dashboard() {
       <article><span>Open appointments</span><strong>{openAppointments.length}</strong></article>
       <article><span>Looks to review</span><strong>{reviews.filter(item => !item.published && item.status !== "hidden").length}</strong></article>
     </section>
-    <nav className="adminTabs" aria-label="Operations sections">
+    <nav className="adminTabs" aria-label="Operations sections">\n      <button className={tab === "overview" ? "active" : ""} onClick={() => setTab("overview")}>Overview &amp; money</button>
       <button className={tab === "appointments" ? "active" : ""} onClick={() => setTab("appointments")}>Appointment requests</button>
       <button className={tab === "availability" ? "active" : ""} onClick={() => setTab("availability")}>Date availability</button>
       <button className={tab === "reviews" ? "active" : ""} onClick={() => setTab("reviews")}>Customer looks & reviews</button>
       <button className={tab === "services" ? "active" : ""} onClick={() => setTab("services")}>Services & prices</button>
       <button className={tab === "styleFeed" ? "active" : ""} onClick={() => setTab("styleFeed")}>John&apos;s style feed · photos &amp; videos</button>
     </nav>
-    {loading ? <section className="adminPanel"><p>Loading JTS operations…</p></section> : tab === "appointments" ? <section id="admin-appointments" className="adminPanel" style={{scrollMarginTop:16}}>
+    {loading ? <section className="adminPanel"><p>Loading JTS operations…</p></section> : tab === "overview" ? <section id="admin-overview" className="adminPanel" style={{scrollMarginTop:16}}>
+      <div className="panelHeading"><div><span className="kicker">BUSINESS PULSE · LAST 30 DAYS</span><h2>What&apos;s happening</h2></div><span>{analytics.recent.length} requests</span></div>
+      <p style={{marginTop:0}}>Live operational figures from appointment records in Firebase. Rolling 30 days, Botswana business context. These are requests and admin-recorded collections, not independently verified bank statements.</p>
+      <div className="stats jtsAdminStats">
+        <article><span>New requests</span><strong>{analytics.newRequests}</strong></article><article><span>Confirmed / in service</span><strong>{analytics.confirmed}</strong></article><article><span>Completed visits</span><strong>{analytics.completedCount}</strong></article><article><span>Cancelled</span><strong>{analytics.cancelled}</strong></article>
+      </div>
+      <div className="panelHeading" style={{marginTop:24}}><div><span className="kicker">FINANCIAL RECONCILIATION · BWP</span><h2>Requested vs collected</h2></div></div>
+      <div className="stats jtsAdminStats">
+        <article><span>Requested service value*</span><strong>{money(analytics.requestedValue)}</strong></article><article><span>50% deposits expected*</span><strong>{money(analytics.expectedDeposits)}</strong></article><article><span>Deposit recorded received</span><strong>{money(analytics.recordedDeposits)}</strong></article><article><span>Balance recorded received</span><strong>{money(analytics.recordedBalances)}</strong></article>
+      </div>
+      <p><strong>Outstanding against requested value: {money(analytics.outstandingRecorded)}</strong> · Estimate only, not confirmed debt or revenue. Cancelled requests are excluded from requested value; recorded collections remain separately visible.</p>
+      <small>*Requested service value includes non-cancelled requests whether or not the appointment was completed. Expected deposits use the published 50% rule. Only amounts explicitly recorded by authorized staff count as collections.</small>
+      <div className="panelHeading" style={{marginTop:26}}><div><span className="kicker">WHAT CUSTOMERS ARE ASKING FOR</span><h2>Trending services</h2></div></div>
+      {analytics.serviceCounts.length ? <div className="queue">{analytics.serviceCounts.map((service,index)=><article className="queueRow" key={service.name}><div><span className="kicker">#{index+1} · LAST 30 DAYS</span><h3>{service.name}</h3><small>{service.count} requested · {money(service.value)} requested value</small></div></article>)}</div> : <p>No service demand recorded in the last 30 days yet.</p>}
+      <div className="panelHeading" style={{marginTop:26}}><div><span className="kicker">CUSTOMER RELATIONSHIPS</span><h2>Repeat business signal</h2></div></div>
+      <p>{analytics.returningCustomers} customer identities have more than one completed visit in this 30-day request cohort. Guest identities not linked across devices may appear separately.</p>
+      <div className="adminNotice" role="note"><strong>How to use this view</strong><p>Review new requests first. Check deposit screenshots in the matching private conversation, then verify the Orange Money receipt before recording a collection. Mark a visit Completed only after service delivery. Compare service trends with your diary and cash/mobile-money records before making pricing or staffing decisions.</p></div>
+      <p><small>Source: live authorized appointment documents. Vercel Analytics and Speed Insights measure browsing/performance—not customers, bookings or money. Firebase records remain the operational source of truth. No customer names, phone numbers, booking IDs or private message content are sent to analytics.</small></p>
+    </section> : tab === "appointments" ? <section id="admin-appointments" className="adminPanel" style={{scrollMarginTop:16}}>
       <div className="panelHeading"><div><span className="kicker">THE APPOINTMENT QUEUE</span><h2>Appointments</h2></div><span className="jtsQueueCount">{openAppointments.length} active</span></div>
       {appointments.length === 0 ? <div className="emptyState"><h3>No appointment requests yet</h3><p>New requests submitted through the JTS booking form will appear here.</p></div> : <div className="queue">
         {appointments.map(item => {
@@ -488,7 +556,7 @@ function Dashboard() {
               <div className="jtsAppointmentTop"><span className="kicker">#{item.id.slice(0, 8).toUpperCase()}</span><span className={"jtsAppointmentStatus status-" + status.toLowerCase().replace(/[^a-z]+/g, "-")}>{status}</span></div>
               <div className="jtsSensitiveHeading"><h3>{revealSensitive ? (item.customerName || "Customer") : "Customer ·••••"}</h3><button type="button" className="jtsSensitiveToggle" aria-pressed={revealSensitive} onClick={() => setRevealedAppointments(current => ({ ...current, [item.id]: !current[item.id] }))}>{revealSensitive ? "Hide private details" : "Show private details"}</button></div>
               <p className="jtsAppointmentService">{serviceName}</p>
-              <div className="jtsAppointmentFacts"><span>◷ {dateText(item.scheduledFor)}</span><strong>{money(item.total)}</strong></div>
+              <div className="jtsAppointmentFacts"><span>◷ {dateText(item.scheduledFor)}</span><strong>{money(item.total)}</strong></div>\n              <div className="jtsAppointmentReconciliation"><small>Money recorded · Deposit {money(item.reconciliation?.depositReceived)} · Balance {money(item.reconciliation?.balanceReceived)}</small><div className="queueActions"><button type="button" className="button buttonLight" disabled={!item.total || !!item.reconciliation?.depositReceived} onClick={() => void recordCollection(item, "deposit")}>Record deposit received · {money(Math.round((Number(item.total)||0)*0.5))}</button><button type="button" className="button buttonLight" disabled={!item.total || !!item.reconciliation?.balanceReceived} onClick={() => void recordCollection(item, "balance")}>Record balance received</button></div></div>
               {item.phone && (revealSensitive ? <a className="jtsAppointmentContact" href={phoneDigits ? "https://wa.me/" + phoneDigits : "tel:" + item.phone}>↗ WhatsApp · {item.phone}</a> : <p className="jtsAppointmentContact jtsSensitiveMasked" aria-label="Customer phone number masked">☎ Phone · •••• ••••</p>)}
               <div className="jtsAppointmentProgress" aria-label={"Appointment progress: " + status}><span style={{width: progress + "%"}}/></div>
               <small className="jtsAppointmentNext">{guidance}</small>
