@@ -2020,3 +2020,36 @@ input, select, textarea, button {
  .jtsOpsActionGrid button{padding:8px}
  .jtsOpsOutstanding{align-items:flex-start;flex-direction:column;gap:3px}
 }
+
+
+/* JTS Operations daily workspace — compact diary-first hierarchy. */
+.jtsOpsPriority{align-items:center;padding:13px 15px;background:linear-gradient(110deg,#17150f,#0b0c0e 72%);border-color:#51452c}
+.jtsOpsPriority>div:first-child{gap:4px}
+.jtsOpsPriority strong{font-size:1.08rem}
+.jtsOpsPriority small{max-width:620px;color:#aaa79f;font-size:.68rem;line-height:1.4}
+.jtsOpsPriorityActions .buttonPrimary{background:#d8c28a;color:#14120d;border-color:#d8c28a}
+.jtsOpsDiaryList{display:grid;gap:6px;margin-top:9px}
+.jtsOpsDiaryRow{display:grid;grid-template-columns:64px minmax(0,1fr) auto auto;align-items:center;gap:10px;padding:10px 11px;border:1px solid #292b2f;border-radius:9px;background:#090a0b}
+.jtsOpsDiaryRow time{font:600 1rem Georgia,serif;color:#d8c28a;font-variant-numeric:tabular-nums}
+.jtsOpsDiaryRow>div{display:flex;flex-direction:column;gap:3px;min-width:0}
+.jtsOpsDiaryRow>div strong{font-size:.76rem;color:#f4f2ec}
+.jtsOpsDiaryRow>div span{font-size:.63rem;color:#a4a49f;overflow-wrap:anywhere}
+.jtsOpsDiaryRow .jtsAppointmentStatus{white-space:nowrap}
+.jtsOpsDiaryRow .jtsSensitiveToggle{font-size:.59rem}
+.jtsOpsDiaryEmpty{display:flex;flex-direction:column;gap:4px;margin-top:9px;padding:12px;border:1px dashed #3a3b3d;border-radius:9px;background:#090a0b}
+.jtsOpsDiaryEmpty strong{font-size:.76rem;color:#eee}
+.jtsOpsDiaryEmpty span{font-size:.64rem;line-height:1.45;color:#999b96}
+.jtsOpsCollectionNote{display:flex;align-items:center;flex-wrap:wrap;gap:7px 16px;margin-top:8px;padding:9px 10px;border:1px solid #292b2f;border-radius:9px;background:#090a0b}
+.jtsOpsCollectionNote span{font-size:.62rem;color:#a5a59f}
+.jtsOpsCollectionNote strong{margin-left:auto;font-size:.68rem;color:#dfcca0}
+.jtsOpsDefinitions{margin-top:12px}
+@media(max-width:560px){
+ .jtsOpsPriority{align-items:flex-start}
+ .jtsOpsPriority strong{font-size:.96rem}
+ .jtsOpsPriorityActions{grid-template-columns:minmax(0,1fr)}
+ .jtsOpsDiaryRow{grid-template-columns:48px minmax(0,1fr) auto;gap:7px;padding:9px}
+ .jtsOpsDiaryRow .jtsSensitiveToggle{grid-column:2 / -1;justify-self:start}
+ .jtsOpsDiaryRow .jtsAppointmentStatus{font-size:.55rem}
+ .jtsOpsCollectionNote{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+ .jtsOpsCollectionNote strong{margin-left:0;grid-column:1 / -1}
+}
