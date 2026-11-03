@@ -9,7 +9,7 @@ import ConversationThread from "@/components/ConversationThread";
 import {uploadFiles} from "@/lib/uploadthing";
 import {track} from "@vercel/analytics";
 
-import {DEFAULT_PUBLIC_SERVICES} from "@/lib/jts/public-services";
+import {DEFAULT_PUBLIC_SERVICES,mergePublicServices} from "@/lib/jts/public-services";
 
 const gaboroneDateKey=(date=new Date())=>{const parts=new Intl.DateTimeFormat("en-GB",{timeZone:"Africa/Gaborone",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(date);const part=(type:string)=>parts.find(item=>item.type===type)?.value??"";return `${part("year")}-${part("month")}-${part("day")}`};
 const minDate=()=>{const parts=gaboroneDateKey().split("-").map(Number);const d=new Date(Date.UTC(parts[0],parts[1]-1,parts[2]+1));return d.toISOString().slice(0,10)};
@@ -19,7 +19,8 @@ const dateKey=(year:number,month:number,day:number)=>String(year).padStart(4,"0"
 const readableDate=(value:string,options:Intl.DateTimeFormatOptions={weekday:"long",day:"numeric",month:"long",year:"numeric"})=>new Intl.DateTimeFormat("en-GB",{...options,timeZone:"UTC"}).format(new Date(value+"T12:00:00Z"));
 
 export default function OrderForm(){
- const services=DEFAULT_PUBLIC_SERVICES;
+ const [services,setServices]=useState(DEFAULT_PUBLIC_SERVICES);
+ useEffect(()=>{const stop=onSnapshot(doc(db,"businessSettings","publicServices"),snapshot=>{setServices(mergePublicServices(snapshot.data()?.services))},()=>{setServices(DEFAULT_PUBLIC_SERVICES)});return()=>stop()},[]);
  useEffect(()=>{track("jts_booking_started")},[]);
  const[activeStep,setActiveStep]=useState(1),[servicePickerOpen,setServicePickerOpen]=useState(false),[serviceId,setServiceId]=useState(""),[date,setDate]=useState(""),[time,setTime]=useState(""),[showTimePicker,setShowTimePicker]=useState(false),[name,setName]=useState(""),[phone,setPhone]=useState(""),[style,setStyle]=useState(""),[styleOpen,setStyleOpen]=useState(false),[styleMedia,setStyleMedia]=useState<{url:string;type:string;name:string;size:number}[]>([]),[styleUploading,setStyleUploading]=useState(false),[styleUploadPercent,setStyleUploadPercent]=useState(0),[busy,setBusy]=useState(false),[error,setError]=useState(""),[submitted,setSubmitted]=useState(false),[reference,setReference]=useState(""),[conversationId,setConversationId]=useState(""),[threadPreparing,setThreadPreparing]=useState(false),[threadError,setThreadError]=useState(""),[offlinePending,setOfflinePending]=useState(false),[blockedDates,setBlockedDates]=useState<Record<string,string>>({}),[availabilityReady,setAvailabilityReady]=useState(false),[availabilityError,setAvailabilityError]=useState(false),[calendarMonth,setCalendarMonth]=useState(()=>minDate().slice(0,7));
  useEffect(()=>{const params=new URLSearchParams(window.location.search);const requested=params.get("service");if(requested){const match=services.find(item=>item.id===requested||item.name.toLowerCase()===requested.toLowerCase());if(match){setServiceId(match.id);setActiveStep(2)}}const requestedStyle=params.get("style");if(requestedStyle)setStyle(requestedStyle.slice(0,500));const requestedDate=params.get("date");if(requestedDate&&/^\d{4}-\d{2}-\d{2}$/.test(requestedDate)&&requestedDate>=minDate()){setDate(requestedDate);setCalendarMonth(requestedDate.slice(0,7))}},[services]);
