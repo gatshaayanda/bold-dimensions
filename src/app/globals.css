@@ -2120,3 +2120,75 @@ input, select, textarea, button {
  .jtsPublicLookbook .jtsCategoryCompactBody{padding:9px}
  .jtsPublicLookbook .jtsCategoryCompactBody h3{font-size:.84rem}
 }
+
+
+/* JTS Operations refinement: calmer rhythm, clearer section boundaries, easier scanning. */
+.adminPage .adminPanel.jtsOpsOverview{padding:22px}
+.adminPage .jtsOpsQueueSection{margin:0 0 25px;padding:0 0 24px;border-bottom:1px solid #3a3934}
+.adminPage .jtsOpsSectionHead{gap:16px}
+.adminPage .jtsOpsSectionHead h2{font-size:1.28rem;line-height:1.22}
+.adminPage .jtsOpsQueueSection .jtsOpsSectionHead{margin-bottom:15px}
+.adminPage .jtsOpsRequestGrid{gap:13px;margin-top:0}
+.adminPage .jtsOpsRequestCard{border-radius:13px;background:#0e0f10}
+.adminPage .jtsOpsRequestImage,.adminPage .jtsOpsRequestFallback{height:142px}
+.adminPage .jtsOpsRequestBody{gap:10px;padding:13px}
+.adminPage .jtsOpsRequestFoot{padding-top:11px}
+.adminPage .jtsOpsDiaryList{gap:9px;margin-top:15px}
+.adminPage .jtsOpsDiaryRow{min-height:66px;padding:12px 14px;gap:13px;border-radius:11px;background:#0d0e0f}
+.adminPage .jtsOpsDiaryRow>div{gap:5px}
+.adminPage .jtsOpsDiaryEmpty{margin-top:15px;padding:17px;border-radius:11px}
+.adminPage .jtsOpsSectionHead.jtsOpsSubhead{margin-top:29px;padding-top:22px;border-top:1px solid #343538}
+.adminPage .jtsOpsSectionHead.jtsOpsSubhead h2{font-size:1.25rem}
+.adminPage .jtsOpsActionGrid{gap:11px;margin-top:14px}
+.adminPage .jtsOpsActionGrid button{min-height:67px;padding:12px 13px;gap:12px;border-radius:11px;background:#0d0e0f}
+.adminPage .jtsOpsMetricGrid,.adminPage .jtsOpsFinanceGrid{gap:11px;margin-top:15px}
+.adminPage .jtsOpsMetricGrid article,.adminPage .jtsOpsFinanceGrid article{min-height:78px;padding:13px 14px;gap:7px;border-radius:11px;background:#0d0e0f}
+.adminPage .jtsOpsMetricGrid span,.adminPage .jtsOpsFinanceGrid span{font-size:.64rem;line-height:1.4}
+.adminPage .jtsOpsMetricGrid strong,.adminPage .jtsOpsFinanceGrid strong{font-size:1.35rem}
+.adminPage .jtsOpsCollectionNote{gap:10px 20px;margin-top:13px;padding:13px 14px;border-radius:11px;background:#101113}
+.adminPage .jtsOpsLowerGrid{gap:13px;margin-top:24px}
+.adminPage .jtsOpsTrendSection,.adminPage .jtsOpsRelationship{padding:15px;border-radius:12px;background:#0d0e0f}
+.adminPage .jtsOpsTrendSection .jtsOpsSectionHead{margin-bottom:12px}
+.adminPage .jtsOpsTrendList li{gap:11px;padding:11px 0}
+.adminPage .jtsOpsTrendList li>div{gap:4px}
+.adminPage .jtsOpsRelationship h2{margin:8px 0}
+.adminPage .jtsOpsRelationship p{margin:8px 0;line-height:1.55}
+.adminPage .jtsOpsDefinitions{margin-top:23px;padding:14px 15px;border:1px solid #303236;border-radius:11px;background:#0d0e0f}
+.adminPage .jtsOpsDefinitions p{margin:10px 0 0;line-height:1.65}
+.adminPage .adminTabs{gap:8px;margin:13px 0 15px}
+.adminPage .adminTabs button{min-height:42px;padding:9px 11px}
+.adminPage .adminPanel:not(.jtsOpsOverview){padding:21px}
+.adminPage .adminPanel:not(.jtsOpsOverview)>.panelHeading{margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid #303236}
+.adminPage .queue{gap:12px}
+.adminPage .queueRow{padding:15px;border-radius:12px}
+@media(max-width:760px){
+ .adminPage .adminPanel.jtsOpsOverview{padding:16px}
+ .adminPage .jtsOpsQueueSection{margin-bottom:22px;padding-bottom:21px}
+ .adminPage .jtsOpsQueueSection .jtsOpsSectionHead{margin-bottom:12px}
+ .adminPage .jtsOpsRequestGrid{gap:11px}
+ .adminPage .jtsOpsRequestImage,.adminPage .jtsOpsRequestFallback{min-height:128px}
+ .adminPage .jtsOpsRequestBody{gap:8px;padding:11px}
+ .adminPage .jtsOpsDiaryList{gap:8px;margin-top:12px}
+ .adminPage .jtsOpsDiaryRow{padding:11px;gap:9px}
+ .adminPage .jtsOpsSectionHead.jtsOpsSubhead{margin-top:24px;padding-top:19px}
+ .adminPage .jtsOpsActionGrid{gap:9px;margin-top:12px}
+ .adminPage .jtsOpsActionGrid button{min-height:62px;padding:10px}
+ .adminPage .jtsOpsMetricGrid,.adminPage .jtsOpsFinanceGrid{gap:9px;margin-top:12px}
+ .adminPage .jtsOpsMetricGrid article,.adminPage .jtsOpsFinanceGrid article{min-height:73px;padding:11px}
+ .adminPage .jtsOpsCollectionNote{gap:9px;padding:11px}
+ .adminPage .jtsOpsLowerGrid{gap:11px;margin-top:20px}
+ .adminPage .jtsOpsTrendSection,.adminPage .jtsOpsRelationship{padding:13px}
+ .adminPage .jtsOpsDefinitions{margin-top:19px;padding:12px}
+ .adminPage .adminPanel:not(.jtsOpsOverview){padding:15px}
+ .adminPage .queueRow{padding:13px}
+}
+@media(max-width:420px){
+ .adminPage .adminPanel.jtsOpsOverview{padding:13px}
+ .adminPage .jtsOpsSectionHead h2,.adminPage .jtsOpsSectionHead.jtsOpsSubhead h2{font-size:1.12rem}
+ .adminPage .jtsOpsSectionHead{align-items:flex-start}
+ .adminPage .jtsOpsSectionHead>.jtsOpsTextAction{white-space:nowrap;font-size:.6rem}
+ .adminPage .jtsOpsMetricGrid article,.adminPage .jtsOpsFinanceGrid article{min-height:69px}
+ .adminPage .jtsOpsMetricGrid strong,.adminPage .jtsOpsFinanceGrid strong{font-size:1.22rem}
+ .adminPage .jtsOpsTrendSection,.adminPage .jtsOpsRelationship{padding:11px}
+ .adminPage .adminPanel:not(.jtsOpsOverview){padding:12px}
+}
