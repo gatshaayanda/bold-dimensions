@@ -446,6 +446,13 @@ function Dashboard() {
     };
   }, [appointments, adminConversations]);
 
+  const reviewQueue = useMemo(() => appointments
+    .filter(item => !["Confirmed", "In service", "Completed", "Cancelled"].includes(item.status || ""))
+    .sort((a, b) => {
+      const rank = (value?: string) => ({ New: 0, Reviewing: 1, Accepted: 2 }[value || "New"] ?? 3);
+      return rank(a.status) - rank(b.status) || (a.createdAt || "").localeCompare(b.createdAt || "");
+    }), [appointments]);
+
   async function confirmDeleteTarget() {
     const target = deleteTarget;
     if (!target) return;
@@ -536,14 +543,35 @@ function Dashboard() {
       <article><span>Looks to review</span><strong>{reviews.filter(item => !item.published && item.status !== "hidden").length}</strong></article>
     </section>
     <nav className="adminTabs" aria-label="Operations sections">
-      <button className={tab === "overview" ? "active" : ""} onClick={() => setTab("overview")}>Overview &amp; money</button>
-      <button className={tab === "appointments" ? "active" : ""} onClick={() => setTab("appointments")}>Appointment requests</button>
-      <button className={tab === "availability" ? "active" : ""} onClick={() => setTab("availability")}>Date availability</button>
-      <button className={tab === "reviews" ? "active" : ""} onClick={() => setTab("reviews")}>Customer looks & reviews</button>
-      <button className={tab === "services" ? "active" : ""} onClick={() => setTab("services")}>Services & prices</button>
-      <button className={tab === "styleFeed" ? "active" : ""} onClick={() => setTab("styleFeed")}>John&apos;s style feed · photos &amp; videos</button>
+      <button className={tab === "overview" ? "active" : ""} aria-current={tab === "overview" ? "page" : undefined} onClick={() => setTab("overview")}>Today</button>
+      <button className={tab === "appointments" ? "active" : ""} aria-current={tab === "appointments" ? "page" : undefined} onClick={() => setTab("appointments")}>Requests <span className="adminTabCount">{reviewQueue.length}</span></button>
+      <button className={tab === "availability" ? "active" : ""} aria-current={tab === "availability" ? "page" : undefined} onClick={() => setTab("availability")}>Availability</button>
+      <button className={tab === "reviews" ? "active" : ""} aria-current={tab === "reviews" ? "page" : undefined} onClick={() => setTab("reviews")}>Customer looks</button>
+      <button className={tab === "services" ? "active" : ""} aria-current={tab === "services" ? "page" : undefined} onClick={() => setTab("services")}>Services & prices</button>
+      <button className={tab === "styleFeed" ? "active" : ""} aria-current={tab === "styleFeed" ? "page" : undefined} onClick={() => setTab("styleFeed")}>Style feed</button>
     </nav>
     {loading ? <section className="adminPanel"><p>Loading JTS Operations…</p></section> : tab === "overview" ? <section id="admin-overview" className="adminPanel jtsOpsOverview" style={{scrollMarginTop:16}}>
+      <section className="jtsOpsQueueSection" aria-labelledby="jts-request-queue-title">
+        <div className="jtsOpsSectionHead"><div><span className="kicker">FIRST · CUSTOMER REQUESTS</span><h2 id="jts-request-queue-title">What needs your decision?</h2></div><button type="button" className="jtsOpsTextAction" onClick={() => setTab("appointments")}>All requests ({reviewQueue.length}) ↗</button></div>
+        {reviewQueue.length ? <div className="jtsOpsRequestGrid">{reviewQueue.slice(0, 3).map(item => {
+          const serviceNames = (item.items || []).map(service => service.name || "Service");
+          const serviceName = serviceNames.join(" · ") || "Appointment request";
+          const matched = services.filter(service => serviceNames.some(name => name.toLowerCase() === service.name.toLowerCase()));
+          const serviceImage = matched.map(service => service.media?.find(media => media.type === "image")).find(Boolean)
+            || (matched[0] ? categoryMedia[matched[0].tag] : undefined);
+          const status = item.status || "New";
+          return <article className="jtsOpsRequestCard" key={item.id}>
+            {serviceImage?.type === "image" ? <img className="jtsOpsRequestImage" src={serviceImage.url} alt="" loading="lazy" /> : <div className="jtsOpsRequestFallback" aria-hidden="true">{serviceName.slice(0, 1).toUpperCase()}</div>}
+            <div className="jtsOpsRequestBody">
+              <div className="jtsOpsRequestMeta"><span className={"jtsAppointmentStatus status-" + status.toLowerCase().replace(/[^a-z]+/g, "-")}>{status}</span><span>#{item.id.slice(0, 6).toUpperCase()}</span></div>
+              <strong className="jtsOpsRequestService">{serviceName}</strong>
+              <span className="jtsOpsRequestTime">Preferred · {dateText(item.scheduledFor)}</span>
+              <div className="jtsOpsRequestFoot"><strong>{money(item.total)}</strong><button type="button" onClick={() => setTab("appointments")}>Review request <span aria-hidden="true">↗</span></button></div>
+            </div>
+          </article>;
+        })}</div> : <div className="jtsOpsQueueClear"><strong>Your request queue is clear.</strong><span>New customer requests will appear here for review before they enter the confirmed diary.</span></div>}
+        {reviewQueue.length > 3 && <p className="jtsOpsQueueMore">Showing the next 3 of {reviewQueue.length} requests. Open the queue to review the rest.</p>}
+      </section>
       <div className="jtsOpsSectionHead"><div><span className="kicker">THE SALON DIARY · TODAY</span><h2>Today&apos;s appointments</h2></div><button type="button" className="jtsOpsTextAction" onClick={() => setTab("appointments")}>All appointments ↗</button></div>
       {todayDiary.length ? <div className="jtsOpsDiaryList">{todayDiary.map(item => {
         const revealSensitive = revealedAppointments[item.id] === true;
