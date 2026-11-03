@@ -733,3 +733,45 @@ Each phase is a separate implementation and QA checkpoint. Do not start customer
 - Treat salon imagery as a choice aid, not decoration: connect a displayed look to the actual service/price where possible, and use only authentic authorized media.
 - Competitor patterns from Fresha and Booksy are references for portfolio-to-service discovery, client context and appointment workflows, not templates to copy wholesale.
 - Validate with actual mobile use and observed task completion: time to locate/review a request, ability to distinguish requests from confirmed appointments, success of private replies/payment-proof review, and ability to navigate salon-management areas. Do not claim conversion or productivity improvement without measured evidence.
+
+## Customer account implementation contract — repository review (2026-11-03)
+
+The current `/account` route is an existing customer workspace. Improve it in place; do not replace it with a new CRM, dashboard framework, or account/auth system.
+
+### Preserve the working foundation
+- Keep anonymous Firebase guest sessions and optional Google sign-in/linking. A customer must be able to request an appointment without creating an account.
+- Preserve customer-UID-scoped booking reads and live subscriptions, booking references/detail links, private booking conversations, attachment uploads, unread/read state, and existing Firestore/UploadThing authorization.
+- Google linking should preserve the existing anonymous UID and its bookings. Do not silently merge records when a guest session is lost and a different Google UID signs in; explain recovery rather than guessing ownership.
+- Do not change Firebase schema/rules/auth, UploadThing authorization, booking creation, payment verification, PWA installation or offline caching as part of account presentation work unless separately approved.
+
+### Account information architecture
+1. **Next appointment / next action first.** Show the nearest relevant upcoming appointment request with its real service, requested date/time, reference and truthful status. Clearly identify the next customer action, such as awaiting John's response, deposit due, proof submitted for review, or appointment confirmed.
+2. **Private messages for that appointment.** Keep the booking-linked conversation easy to reopen. Make unread staff replies and attachment state understandable; all messaging and media remain private to the booking's customer and authorized staff.
+3. **Appointment history.** Separate upcoming/requested, confirmed or in-service, completed and cancelled records. Keep cancelled and completed records out of the next-appointment selection. Provide a clear route back to each booking's details/conversation and a straightforward book-again action.
+4. **Customer details and account access.** Add profile editing only after inspecting the actual `CustomerProfile` type, write paths and rules. Use only supported, relevant fields (for example name and phone); do not expose inherited restaurant fields such as delivery location or customer notes as salon profile settings without an explicit data-model decision.
+5. **Preferences.** Notification preferences may be surfaced using existing helpers only after verifying their actual persistence and delivery path. A saved token or preference is not proof that a push notification was delivered.
+
+### Status, date and payment truth
+- Normalize all supported current and legacy appointment statuses in one shared presentation mapping. At minimum handle Requested/New, Reviewing, Accepted/Confirmed, In service (including mapped legacy Preparing/Ready), Completed (including mapped legacy Collected/Delivered), and Cancelled. Unknown values must remain visibly unknown/action-required; never silently count them as confirmed or completed.
+- The next appointment selector must exclude terminal states (Completed and Cancelled) and must not promote a merely requested slot to a confirmed appointment.
+- Display appointment dates/times consistently in the business timezone, `Africa/Gaborone`, regardless of the customer's device timezone. Keep the stored timestamp unchanged; timezone handling is presentation-only unless a separate migration is approved.
+- Show deposit required, proof submitted/awaiting review, and deposit verified only when supported by the actual booking/payment/conversation records. A screenshot or customer claim is evidence submitted, not payment received. Only authorized staff verification updates payment state; John confirms the appointment.
+- Do not show an estimated or requested service value as money collected or revenue.
+
+### Visual and interaction direction
+- Use the Iteration 13 compact, task-first visual standard and the JTS black, metallic-gold, white and silver identity.
+- Make the next appointment the clear focal task; keep account identity compact and secondary. Use deliberate section spacing and readable separation rather than clustering many equal-weight cards.
+- Prefer concise appointment rows, expandable history and progressive disclosure over long explanatory panels. Keep the mobile experience scannable with comfortable touch targets and no horizontal overflow.
+- Do not duplicate booking CTAs, brand mastheads, deposit explanations or status copy across adjacent panels. Keep inspiration/Style Studio and other optional content below appointment, message and account tasks.
+- Mask sensitive contact/payment details in overview surfaces where practical; reveal them only within the relevant authenticated customer task.
+
+### Implementation and release sequence
+1. Audit current account components, shared status types, booking timestamps, profile writes, notification helpers and Firestore/Storage/UploadThing rules before editing.
+2. Fix shared status mapping, next-appointment selection and `Africa/Gaborone` display; add focused tests for current and legacy states.
+3. Refine the account hierarchy and narrow-mobile layout without changing data contracts.
+4. Add supported profile editing and saved details only after confirming the existing type, write path and security rules.
+5. Improve booking-specific inbox/unread/attachment recovery and history/rebook paths using the existing deterministic booking thread.
+6. Expose notification preferences only if the underlying delivery path is verified; otherwise describe the feature as unavailable rather than promising reminders.
+7. Verify guest and Google-linked sessions, UID continuity, customer-only reads, live updates, every status mapping, timezone display, deposit-proof recovery, private attachment access and mobile interactions. Run typecheck, lint and production build; inspect the diff before committing.
+
+The account phase is a refinement of the existing foundation, not a rewrite. Never claim end-to-end, device or payment QA from source inspection or a successful build alone.
