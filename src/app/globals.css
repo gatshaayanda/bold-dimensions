@@ -2053,3 +2053,28 @@ input, select, textarea, button {
  .jtsOpsCollectionNote{display:grid;grid-template-columns:1fr 1fr;gap:7px}
  .jtsOpsCollectionNote strong{margin-left:0;grid-column:1 / -1}
 }
+
+
+/* JTS Operations: visual, decision-first request review. */
+.adminPage .adminTabs button{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.adminPage .adminTabs button .adminTabCount{display:inline-grid;place-items:center;min-width:19px;height:19px;padding:0 5px;border:1px solid currentColor;border-radius:999px;font-size:.58rem;font-variant-numeric:tabular-nums}
+.jtsOpsQueueSection{margin:0 0 18px;padding:0 0 17px;border-bottom:1px solid #292b2f}
+.jtsOpsRequestGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:10px}
+.jtsOpsRequestCard{display:grid;grid-template-columns:1fr;min-width:0;overflow:hidden;border:1px solid #34363a;border-radius:11px;background:#0b0c0e}
+.jtsOpsRequestImage,.jtsOpsRequestFallback{display:grid;width:100%;height:124px;object-fit:cover;background:#171716}
+.jtsOpsRequestFallback{place-items:center;color:#b9a36b;font:600 2rem Georgia,serif}
+.jtsOpsRequestBody{display:grid;gap:7px;min-width:0;padding:10px}
+.jtsOpsRequestMeta{display:flex;align-items:center;justify-content:space-between;gap:7px;color:#858780;font-size:.57rem;font-variant-numeric:tabular-nums}
+.jtsOpsRequestMeta .jtsAppointmentStatus{padding:3px 7px;font-size:.56rem}
+.jtsOpsRequestService{font:600 .9rem/1.25 Georgia,serif;color:#f4f2ec;overflow-wrap:anywhere}
+.jtsOpsRequestTime{font-size:.62rem;line-height:1.4;color:#a4a49f}
+.jtsOpsRequestFoot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:2px;padding-top:8px;border-top:1px solid #242528}
+.jtsOpsRequestFoot>strong{font:600 1rem Georgia,serif;color:#dfcca0}
+.jtsOpsRequestFoot button{border:1px solid #6b5937;border-radius:7px;padding:7px 9px;background:#211b10;color:#f0dca9;font-size:.62rem;font-weight:800;cursor:pointer}
+.jtsOpsRequestFoot button:focus-visible{outline:2px solid #d8c28a;outline-offset:2px}
+.jtsOpsQueueClear{display:flex;flex-direction:column;gap:4px;margin-top:10px;padding:14px;border:1px dashed #45423a;border-radius:10px;background:#0b0c0e}
+.jtsOpsQueueClear strong{font:600 .92rem Georgia,serif;color:#f2eee4}
+.jtsOpsQueueClear span,.jtsOpsQueueMore{font-size:.65rem;line-height:1.45;color:#999b96}
+.jtsOpsQueueMore{margin:8px 0 0}
+@media(max-width:760px){.jtsOpsRequestGrid{grid-template-columns:1fr}.jtsOpsRequestCard{grid-template-columns:92px minmax(0,1fr);align-items:stretch}.jtsOpsRequestImage,.jtsOpsRequestFallback{height:100%;min-height:116px}.jtsOpsRequestBody{padding:9px}.jtsOpsRequestFoot{align-items:center}.jtsOpsRequestFoot button{min-height:36px}}
+@media(max-width:420px){.adminPage .adminTabs button{font-size:.59rem}.jtsOpsRequestCard{grid-template-columns:78px minmax(0,1fr)}.jtsOpsRequestImage,.jtsOpsRequestFallback{min-height:112px}.jtsOpsRequestService{font-size:.82rem}}
