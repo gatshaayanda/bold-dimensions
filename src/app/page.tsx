@@ -3,6 +3,7 @@
 import Link from "next/link";
 import JtsInstallButton from "@/app/jts-install-button";
 import JtsHomeHeroVisual from "@/components/jts-home-hero-visual";
+import PublicServiceCards from "@/components/public-service-cards";
 
 function Logo() {
   return <Link href="/" className="jtsAppLogo" aria-label="John The Stylist Bw home">
@@ -25,8 +26,20 @@ export default function Home() {
         <span className="jtsAppKicker">JOHN THE STYLIST BW · G WEST</span>
         <h1>Your look.<br /><em>Your signature.</em></h1>
         <p>Precision cuts, colour and statement styles by John.</p>
-        <Link href="/order" className="jtsAppBook"><span>▦</span><strong>Book an appointment</strong><b>↗</b></Link>
+        <div className="jtsPublicHeroActions">
+          <Link href="/services" className="jtsAppBook"><strong>Explore styles</strong><b>↗</b></Link>
+          <Link href="/order" className="jtsPublicBookSecondary">Book with John <span>↗</span></Link>
+        </div>
       </div>
+    </section>
+
+    <section className="jtsPublicLookbook" aria-labelledby="jts-public-lookbook-title">
+      <div className="jtsPublicSectionHeading">
+        <div><span className="jtsAppKicker">THE JTS STYLE EDIT</span><h2 id="jts-public-lookbook-title">Find your <em>starting point.</em></h2><p>Explore real service categories, see the work and choose what feels right.</p></div>
+        <Link href="/services">View all services <span>↗</span></Link>
+      </div>
+      <PublicServiceCards />
+      <p className="jtsPublicLookbookNote">Every style leads to its actual service and published price. Not sure what to choose? Ask John when you book.</p>
     </section>
 
     <section className="jtsAppShortcuts" aria-label="JTS customer destinations">
@@ -49,9 +62,9 @@ export default function Home() {
 
     <nav className="jtsHomeDock" aria-label="Quick navigation">
       <Link href="/"><span>⌂</span><small>Home</small></Link>
+      <Link href="/services"><span>✂</span><small>Looks</small></Link>
       <Link href="/order"><span>▦</span><small>Book</small></Link>
       <Link href="/account"><span>◉</span><small>Account</small></Link>
-      <Link href="/studio"><span>✳</span><small>Studio</small></Link>
     </nav>
   </main>;
 }

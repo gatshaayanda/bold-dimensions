@@ -2078,3 +2078,45 @@ input, select, textarea, button {
 .jtsOpsQueueMore{margin:8px 0 0}
 @media(max-width:760px){.jtsOpsRequestGrid{grid-template-columns:1fr}.jtsOpsRequestCard{grid-template-columns:92px minmax(0,1fr);align-items:stretch}.jtsOpsRequestImage,.jtsOpsRequestFallback{height:100%;min-height:116px}.jtsOpsRequestBody{padding:9px}.jtsOpsRequestFoot{align-items:center}.jtsOpsRequestFoot button{min-height:36px}}
 @media(max-width:420px){.adminPage .adminTabs button{font-size:.59rem}.jtsOpsRequestCard{grid-template-columns:78px minmax(0,1fr)}.jtsOpsRequestImage,.jtsOpsRequestFallback{min-height:112px}.jtsOpsRequestService{font-size:.82rem}}
+
+
+/* Public lookbook slice: real category media, direct service discovery, no fabricated social proof. */
+.jtsPublicHeroActions{display:grid;width:100%;gap:10px}
+.jtsPublicHeroActions .jtsAppBook{min-height:58px}
+.jtsPublicBookSecondary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:46px;padding:10px 2px;color:#f1e5c9;font-size:.82rem;font-weight:800;text-decoration:none;border-bottom:1px solid #665637}
+.jtsPublicBookSecondary span,.jtsPublicSectionHeading>a span{color:#e7ce91}
+.jtsPublicLookbook{max-width:1076px;margin:0 auto;padding:28px 22px 30px;border-top:1px solid #292929}
+.jtsPublicSectionHeading{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:17px}
+.jtsPublicSectionHeading>div{min-width:0}
+.jtsPublicSectionHeading h2{margin:8px 0;color:#fff;font:500 clamp(2rem,4.5vw,3.4rem)/1 Georgia,serif;letter-spacing:-.04em}
+.jtsPublicSectionHeading h2 em{color:#f0d58a}
+.jtsPublicSectionHeading p{max-width:540px;margin:0;color:#c9c9c5;font-size:.82rem;line-height:1.55}
+.jtsPublicSectionHeading>a{flex:0 0 auto;padding:10px 0;color:#f4e6c5;font-size:.72rem;font-weight:800;text-decoration:none;border-bottom:1px solid #8c7547}
+.jtsPublicLookbook .jtsCategoryCardCompact{border-color:#39352d;background:#101010}
+.jtsPublicLookbook .jtsCategoryCardCompact .jtsCategoryVisual{aspect-ratio:16/10}
+.jtsPublicLookbook .jtsCategoryCompactBody{align-items:flex-start}
+.jtsPublicLookbook .jtsCategoryCompactBody h3{font:500 1.12rem/1.2 Georgia,serif}
+.jtsPublicLookbook .jtsCategoryCompactBody button{border-color:#8c7547;background:#17150f;color:#f6e9ca;cursor:pointer}
+.jtsPublicLookbook .jtsCategoryCompactBody button:hover,.jtsPublicLookbook .jtsCategoryCompactBody button:focus-visible{outline:2px solid #e7ce91;outline-offset:2px;background:#242014}
+.jtsPublicLookbookNote{margin:13px 0 0;color:#aead a7;font-size:.7rem;line-height:1.5}
+.jtsPublicLookbook .jtsPriceModal{max-width:650px}
+@media(max-width:760px){
+ .jtsPublicLookbook{padding:23px 14px 24px}
+ .jtsPublicSectionHeading{align-items:flex-start;flex-direction:column;gap:10px}
+ .jtsPublicSectionHeading h2{font-size:2.25rem}
+ .jtsPublicSectionHeading>a{padding:6px 0}
+ .jtsPublicLookbook .jtsCategoryGridCompact{grid-template-columns:1fr;gap:11px}
+ .jtsPublicLookbook .jtsCategoryCardCompact{display:grid;grid-template-columns:38% minmax(0,1fr);align-items:stretch}
+ .jtsPublicLookbook .jtsCategoryCardCompact .jtsCategoryVisual{height:100%;min-height:132px;aspect-ratio:auto}
+ .jtsPublicLookbook .jtsCategoryCompactBody{flex-direction:column;justify-content:space-between;gap:9px;padding:11px}
+ .jtsPublicLookbook .jtsCategoryCompactBody h3{font-size:.94rem}
+ .jtsPublicLookbook .jtsCategoryCompactBody p{font-size:.65rem}
+ .jtsPublicLookbook .jtsCategoryCompactBody button{min-height:36px;padding:7px 9px;font-size:.68rem}
+ .jtsPublicHeroActions{gap:6px}
+}
+@media(max-width:380px){
+ .jtsPublicLookbook .jtsCategoryCardCompact{grid-template-columns:34% minmax(0,1fr)}
+ .jtsPublicLookbook .jtsCategoryCardCompact .jtsCategoryVisual{min-height:126px}
+ .jtsPublicLookbook .jtsCategoryCompactBody{padding:9px}
+ .jtsPublicLookbook .jtsCategoryCompactBody h3{font-size:.84rem}
+}
