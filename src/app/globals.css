@@ -1841,3 +1841,32 @@ input, select, textarea, button {
  .adminPage .menuAdminList article>div:last-child{grid-template-columns:minmax(0,1fr)}
  .adminPage .panelHeading>span{font-size:.7rem}
 }
+
+
+/* JTS operations header and helper: deliberate compact hierarchy, never overflow the viewport. */
+.adminAccountBar{width:min(1180px,calc(100% - 32px));min-width:0;flex-wrap:wrap;gap:8px 14px}
+.adminAccountBar>span{min-width:0;overflow-wrap:anywhere}
+.adminAccountBar>.button{min-height:40px;padding:8px 12px}
+.jtsAdminWelcome{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:18px;margin:0 0 12px;padding:18px 20px;border:1px solid #51442b;border-radius:14px;background:linear-gradient(120deg,#1b1812,#111112 70%)}
+.jtsAdminWelcome>div:first-child{min-width:0}
+.jtsAdminWelcome .jtsEyebrow{display:block;color:#d8bd83;font-size:.62rem;font-weight:900;letter-spacing:.14em}
+.jtsAdminWelcome h2{margin:6px 0;font:600 clamp(1.35rem,3vw,1.8rem)/1.2 Georgia,serif;color:#fff}
+.jtsAdminWelcome p{margin:0;color:#c4beb4;font-size:.82rem;line-height:1.5}
+.jtsAdminWelcomeActions{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+.jtsAdminWelcomeActions .button{min-height:42px;padding:10px 13px;font-size:.7rem}
+.adminPage .jtsGuidePanel{width:min(420px,calc(100vw - 24px));max-width:calc(100vw - 24px);max-height:min( min(720px, calc(100dvh - 100px)), 82dvh);overflow:auto}
+.adminPage .jtsGuidePanel input{min-width:0;width:100%}
+@media(max-width:760px){
+ .jtsAdminWelcome{grid-template-columns:minmax(0,1fr);gap:12px;padding:15px}
+ .jtsAdminWelcomeActions{justify-content:stretch}
+}
+@media(max-width:560px){
+ .adminAccountBar{width:calc(100% - 24px);align-items:center}
+ .adminAccountBar>span{flex:1 1 170px;font-size:.72rem}
+ .adminAccountBar>.button{flex:0 0 auto}
+ .jtsAdminWelcome{padding:13px}
+ .jtsAdminWelcome p{font-size:.78rem}
+ .jtsAdminWelcomeActions{display:grid;grid-template-columns:minmax(0,1fr)}
+ .jtsAdminWelcomeActions .button{width:100%}
+ .adminPage .jtsGuidePanel{right:10px;bottom:76px;width:calc(100vw - 20px);max-width:calc(100vw - 20px);max-height:calc(100dvh - 100px)}
+}
