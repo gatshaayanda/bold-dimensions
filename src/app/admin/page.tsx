@@ -428,12 +428,13 @@ function Dashboard() {
     const confirmedValue = confirmedOrInService.reduce((sum, item) => sum + Math.max(0, Number(item.total) || 0), 0);
     const completedValue = completed.reduce((sum, item) => sum + Math.max(0, Number(item.total) || 0), 0);
     const expectedConfirmedDeposits = confirmedOrInService.reduce((sum, item) => sum + Math.round(Math.max(0, Number(item.total) || 0) * 0.5), 0);
+    const confirmedDepositsReceived = confirmedOrInService.reduce((sum, item) => sum + Math.max(0, Number(item.reconciliation?.depositReceived) || 0), 0);
     const recordedDeposits = recent.reduce((sum, item) => sum + Math.max(0, Number(item.reconciliation?.depositReceived) || 0), 0);
     const recordedBalances = recent.reduce((sum, item) => sum + Math.max(0, Number(item.reconciliation?.balanceReceived) || 0), 0);
     return {
       recent, unknownLegacy, requestedValue, confirmedValue, completedValue, expectedConfirmedDeposits,
       recordedDeposits, recordedBalances, collectedValue: recordedDeposits + recordedBalances,
-      depositGap: Math.max(0, expectedConfirmedDeposits - recordedDeposits),
+      depositGap: Math.max(0, expectedConfirmedDeposits - confirmedDepositsReceived),
       newRequests: recent.filter(item => !item.status || item.status === "New").length,
       confirmed: confirmedOrInService.length,
       cancelled: recent.filter(item => item.status === "Cancelled").length,
