@@ -396,10 +396,13 @@ function Dashboard() {
   const openAppointments = useMemo(() => appointments.filter(item => !["Cancelled", "Completed"].includes(item.status || "")), [appointments]);
   const analytics = useMemo(() => {
     const now = Date.now();
-    const recent = appointments.filter(item => {
+    const periodRecords = appointments.filter(item => {
       const created = Date.parse(item.createdAt || "");
       return Number.isFinite(created) && created >= now - 30 * 24 * 60 * 60 * 1000;
     });
+    const knownStatuses = ["New", "Reviewing", "Accepted", "Confirmed", "In service", "Completed", "Cancelled"];
+    const recent = periodRecords.filter(item => !item.status || knownStatuses.includes(item.status));
+    const unknownLegacy = periodRecords.length - recent.length;
     const completed = recent.filter(item => item.status === "Completed");
     const customerVisits = new Map<string, number>();
     completed.forEach(item => { if (item.customerId) customerVisits.set(item.customerId, (customerVisits.get(item.customerId) || 0) + 1); });
@@ -415,7 +418,7 @@ function Dashboard() {
     const expectedDeposits = recent.filter(item => item.status !== "Cancelled").reduce((sum, item) => sum + Math.round(Math.max(0, Number(item.total) || 0) * 0.5), 0);
     const recordedDeposits = recent.reduce((sum, item) => sum + Math.max(0, Number(item.reconciliation?.depositReceived) || 0), 0);
     const recordedBalances = recent.reduce((sum, item) => sum + Math.max(0, Number(item.reconciliation?.balanceReceived) || 0), 0);
-    return { recent, requestedValue, expectedDeposits, recordedDeposits, recordedBalances,
+    return { recent, unknownLegacy, requestedValue, expectedDeposits, recordedDeposits, recordedBalances,
       outstandingRecorded: Math.max(0, requestedValue - recordedDeposits - recordedBalances),
       newRequests: recent.filter(item => !item.status || item.status === "New").length,
       confirmed: recent.filter(item => ["Confirmed", "In service"].includes(item.status || "")).length,
@@ -425,7 +428,7 @@ function Dashboard() {
       serviceCounts: [...serviceCounts.entries()].map(([name,data]) => ({name,...data})).sort((a,b) => b.count-a.count).slice(0,5),
       unreadMessages: adminConversations.filter(item => item.unreadForAdmin && !item.lastMessagePreview.startsWith("DEPOSIT PROOF SUBMITTED")).length,
       proofsAwaitingReview: adminConversations.filter(item => item.unreadForAdmin && item.lastMessagePreview.startsWith("DEPOSIT PROOF SUBMITTED")).length,
-      todayConfirmed: appointments.filter(item => item.status === "Confirmed" && item.scheduledFor && new Intl.DateTimeFormat("en-CA",{timeZone:"Africa/Gaborone"}).format(new Date(item.scheduledFor)) === new Intl.DateTimeFormat("en-CA",{timeZone:"Africa/Gaborone"}).format(new Date())).length
+      todayConfirmed: appointments.filter(item => { if (item.status !== "Confirmed" || !item.scheduledFor) return false; const scheduled = new Date(item.scheduledFor); return Number.isFinite(scheduled.getTime()) && new Intl.DateTimeFormat("en-CA",{timeZone:"Africa/Gaborone"}).format(scheduled) === new Intl.DateTimeFormat("en-CA",{timeZone:"Africa/Gaborone"}).format(new Date()); }).length
     };
   }, [appointments, adminConversations]);
 
@@ -548,6 +551,7 @@ function Dashboard() {
       <div className="panelHeading" style={{marginTop:26}}><div><span className="kicker">CUSTOMER RELATIONSHIPS</span><h2>Repeat business signal</h2></div></div>
       <p>{analytics.returningCustomers} customer identities have more than one completed visit in this 30-day request cohort. Guest identities not linked across devices may appear separately.</p>
       <div className="adminNotice" role="note"><strong>How to use this view</strong><p>Review new requests first. Check deposit screenshots in the matching private conversation, then verify the Orange Money receipt before recording a collection. Mark a visit Completed only after service delivery. Compare service trends with your diary and cash/mobile-money records before making pricing or staffing decisions.</p></div>
+      <p><small>{analytics.unknownLegacy ? analytics.unknownLegacy + " older/unknown-status record(s) in this 30-day window are excluded from appointment KPIs until their legacy status is deliberately mapped." : "No unknown legacy statuses found in this 30-day window."}</small></p>
       <p><small>Source: live authorized appointment documents. Vercel Analytics and Speed Insights measure browsing/performance—not customers, bookings or money. Firebase records remain the operational source of truth. No customer names, phone numbers, booking IDs or private message content are sent to analytics.</small></p>
     </section> : tab === "appointments" ? <section id="admin-appointments" className="adminPanel" style={{scrollMarginTop:16}}>
       <div className="panelHeading"><div><span className="kicker">THE APPOINTMENT QUEUE</span><h2>Appointments</h2></div><span className="jtsQueueCount">{openAppointments.length} active</span></div>
