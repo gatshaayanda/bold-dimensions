@@ -544,7 +544,7 @@ function Dashboard() {
       <button className={tab === "styleFeed" ? "active" : ""} onClick={() => setTab("styleFeed")}>John&apos;s style feed · photos &amp; videos</button>
     </nav>
     {loading ? <section className="adminPanel"><p>Loading JTS Operations…</p></section> : tab === "overview" ? <section id="admin-overview" className="adminPanel jtsOpsOverview" style={{scrollMarginTop:16}}>
-      <div className="jtsOpsSectionHead"><div><span className="kicker">THE SALON DIARY · TODAY</span><h2>Today's appointments</h2></div><button type="button" className="jtsOpsTextAction" onClick={() => setTab("appointments")}>All appointments ↗</button></div>
+      <div className="jtsOpsSectionHead"><div><span className="kicker">THE SALON DIARY · TODAY</span><h2>Today&apos;s appointments</h2></div><button type="button" className="jtsOpsTextAction" onClick={() => setTab("appointments")}>All appointments ↗</button></div>
       {todayDiary.length ? <div className="jtsOpsDiaryList">{todayDiary.map(item => {
         const revealSensitive = revealedAppointments[item.id] === true;
         const serviceName = (item.items || []).map(service => service.name || "Service").join(" · ") || "Appointment";
