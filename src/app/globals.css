@@ -1749,3 +1749,12 @@ input, select, textarea, button {
  .jtsPrivateComposer>button{width:100%;justify-self:stretch}
  .jtsPrivateUpload{min-height:42px;align-items:center}
 }
+
+
+/* Admin privacy controls: appointment customer details are concealed by default. */
+.jtsSensitiveHeading{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.jtsSensitiveHeading h3{margin:0;min-width:0}
+.jtsSensitiveToggle{min-height:40px;padding:9px 13px;border:1px solid #806b42;border-radius:9px;background:#211b10;color:#f0d58a;font-size:.72rem;font-weight:800;line-height:1.2;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.jtsSensitiveToggle:focus-visible{outline:2px solid #f0d58a;outline-offset:3px}
+.jtsSensitiveMasked{color:#bdb5a8!important;letter-spacing:.04em}
+@media(max-width:560px){.jtsSensitiveHeading{align-items:stretch;flex-direction:column}.jtsSensitiveToggle{width:100%;min-height:44px}}
