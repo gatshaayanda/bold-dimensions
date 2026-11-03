@@ -550,7 +550,7 @@ function Dashboard() {
         return <article key={item.id} className="jtsOpsDiaryRow">
           <time>{new Date(item.scheduledFor!).toLocaleTimeString("en-GB", {hour:"2-digit",minute:"2-digit",timeZone:"Africa/Gaborone"})}</time>
           <div><strong>{revealSensitive ? (item.customerName || "Customer") : "Customer ·••••"}</strong><span>{serviceName} · {money(item.total)}</span></div>
-          <span className="jtsAppointmentStatus status-{item.status?.toLowerCase().replace(/[^a-z]+/g, "-")}">{item.status}</span>
+          <span className={"jtsAppointmentStatus status-" + (item.status || "").toLowerCase().replace(/[^a-z]+/g, "-")}>{item.status}</span>
           <button type="button" className="jtsSensitiveToggle" aria-pressed={revealSensitive} onClick={() => setRevealedAppointments(current => ({...current,[item.id]:!current[item.id]}))}>{revealSensitive ? "Hide" : "Show"}</button>
         </article>;
       })}</div> : <div className="jtsOpsDiaryEmpty"><strong>No confirmed appointments today.</strong><span>New requests are not part of the diary until John confirms the slot and deposit.</span></div>}
