@@ -183,14 +183,16 @@ export default function AccountPage() {
   const visibleOrders = showAllBookings ? recentOrders : recentOrders.slice(0, INITIAL_BOOKINGS_VISIBLE);
 
   return <main className="jtsBookingPage jtsStyleAccount"><div className="jtsContainer jtsBookingWrap">
-    <div className="jtsBookingTop"><Link href="/" className="jtsBack">← John The Stylist Bw</Link><div className="jtsAccountTopLinks"><Link href="/feed" className="jtsGhost">Style feed ↗</Link><Link href="/order" className="jtsGhost">Book appointment</Link></div></div>
+    <div className="jtsBookingTop jtsAccountAppBar"><Link href="/" className="jtsAccountWordmark"><span className="jtsAccountWordmarkMark">J</span><span>JOHN THE STYLIST <small>BW</small></span></Link><div className="jtsAccountTopLinks"><Link href="/feed" className="jtsGhost">Style feed ↗</Link><Link href="/order" className="jtsButton jtsButtonGold">Book appointment <span aria-hidden="true">↗</span></Link></div></div>
 
-    <header className="jtsAccountHero jtsAccountUtilityHero jtsAccountLivingHero">
-      <span className="jtsEyebrow">YOUR JOHN THE STYLIST BW SPACE</span>
-      <h1>My JTS.</h1>
-      <p>Your appointments, conversations with John and style history — together.</p>
-      <div className="jtsAccountHeroActions"><Link href="/order" className="jtsButton jtsButtonGold">Book a style ↗</Link><Link href="/feed" className="jtsGhost">Explore the style feed</Link></div>
+    <header className="jtsAccountHero jtsAccountUtilityHero jtsAccountLivingHero jtsAccountCompactHero">
+      <div><span className="jtsEyebrow">YOUR PERSONAL SALON SPACE</span><h1>My JTS<span>.</span></h1><p>Your appointments, messages and style history.</p></div>
+      <div className="jtsAccountHeroSeal" aria-hidden="true"><span>J</span><small>STYLE<br/>RECORD</small></div>
     </header>
+    <nav className="jtsAccountLaunchGrid" aria-label="Your JTS shortcuts">
+      <a href="#account-private-title" className="jtsAccountLaunchCard"><span className="jtsAccountLaunchIcon" aria-hidden="true">✉</span><span><strong>Private inbox</strong><small>Talk with John</small></span><b aria-hidden="true">↗</b></a>
+      <a href="#account-history-title" className="jtsAccountLaunchCard"><span className="jtsAccountLaunchIcon" aria-hidden="true">▤</span><span><strong>Style history</strong><small>Your past bookings</small></span><b aria-hidden="true">↗</b></a>
+    </nav>
 
     {(error || message) && <p className={error ? "jtsFormError" : "jtsStyleStatus"} role="status" aria-live="polite">{error || message}</p>}
 
@@ -204,7 +206,7 @@ export default function AccountPage() {
           : <><p>Sign in to access saved bookings, or continue with a guest session on this device.</p><button className="googleSignInButton jtsAccountGoogleButton" type="button" onClick={() => void connectGoogle()} disabled={!ready || busy}><GoogleBrandMark />{busy ? "Connecting…" : "Continue with Google"}</button><div className="jtsAccountAuthFallback"><span>Prefer not to sign in?</span><button type="button" className="jtsStyleTextLink" onClick={() => void startGuest()} disabled={!ready || busy}>Open guest booking history</button></div></>}
     </section>
 
-    <section className="jtsStyleNext jtsAccountNext" aria-labelledby="account-next-title">
+    <section className="jtsStyleNext jtsAccountNext jtsAccountFocus" aria-labelledby="account-next-title">
       <div className="jtsAccountNextHeading"><span className="jtsEyebrow">{nextOrderIsConfirmed ? "YOUR NEXT APPOINTMENT" : "YOUR NEXT REQUEST"}</span>
         {nextOrder ? <><h2 id="account-next-title">{nextOrder.items.map(item => item.name).join(" · ")}</h2><p>{dateText(nextOrder.scheduledFor)}</p><span className="jtsAccountStatus">{label(nextOrder.status)}</span><small>Ref #{nextOrder.id.slice(0, 8).toUpperCase()}</small></>
         : <><h2 id="account-next-title">Your next style starts here.</h2><p>Choose a service and request a date that works for you.</p></>}
@@ -216,7 +218,7 @@ export default function AccountPage() {
       <p className="jtsAccountTruth">A request is not confirmed until John confirms the slot and verifies the deposit.</p>
     </section>
 
-    <section className="jtsAccountPrivateInbox" id="account-payment-proof" aria-labelledby="account-private-title">
+    <section className="jtsAccountPrivateInbox jtsAccountSecondarySection" id="account-payment-proof" aria-labelledby="account-private-title">
       <div className="jtsAccountUtilityHeading"><div><span className="jtsEyebrow">PRIVATE INBOX</span><h2 id="account-private-title">Talk with John</h2><p className="jtsAccountInboxIntro">Replies, appointment questions and payment proof stay in the private conversation linked to your booking.</p></div><span className="jtsAccountLiveDot">Private</span></div>
       {!user ? <div className="jtsStyleEmpty"><p>Connect your account or open your guest booking history to see private appointment conversations.</p></div>
       : !ready ? <div className="jtsStyleEmpty">Loading your appointment messages…</div>
@@ -233,7 +235,7 @@ export default function AccountPage() {
       <p className="jtsAccountNotificationNote">Messages and payment screenshots are private to you and authorized JTS staff. A screenshot is not payment verification; John checks the Orange Money account.</p>
     </section>
 
-    <section className="jtsStyleHistory" aria-labelledby="account-history-title"><div className="jtsStyleSectionHead"><div><span className="jtsEyebrow">YOUR RECORD</span><h2 id="account-history-title">Your style history</h2><p>{orders.length} {orders.length === 1 ? "booking record" : "booking records"} saved here. Reopen any one to see its details and conversation.</p></div><Link href="/order" className="jtsStyleTextLink">New booking ↗</Link></div>
+    <section className="jtsStyleHistory jtsAccountSecondarySection" aria-labelledby="account-history-title"><div className="jtsStyleSectionHead"><div><span className="jtsEyebrow">YOUR RECORD</span><h2 id="account-history-title">Your style history</h2><p>{orders.length} {orders.length === 1 ? "booking record" : "booking records"} saved here. Reopen any one to see its details and conversation.</p></div><Link href="/order" className="jtsStyleTextLink">New booking ↗</Link></div>
       {!user ? <div className="jtsStyleEmpty"><p>Open your private booking session above to load your history.</p></div>
       : !ready ? <div className="jtsStyleEmpty">Loading your bookings…</div>
       : orders.length > 0 ? <><div className="jtsStyleBookingList">{visibleOrders.map(order => <article key={order.id} className="jtsBookingRow jtsStyleBookingRow"><div><span className="jtsEyebrow">{label(order.status)}</span><h3>{order.items.map(item => item.name).join(" · ")}</h3><p>{dateText(order.scheduledFor)}</p><small>Reference #{order.id.slice(0, 8).toUpperCase()} · {order.status}</small></div><Link href={"/orders/" + order.id} className="jtsGhost">Details ↗</Link></article>)}</div>{recentOrders.length > INITIAL_BOOKINGS_VISIBLE && <button type="button" className="jtsAccountShowBookings" onClick={() => setShowAllBookings(value => !value)}>{showAllBookings ? "Show recent bookings" : "View all " + recentOrders.length + " bookings"}</button>}</>
