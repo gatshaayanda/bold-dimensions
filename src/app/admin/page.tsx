@@ -597,7 +597,7 @@ function Dashboard() {
         <p>{analytics.unknownLegacy ? analytics.unknownLegacy + " older/legacy record(s) in this 30-day window are excluded from appointment KPIs until their identity and status are deliberately mapped." : "No unknown legacy records found in this 30-day window."}</p>
         <p>Source: authorized appointment documents in Firebase. Vercel Analytics and Speed Insights measure browsing and performance, not customers, bookings or money. Customer names, phone numbers, booking IDs and private message content are not sent to analytics.</p>
       </details>
-    </section>tab === "appointments" ? <section id="admin-appointments" className="adminPanel" style={{scrollMarginTop:16}}>
+    </section> : tab === "appointments" ? <section id="admin-appointments" className="adminPanel" style={{scrollMarginTop:16}}>
       <div className="panelHeading"><div><span className="kicker">THE APPOINTMENT QUEUE</span><h2>Appointments</h2></div><span className="jtsQueueCount">{openAppointments.length} active</span></div>
       {appointments.length === 0 ? <div className="emptyState"><h3>No appointment requests yet</h3><p>New requests submitted through the JTS booking form will appear here.</p></div> : <div className="queue">
         {appointments.map(item => {
