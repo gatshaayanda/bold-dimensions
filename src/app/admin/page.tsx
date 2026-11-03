@@ -401,7 +401,7 @@ function Dashboard() {
       return Number.isFinite(created) && created >= now - 30 * 24 * 60 * 60 * 1000;
     });
     const knownStatuses = ["New", "Reviewing", "Accepted", "Confirmed", "In service", "Completed", "Cancelled"];
-    const recent = periodRecords.filter(item => !item.status || knownStatuses.includes(item.status));
+    const recent = periodRecords.filter(item => (item.instructions || "").startsWith("APPOINTMENT REQUEST.") && (!item.status || knownStatuses.includes(item.status)));
     const unknownLegacy = periodRecords.length - recent.length;
     const completed = recent.filter(item => item.status === "Completed");
     const customerVisits = new Map<string, number>();
@@ -551,7 +551,7 @@ function Dashboard() {
       <div className="panelHeading" style={{marginTop:26}}><div><span className="kicker">CUSTOMER RELATIONSHIPS</span><h2>Repeat business signal</h2></div></div>
       <p>{analytics.returningCustomers} customer identities have more than one completed visit in this 30-day request cohort. Guest identities not linked across devices may appear separately.</p>
       <div className="adminNotice" role="note"><strong>How to use this view</strong><p>Review new requests first. Check deposit screenshots in the matching private conversation, then verify the Orange Money receipt before recording a collection. Mark a visit Completed only after service delivery. Compare service trends with your diary and cash/mobile-money records before making pricing or staffing decisions.</p></div>
-      <p><small>{analytics.unknownLegacy ? analytics.unknownLegacy + " older/unknown-status record(s) in this 30-day window are excluded from appointment KPIs until their legacy status is deliberately mapped." : "No unknown legacy statuses found in this 30-day window."}</small></p>
+      <p><small>{analytics.unknownLegacy ? analytics.unknownLegacy + " older/legacy record(s) in this 30-day window are excluded from appointment KPIs until their appointment identity and status are deliberately mapped." : "No unknown legacy statuses found in this 30-day window."}</small></p>
       <p><small>Source: live authorized appointment documents. Vercel Analytics and Speed Insights measure browsing/performance—not customers, bookings or money. Firebase records remain the operational source of truth. No customer names, phone numbers, booking IDs or private message content are sent to analytics.</small></p>
     </section> : tab === "appointments" ? <section id="admin-appointments" className="adminPanel" style={{scrollMarginTop:16}}>
       <div className="panelHeading"><div><span className="kicker">THE APPOINTMENT QUEUE</span><h2>Appointments</h2></div><span className="jtsQueueCount">{openAppointments.length} active</span></div>
