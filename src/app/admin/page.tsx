@@ -75,6 +75,7 @@ function Dashboard() {
   const [uploadPercent, setUploadPercent] = useState(0);
   const [deleteTarget, setDeleteTarget] = useState<DeleteTarget | null>(null);
   const [privateThreads, setPrivateThreads] = useState<Record<string,string>>({});
+  const [revealedAppointments, setRevealedAppointments] = useState<Record<string, boolean>>({});
   const [adminConversations, setAdminConversations] = useState<Conversation[]>([]);
   const [threadOpening, setThreadOpening] = useState<string>("");
   const mediaUploadingRef = useRef(false);
@@ -476,6 +477,7 @@ function Dashboard() {
       {appointments.length === 0 ? <div className="emptyState"><h3>No appointment requests yet</h3><p>New requests submitted through the JTS booking form will appear here.</p></div> : <div className="queue">
         {appointments.map(item => {
           const status = item.status || "New";
+          const revealSensitive = revealedAppointments[item.id] === true;
           const serviceName = (item.items || []).map(service => service.name || "Service").join(" · ") || "Appointment request";
           const rawPhoneDigits = (item.phone || "").replace(/\D/g, "");
           const phoneDigits = rawPhoneDigits.length === 8 ? "267" + rawPhoneDigits : rawPhoneDigits;
@@ -484,13 +486,13 @@ function Dashboard() {
           return <article className={"queueRow jtsAppointmentCard jtsAppointment-" + status.toLowerCase().replace(/[^a-z]+/g, "-")} key={item.id}>
             <div className="jtsAppointmentMain">
               <div className="jtsAppointmentTop"><span className="kicker">#{item.id.slice(0, 8).toUpperCase()}</span><span className={"jtsAppointmentStatus status-" + status.toLowerCase().replace(/[^a-z]+/g, "-")}>{status}</span></div>
-              <h3>{item.customerName || "Customer"}</h3>
+              <div className="jtsSensitiveHeading"><h3>{revealSensitive ? (item.customerName || "Customer") : "Customer ·••••"}</h3><button type="button" className="jtsSensitiveToggle" aria-pressed={revealSensitive} onClick={() => setRevealedAppointments(current => ({ ...current, [item.id]: !current[item.id] }))}>{revealSensitive ? "Hide private details" : "Show private details"}</button></div>
               <p className="jtsAppointmentService">{serviceName}</p>
               <div className="jtsAppointmentFacts"><span>◷ {dateText(item.scheduledFor)}</span><strong>{money(item.total)}</strong></div>
-              {item.phone && <a className="jtsAppointmentContact" href={phoneDigits ? "https://wa.me/" + phoneDigits : "tel:" + item.phone}>↗ WhatsApp · {item.phone}</a>}
+              {item.phone && (revealSensitive ? <a className="jtsAppointmentContact" href={phoneDigits ? "https://wa.me/" + phoneDigits : "tel:" + item.phone}>↗ WhatsApp · {item.phone}</a> : <p className="jtsAppointmentContact jtsSensitiveMasked" aria-label="Customer phone number masked">☎ Phone · •••• ••••</p>)}
               <div className="jtsAppointmentProgress" aria-label={"Appointment progress: " + status}><span style={{width: progress + "%"}}/></div>
               <small className="jtsAppointmentNext">{guidance}</small>
-              {item.instructions && <details className="jtsAppointmentDetails"><summary>View booking notes &amp; deposit</summary><p>{item.instructions}</p><small>50% deposit · Orange Money 75720306 · John Shumba</small></details>}
+              {item.instructions && <details className="jtsAppointmentDetails"><summary>{revealSensitive ? "View booking notes & deposit" : "Booking notes & deposit · masked"}</summary>{revealSensitive ? <><p>{item.instructions}</p><small>50% deposit · Orange Money 75720306 · John Shumba</small></> : <p className="jtsSensitiveMasked">Private booking notes and customer-provided details are hidden until you reveal them.</p>}</details>}
               <div className="jtsAppointmentPrivate">
                 <button type="button" className="button buttonLight" disabled={threadOpening===item.id||!item.customerId} onClick={()=>void openPrivateThread(item)}>{threadOpening===item.id?"Opening…":adminConversations.some(conversation=>conversation.bookingId===item.id&&conversation.unreadForAdmin&&conversation.lastMessagePreview.startsWith("DEPOSIT PROOF SUBMITTED"))?"Review new customer upload ↗":privateThreads[item.id]?"Open private reply":"Reply privately ↗"}</button>
                 {!item.customerId&&<small>Private reply unavailable: customer identity missing from this booking.</small>}
