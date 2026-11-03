@@ -821,3 +821,95 @@ The account phase is a refinement of the existing foundation, not a rewrite. Nev
 - My JTS uses black, metallic gold, warm white and silver. The account identity stays compact; the real next request/confirmed appointment is the focal task; private inbox and style history are secondary shortcuts; full message/history content remains available in its existing authorized sections.
 - Preserve guest/Google identity, UID-scoped Firebase reads, same booking-linked private conversation IDs, unread/read state, private media/payment proof, status truth, Gaborone timezone, booking routes, analytics events, and all existing actions. This visual pass must not alter schema, rules, booking/payment writes, UploadThing authorization, PWA/install or offline behavior.
 - Keep the account compact at phone widths, with clear section separation and accessible focus/touch targets. Verify no horizontal overflow and test the actual customer/admin conversation together; build success alone is not device or end-to-end QA.
+
+## Visible work, loading and operational transparency — 2026-11-03
+
+This section establishes a cross-cutting UX and reliability standard for the existing JTS application. It applies to customer-facing routes, booking, My Account, private conversations, public discovery, Operations/admin, media workflows and offline recovery. It is a refinement of the existing product, not permission to replace working architecture.
+
+### Product principle
+- Make genuine application work understandable. Do not manufacture effort, add artificial delays, fake progress, invent activity or make the application slower to increase perceived value.
+- Explain operations in ordinary customer/business language: checking availability, retrieving bookings, saving a request, uploading an attachment, sending a private reply or synchronising an offline change.
+- Keep the interface calm, concise, mobile-first and consistent with the JTS black, metallic-gold, white and silver identity. One clear task at a time; no decorative progress theatre or unnecessary dashboards.
+
+### Loading and asynchronous states
+- Important asynchronous sections must distinguish initial loading, successfully loaded content, a genuinely empty result, refresh/revalidation where relevant, and failure.
+- Prefer content-shaped skeletons for known content layouts and restrained activity indicators for operations with indeterminate duration. Never display a fabricated percentage for Firestore reads, authentication, message delivery or other operations without measurable progress.
+- Replace vague whole-page loading copy with specific, contextual descriptions where useful (for example, checking appointment availability, retrieving private messages, loading appointment history or refreshing today's requests).
+- Avoid blank screens and avoid showing an empty-state message before the initial subscription/read has resolved.
+- Keep independent data sources independently understandable. A failure to load reviews must not imply that bookings failed; a slow inbox must not hide already-loaded appointment information.
+- Do not keep showing an endless spinner after a terminal error. Surface the affected section's failure and a relevant retry/recovery action.
+- Respect reduced-motion preferences; loading animation must be subtle and never essential to understanding state.
+
+### Booking, saving and offline synchronisation truth
+- Distinguish clearly between local draft/input state, locally saved/offline-pending data, backend-synchronised data, an appointment request received by JTS, a staff-confirmed appointment and a verified deposit.
+- A local Firestore persistence acknowledgement is not proof that John or staff has received the request. Offline confirmation language must say that the request is saved on this device and waiting to synchronise.
+- Where the existing persistence APIs permit reliable observation, reflect the actual pending-write/synchronisation state and update the customer when the backend acknowledges it. Do not infer delivery merely because the device comes back online.
+- If a write fails, preserve recoverable customer input/local reference where safe, explain what failed and provide a safe retry. Prevent accidental duplicate booking creation when retrying; inspect existing idempotency/record identity before changing writes.
+- Keep the current request-vs-confirmation, one-day advance booking, availability and 50% deposit rules. A submitted request is not a confirmed appointment; a payment screenshot is not verified payment.
+- Do not alter Firestore schema, security rules, authentication, booking IDs, guest identity continuity or offline persistence merely to improve the presentation. Any required data-contract change needs a separate explicit review and migration/compatibility plan.
+
+### Private communications and attachments
+- Conversation UI must have distinct initial-loading, loaded-with-messages, genuinely-empty, refresh/error and retry states. Never show “No messages yet” while the first subscription is still unresolved.
+- Keep customer and staff views connected to the exact same authorized booking conversation. Preserve customer UID scoping, staff authorization, unread/read state and existing conversation ownership.
+- Sending, upload completion, message persistence and recipient visibility are different events. Use accurate feedback; do not say “sent” until the message write is acknowledged. Do not claim a staff member has read a message unless the existing read-state record confirms it.
+- Attachment upload progress may show a percentage only when the upload provider supplies measurable progress. After upload, distinguish “uploaded/attached” from “message sent” and from any staff verification.
+- Failed sends/uploads/read-state updates need contextual errors and safe retry/recovery. Avoid silently discarding a draft or already-uploaded attachment when a later step fails.
+- Payment proof remains evidence submitted for review, never proof of funds received. Only authorized staff can verify payment.
+
+### Public discovery and customer engagement
+- Public services, category media and style feed should distinguish loading, available content, no published content and temporary failure. Offer retry where a transient retrieval failure can reasonably be retried.
+- Use genuine authorized JTS/customer media only. Do not show stock/generated imagery as salon work, fabricate reviews, popularity or engagement, or expose private customer content.
+- Keep service names, prices, booking links and booking truth visible and consistent with the canonical 17-service catalogue.
+- Public analytics events must remain coarse, privacy-safe, best-effort and PII-free. Never send names, contact details, UIDs, booking references/IDs, exact appointment times, message text, media URLs or payment information to analytics.
+- Do not equate views, clicks or feed engagement with bookings, confirmed appointments, completed services or revenue. Reconcile business metrics against authorized source records.
+
+### Operations/admin feedback
+- Give independently loaded operational areas their own truthful loading, empty and failure states where appropriate; one subscription's failure must not falsely describe the entire Operations workspace as unavailable.
+- Confirm consequential actions with precise outcomes: appointment status saved, service changes saved, media uploaded, post published/drafted, reply sent, or reconciliation entry recorded. Acknowledge only after the corresponding operation succeeds.
+- Disable duplicate-submit controls while an action is genuinely in progress, but always provide visible progress/working feedback and restore controls after success/failure.
+- Provide contextual retry for recoverable reads/writes. Do not use a generic toast as the only explanation for a failed critical action.
+- Preserve the existing role-controlled admin boundary and sensitive-data masking. Never expose customer private information in public surfaces or analytics.
+- Financial feedback must distinguish an admin-entered reconciliation record from independently verified money received. Do not label requested or confirmed service value as revenue.
+
+### Error, recovery and identity consistency
+- All error and recovery surfaces must use the sole customer-facing identity “John The Stylist Bw”; remove inherited BOEMO, NAMANE TYRES or other unrelated customer-visible branding when those surfaces are next safely touched.
+- Errors should identify the affected task, state whether existing data/input remains safe, and offer a useful next step (retry, reconnect, sign in again or contact John) where supported.
+- Keep technical diagnostics out of ordinary customer copy. Authorized diagnostics may be available in a restrained expandable technical detail area; never expose tokens, credentials, private records or sensitive backend payloads.
+- Do not silently swallow failures that leave the user uncertain. Log only minimal non-sensitive diagnostics; never log credentials, tokens, message contents, payment evidence or unnecessary personal data.
+- Error boundaries, offline fallbacks and not-found/recovery screens must be branded, accessible and consistent with the actual recovery capability.
+
+### Analytics and customer value
+- Keep three distinct information boundaries: public discovery analytics (coarse aggregates), a customer's own operational account information, and authorized staff/business reporting.
+- Customer account screens are personal utility, not a cross-customer analytics dashboard. Customers may see only their own records and private conversation state.
+- Public/admin analytics must follow the existing `docs/ANALYTICS-MEASUREMENT-PLAN.md` definitions and privacy restrictions. Add missing public feed/lookbook engagement and booking-funnel events only after checking existing event names to avoid duplication.
+- Use Vercel Analytics/Speed Insights and existing authorized operational records; do not add another analytics vendor or client-writable public event collection without explicit approval.
+- Do not invent counts, response times, delivery receipts, popularity, conversion, revenue or productivity improvements. Distinguish measured facts from illustrative examples.
+
+### PWA and service-worker protection
+- PWA installation, offline caching, Firebase messaging, service-worker scope, cache versioning and update lifecycle are protected infrastructure.
+- This UX standard does not authorize changing `beforeinstallprompt`, install card behavior, iOS guidance, service-worker activation/reload behavior, cache strategy, notification delivery or offline data handling.
+- The current service-worker update behavior must be audited against the explicit waiting-worker/refresh requirement before any change. Resolve the discrepancy in a separate, isolated change with dedicated install/offline/update QA; do not silently change it as part of loading-state work.
+- A successful browser notification permission request or saved token is not proof that a notification was delivered or read.
+
+### Implementation and verification sequence
+1. Inspect the exact component, data source, subscription/write lifecycle, existing state and security boundary before editing. Reuse existing APIs and event names where possible.
+2. Correct inherited visible branding and naming without risky infrastructure renames.
+3. Standardize loading/empty/error/retry states for public feed, booking availability, My Account sections and Operations sections.
+4. Add conversation initial-loading and safe retry states; verify same-thread customer/staff communication and unread/read behavior.
+5. Improve booking write acknowledgement and offline-pending/synchronised/failed messaging only where the actual Firestore persistence lifecycle can be observed reliably.
+6. Standardize real UploadThing progress and distinguish upload, message send and payment review states.
+7. Complete the privacy-safe public engagement/booking funnel measurement only after auditing the existing event contract.
+8. Review PWA waiting-worker/update behavior separately; do not bundle an unapproved lifecycle change.
+
+### Release gates
+- Test initial loading versus genuinely empty results for every affected subscription.
+- Test transient read failure and successful retry; verify independent sections remain usable.
+- Test booking submission online, offline, reconnection, eventual acknowledgement, failed write and retry without duplicate records.
+- Test conversation first load, empty thread, existing messages, new staff/customer reply, unread/read update, failed send and image/video attachment progress/recovery.
+- Test public feed/service loading, empty and unavailable states, including mobile layouts.
+- Test admin action feedback for appointment updates, service saves, media uploads, publishing, private replies and reconciliation.
+- Verify no PII leaks into analytics/logs and no customer can read another customer's records.
+- Verify all customer-facing error/offline surfaces use John The Stylist Bw identity.
+- Preserve guest booking, Google-linked account continuity, appointment/deposit truth, Firebase rules/schema/auth, UploadThing authorization and PWA install/offline behavior unless a separately approved task explicitly changes them.
+- Run identity verification, `npx tsc --noEmit`, lint, production build and inspect the final diff. Then perform preview QA on real mobile layouts and critical customer/admin journeys. A build is not a substitute for device/end-to-end QA; report exactly what was and was not tested.
+
