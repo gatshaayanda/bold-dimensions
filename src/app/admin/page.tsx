@@ -510,9 +510,9 @@ function Dashboard() {
       <div><span className="kicker">JOHN THE STYLIST BW · OPERATIONS</span><h1>Run the appointments.</h1><p>Today’s appointments, one clear action at a time.</p></div>
       <Link href="/" className="button buttonLight">View customer app</Link>
     </header>
-    <section className="jtsAdminWelcome" aria-labelledby="jts-admin-welcome-title">
-      <div><span className="jtsEyebrow">A CLEAR VIEW OF THE DAY</span><h2 id="jts-admin-welcome-title">{(() => { const hour = Number(new Intl.DateTimeFormat("en-GB", { timeZone: "Africa/Gaborone", hour: "2-digit", hourCycle: "h23" }).format(new Date())); return (hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening") + ", " + (adminName || "Boss") + "."; })()}</h2><p>{appointments.filter(item => !item.status || item.status === "New").length ? "You have " + appointments.filter(item => !item.status || item.status === "New").length + " new appointment request" + (appointments.filter(item => !item.status || item.status === "New").length === 1 ? "" : "s") + " to review." : "No new appointment requests need your attention right now. You can check availability or refresh the style catalogue."}</p></div>
-      <div className="jtsAdminWelcomeActions"><button type="button" className="button buttonPrimary" onClick={() => { setTab("appointments"); track("jts_admin_priority_action", { action: "review_appointments" }); }}>Review requests ↗</button><button type="button" className="button buttonLight" onClick={() => { setTab("services"); track("jts_admin_priority_action", { action: "manage_services" }); }}>Services &amp; prices</button></div>
+    <section className="jtsOpsPriority" aria-label="Priority actions">
+      <div><span className="jtsEyebrow">TODAY AT JTS</span><strong>{appointments.filter(item => !item.status || item.status === "New").length} requests need review</strong></div>
+      <div className="jtsOpsPriorityActions"><button type="button" className="button buttonPrimary" onClick={() => { setTab("appointments"); track("jts_admin_priority_action", { action: "review_appointments" }); }}>Review requests</button><button type="button" className="button buttonLight" onClick={() => { setTab("services"); track("jts_admin_priority_action", { action: "manage_services" }); }}>Services &amp; prices</button></div>
     </section>
     {notice && <div className={"notice adminNotice adminNotice-" + (/could not|not saved|failed|denied|expired|choose |exceeds|must be an image|enter a valid|temporarily unavailable|try again|no media was uploaded|upload failed|not be saved/i.test(notice) ? "error" : /saved|uploaded|updated|removed|published|available for|marked unavailable|reopened/i.test(notice) ? "success" : "info")} role={/could not|not saved|failed|denied|expired|choose |exceeds|must be an image|enter a valid|temporarily unavailable|try again|no media was uploaded|upload failed|not be saved/i.test(notice) ? "alert" : "status"} aria-live="polite"><span className="adminNoticeIcon" aria-hidden="true">{/could not|not saved|failed|denied|expired|choose |exceeds|must be an image|enter a valid|temporarily unavailable|try again|no media was uploaded|upload failed|not be saved/i.test(notice) ? "!" : /saved|uploaded|updated|removed|published|available for|marked unavailable|reopened/i.test(notice) ? "✓" : "i"}</span><span className="adminNoticeText">{notice}</span><button type="button" className="adminNoticeDismiss" aria-label="Dismiss notification" onClick={() => setNotice("")}>×</button></div>}
     <section className="stats jtsAdminStats">
@@ -529,30 +529,49 @@ function Dashboard() {
       <button className={tab === "services" ? "active" : ""} onClick={() => setTab("services")}>Services & prices</button>
       <button className={tab === "styleFeed" ? "active" : ""} onClick={() => setTab("styleFeed")}>John&apos;s style feed · photos &amp; videos</button>
     </nav>
-    {loading ? <section className="adminPanel"><p>Loading JTS operations…</p></section> : tab === "overview" ? <section id="admin-overview" className="adminPanel" style={{scrollMarginTop:16}}>
-      <div className="panelHeading"><div><span className="kicker">BUSINESS PULSE · LAST 30 DAYS</span><h2>What&apos;s happening</h2></div><span>{analytics.recent.length} requests</span></div>
-      <p style={{marginTop:0}}>Live operational figures from appointment records in Firebase. Rolling 30 days, Botswana business context. These are requests and admin-recorded collections, not independently verified bank statements.</p>
-      <div className="stats jtsAdminStats">
-        <article><span>New requests</span><strong>{analytics.newRequests}</strong></article><article><span>Confirmed / in service</span><strong>{analytics.confirmed}</strong></article><article><span>Completed visits</span><strong>{analytics.completedCount}</strong></article><article><span>Cancelled</span><strong>{analytics.cancelled}</strong></article>
+    {loading ? <section className="adminPanel"><p>Loading JTS Operations…</p></section> : tab === "overview" ? <section id="admin-overview" className="adminPanel jtsOpsOverview" style={{scrollMarginTop:16}}>
+      <div className="jtsOpsSectionHead"><div><span className="kicker">BUSINESS PULSE · 30 DAYS</span><h2>Overview</h2></div><span className="jtsOpsLiveLabel"><i /> Live Firebase records</span></div>
+      <div className="jtsOpsMetricGrid" aria-label="Appointment activity">
+        <article><span>New requests</span><strong>{analytics.newRequests}</strong></article>
+        <article><span>Confirmed / in service</span><strong>{analytics.confirmed}</strong></article>
+        <article><span>Completed visits</span><strong>{analytics.completedCount}</strong></article>
+        <article><span>Cancelled</span><strong>{analytics.cancelled}</strong></article>
       </div>
-      <div className="panelHeading" style={{marginTop:24}}><div><span className="kicker">WHAT NEEDS YOUR ATTENTION</span><h2>Today&apos;s action queue</h2></div></div>
-      <div className="stats jtsAdminStats">
-        <article><span>New requests to review</span><strong>{analytics.newRequests}</strong></article><article><span>Deposit proofs to check</span><strong>{analytics.proofsAwaitingReview}</strong></article><article><span>Unread customer replies</span><strong>{analytics.unreadMessages}</strong></article><article><span>Confirmed today</span><strong>{analytics.todayConfirmed}</strong></article>
+
+      <div className="jtsOpsSectionHead jtsOpsSubhead"><div><span className="kicker">ACTION QUEUE</span><h2>Needs attention</h2></div><button type="button" className="jtsOpsTextAction" onClick={() => setTab("appointments")}>Open queue ↗</button></div>
+      <div className="jtsOpsActionGrid">
+        <button type="button" onClick={() => setTab("appointments")}><strong>{analytics.newRequests}</strong><span>Requests to review</span></button>
+        <button type="button" onClick={() => setTab("appointments")}><strong>{analytics.proofsAwaitingReview}</strong><span>Deposit proofs</span></button>
+        <button type="button" onClick={() => setTab("appointments")}><strong>{analytics.unreadMessages}</strong><span>Unread replies</span></button>
+        <button type="button" onClick={() => setTab("appointments")}><strong>{analytics.todayConfirmed}</strong><span>Confirmed today</span></button>
       </div>
-      <div className="queueActions"><button type="button" className="button buttonPrimary" onClick={() => setTab("appointments")}>Open appointment queue ↗</button></div>
-      <div className="panelHeading" style={{marginTop:24}}><div><span className="kicker">FINANCIAL RECONCILIATION · BWP</span><h2>Requested vs collected</h2></div></div>
-      <div className="stats jtsAdminStats">
-        <article><span>Requested service value*</span><strong>{money(analytics.requestedValue)}</strong></article><article><span>50% deposits expected*</span><strong>{money(analytics.expectedDeposits)}</strong></article><article><span>Deposit recorded received</span><strong>{money(analytics.recordedDeposits)}</strong></article><article><span>Balance recorded received</span><strong>{money(analytics.recordedBalances)}</strong></article>
+
+      <div className="jtsOpsSectionHead jtsOpsSubhead"><div><span className="kicker">FINANCIAL RECONCILIATION · BWP</span><h2>Requested vs collected</h2></div></div>
+      <div className="jtsOpsFinanceGrid">
+        <article><span>Requested value*</span><strong>{money(analytics.requestedValue)}</strong></article>
+        <article><span>50% deposits expected*</span><strong>{money(analytics.expectedDeposits)}</strong></article>
+        <article><span>Deposits received</span><strong>{money(analytics.recordedDeposits)}</strong></article>
+        <article><span>Balances received</span><strong>{money(analytics.recordedBalances)}</strong></article>
       </div>
-      <p><strong>Outstanding against requested value: {money(analytics.outstandingRecorded)}</strong> · Estimate only, not confirmed debt or revenue. Cancelled requests are excluded from requested value; recorded collections remain separately visible.</p>
-      <small>*Requested service value includes non-cancelled requests whether or not the appointment was completed. Expected deposits use the published 50% rule. Only amounts explicitly recorded by authorized staff count as collections.</small>
-      <div className="panelHeading" style={{marginTop:26}}><div><span className="kicker">WHAT CUSTOMERS ARE ASKING FOR</span><h2>Trending services</h2></div></div>
-      {analytics.serviceCounts.length ? <div className="queue">{analytics.serviceCounts.map((service,index)=><article className="queueRow" key={service.name}><div><span className="kicker">#{index+1} · LAST 30 DAYS</span><h3>{service.name}</h3><small>{service.count} requested · {money(service.value)} requested value</small></div></article>)}</div> : <p>No service demand recorded in the last 30 days yet.</p>}
-      <div className="panelHeading" style={{marginTop:26}}><div><span className="kicker">CUSTOMER RELATIONSHIPS</span><h2>Repeat business signal</h2></div></div>
-      <p>{analytics.returningCustomers} customer identities have more than one completed visit in this 30-day request cohort. Guest identities not linked across devices may appear separately.</p>
-      <p className="analyticsFootnote">Operational guide: review requests, verify deposits privately, confirm the slot, and mark visits Completed only after service. Compare trends with the salon diary before changing prices or staffing.</p>
-      <p><small>{analytics.unknownLegacy ? analytics.unknownLegacy + " older/legacy record(s) in this 30-day window are excluded from appointment KPIs until their appointment identity and status are deliberately mapped." : "No unknown legacy statuses found in this 30-day window."}</small></p>
-      <p><small>Source: live authorized appointment documents. Vercel Analytics and Speed Insights measure browsing/performance—not customers, bookings or money. Firebase records remain the operational source of truth. No customer names, phone numbers, booking IDs or private message content are sent to analytics.</small></p>
+      <p className="jtsOpsOutstanding"><strong>Outstanding against requested value: {money(analytics.outstandingRecorded)}</strong><span>Estimate only — not confirmed debt or revenue.</span></p>
+
+      <div className="jtsOpsLowerGrid">
+        <section className="jtsOpsTrendSection" aria-labelledby="jts-trending-title">
+          <div className="jtsOpsSectionHead"><div><span className="kicker">CUSTOMER DEMAND</span><h2 id="jts-trending-title">Trending services</h2></div></div>
+          {analytics.serviceCounts.length ? <ol className="jtsOpsTrendList">{analytics.serviceCounts.map((service,index)=><li key={service.name}><span className="jtsOpsRank">{index+1}</span><div><strong>{service.name}</strong><small>{service.count} requested</small></div><b>{money(service.value)}</b></li>)}</ol> : <p className="jtsOpsMuted">No service demand recorded in the last 30 days yet.</p>}
+        </section>
+        <section className="jtsOpsRelationship" aria-labelledby="jts-repeat-title">
+          <span className="kicker">CUSTOMER RELATIONSHIPS</span><h2 id="jts-repeat-title">Repeat business</h2>
+          <strong className="jtsOpsRepeatCount">{analytics.returningCustomers}</strong>
+          <p>Customer identities with more than one completed visit in this 30-day cohort.</p>
+          <small>Guest identities not linked across devices may appear separately.</small>
+        </section>
+      </div>
+      <details className="jtsOpsDefinitions"><summary>How these figures are calculated</summary>
+        <p>Requested service value includes non-cancelled requests whether or not the appointment was completed. Expected deposits use the published 50% rule. Only amounts explicitly recorded by authorized staff count as collections. Cancelled requests are excluded from requested value; recorded collections remain separately visible.</p>
+        <p>{analytics.unknownLegacy ? analytics.unknownLegacy + " older/legacy record(s) in this 30-day window are excluded from appointment KPIs until their appointment identity and status are deliberately mapped." : "No unknown legacy statuses found in this 30-day window."}</p>
+        <p>Source: live authorized appointment documents. Vercel Analytics and Speed Insights measure browsing/performance—not customers, bookings or money. Firebase records remain the operational source of truth. No customer names, phone numbers, booking IDs or private message content are sent to analytics.</p>
+      </details>
     </section> : tab === "appointments" ? <section id="admin-appointments" className="adminPanel" style={{scrollMarginTop:16}}>
       <div className="panelHeading"><div><span className="kicker">THE APPOINTMENT QUEUE</span><h2>Appointments</h2></div><span className="jtsQueueCount">{openAppointments.length} active</span></div>
       {appointments.length === 0 ? <div className="emptyState"><h3>No appointment requests yet</h3><p>New requests submitted through the JTS booking form will appear here.</p></div> : <div className="queue">
