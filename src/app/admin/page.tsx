@@ -394,6 +394,12 @@ function Dashboard() {
   }
 
   const openAppointments = useMemo(() => appointments.filter(item => !["Cancelled", "Completed"].includes(item.status || "")), [appointments]);
+  const todayKey = new Intl.DateTimeFormat("en-CA", { timeZone: "Africa/Gaborone", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
+  const todayDiary = useMemo(() => appointments.filter(item => {
+    if (!["Confirmed", "In service"].includes(item.status || "") || !item.scheduledFor) return false;
+    const scheduled = new Date(item.scheduledFor);
+    return Number.isFinite(scheduled.getTime()) && new Intl.DateTimeFormat("en-CA", { timeZone: "Africa/Gaborone" }).format(scheduled) === todayKey;
+  }).sort((a,b) => (a.scheduledFor || "").localeCompare(b.scheduledFor || "")), [appointments, todayKey]);
   const analytics = useMemo(() => {
     const now = Date.now();
     const periodRecords = appointments.filter(item => {
@@ -405,30 +411,37 @@ function Dashboard() {
     const unknownLegacy = periodRecords.length - recent.length;
     const completed = recent.filter(item => item.status === "Completed");
     const customerVisits = new Map<string, number>();
-    completed.forEach(item => { if (item.customerId) customerVisits.set(item.customerId, (customerVisits.get(item.customerId) || 0) + 1); });
+    appointments.filter(item => item.status === "Completed" && item.customerId).forEach(item => {
+      customerVisits.set(item.customerId!, (customerVisits.get(item.customerId!) || 0) + 1);
+    });
     const serviceCounts = new Map<string, { count: number; value: number }>();
-    recent.forEach(item => (item.items || []).forEach(service => {
+    recent.filter(item => item.status !== "Cancelled").forEach(item => (item.items || []).forEach(service => {
       const name = service.name || "Unspecified service";
       const entry = serviceCounts.get(name) || { count: 0, value: 0 };
       entry.count += Math.max(1, Number(service.quantity) || 1);
       entry.value += Math.max(0, Number(service.price) || 0) * Math.max(1, Number(service.quantity) || 1);
       serviceCounts.set(name, entry);
     }));
-    const requestedValue = recent.filter(item => item.status !== "Cancelled").reduce((sum, item) => sum + Math.max(0, Number(item.total) || 0), 0);
-    const expectedDeposits = recent.filter(item => item.status !== "Cancelled").reduce((sum, item) => sum + Math.round(Math.max(0, Number(item.total) || 0) * 0.5), 0);
+    const eligible = recent.filter(item => item.status !== "Cancelled");
+    const confirmedOrInService = eligible.filter(item => ["Confirmed", "In service"].includes(item.status || ""));
+    const requestedValue = eligible.reduce((sum, item) => sum + Math.max(0, Number(item.total) || 0), 0);
+    const confirmedValue = confirmedOrInService.reduce((sum, item) => sum + Math.max(0, Number(item.total) || 0), 0);
+    const completedValue = completed.reduce((sum, item) => sum + Math.max(0, Number(item.total) || 0), 0);
+    const expectedConfirmedDeposits = confirmedOrInService.reduce((sum, item) => sum + Math.round(Math.max(0, Number(item.total) || 0) * 0.5), 0);
     const recordedDeposits = recent.reduce((sum, item) => sum + Math.max(0, Number(item.reconciliation?.depositReceived) || 0), 0);
     const recordedBalances = recent.reduce((sum, item) => sum + Math.max(0, Number(item.reconciliation?.balanceReceived) || 0), 0);
-    return { recent, unknownLegacy, requestedValue, expectedDeposits, recordedDeposits, recordedBalances,
-      outstandingRecorded: Math.max(0, requestedValue - recordedDeposits - recordedBalances),
+    return {
+      recent, unknownLegacy, requestedValue, confirmedValue, completedValue, expectedConfirmedDeposits,
+      recordedDeposits, recordedBalances, collectedValue: recordedDeposits + recordedBalances,
+      depositGap: Math.max(0, expectedConfirmedDeposits - recordedDeposits),
       newRequests: recent.filter(item => !item.status || item.status === "New").length,
-      confirmed: recent.filter(item => ["Confirmed", "In service"].includes(item.status || "")).length,
+      confirmed: confirmedOrInService.length,
       cancelled: recent.filter(item => item.status === "Cancelled").length,
       completedCount: completed.length,
       returningCustomers: [...customerVisits.values()].filter(count => count > 1).length,
       serviceCounts: [...serviceCounts.entries()].map(([name,data]) => ({name,...data})).sort((a,b) => b.count-a.count).slice(0,5),
       unreadMessages: adminConversations.filter(item => item.unreadForAdmin && !item.lastMessagePreview.startsWith("DEPOSIT PROOF SUBMITTED")).length,
-      proofsAwaitingReview: adminConversations.filter(item => item.unreadForAdmin && item.lastMessagePreview.startsWith("DEPOSIT PROOF SUBMITTED")).length,
-      todayConfirmed: appointments.filter(item => { if (item.status !== "Confirmed" || !item.scheduledFor) return false; const scheduled = new Date(item.scheduledFor); return Number.isFinite(scheduled.getTime()) && new Intl.DateTimeFormat("en-CA",{timeZone:"Africa/Gaborone"}).format(scheduled) === new Intl.DateTimeFormat("en-CA",{timeZone:"Africa/Gaborone"}).format(new Date()); }).length
+      proofsAwaitingReview: adminConversations.filter(item => item.unreadForAdmin && item.lastMessagePreview.startsWith("DEPOSIT PROOF SUBMITTED")).length
     };
   }, [appointments, adminConversations]);
 
@@ -511,14 +524,14 @@ function Dashboard() {
       <Link href="/" className="button buttonLight">View customer app</Link>
     </header>
     <section className="jtsOpsPriority" aria-label="Priority actions">
-      <div><span className="jtsEyebrow">TODAY AT JTS</span><strong>{appointments.filter(item => !item.status || item.status === "New").length} requests need review</strong></div>
-      <div className="jtsOpsPriorityActions"><button type="button" className="button buttonPrimary" onClick={() => { setTab("appointments"); track("jts_admin_priority_action", { action: "review_appointments" }); }}>Review requests</button><button type="button" className="button buttonLight" onClick={() => { setTab("services"); track("jts_admin_priority_action", { action: "manage_services" }); }}>Services &amp; prices</button></div>
+      <div><span className="jtsEyebrow">NEXT ACTION</span><strong>{appointments.filter(item => !item.status || item.status === "New").length ? appointments.filter(item => !item.status || item.status === "New").length + " new requests need your review" : "Your request queue is clear"}</strong><small>Review the requested service, preferred time and customer details before deciding.</small></div>
+      <div className="jtsOpsPriorityActions"><button type="button" className="button buttonPrimary" onClick={() => { setTab("appointments"); track("jts_admin_priority_action", { action: "review_appointments" }); }}>Review requests ↗</button></div>
     </section>
     {notice && <div className={"notice adminNotice adminNotice-" + (/could not|not saved|failed|denied|expired|choose |exceeds|must be an image|enter a valid|temporarily unavailable|try again|no media was uploaded|upload failed|not be saved/i.test(notice) ? "error" : /saved|uploaded|updated|removed|published|available for|marked unavailable|reopened/i.test(notice) ? "success" : "info")} role={/could not|not saved|failed|denied|expired|choose |exceeds|must be an image|enter a valid|temporarily unavailable|try again|no media was uploaded|upload failed|not be saved/i.test(notice) ? "alert" : "status"} aria-live="polite"><span className="adminNoticeIcon" aria-hidden="true">{/could not|not saved|failed|denied|expired|choose |exceeds|must be an image|enter a valid|temporarily unavailable|try again|no media was uploaded|upload failed|not be saved/i.test(notice) ? "!" : /saved|uploaded|updated|removed|published|available for|marked unavailable|reopened/i.test(notice) ? "✓" : "i"}</span><span className="adminNoticeText">{notice}</span><button type="button" className="adminNoticeDismiss" aria-label="Dismiss notification" onClick={() => setNotice("")}>×</button></div>}
-    <section className="stats jtsAdminStats">
-      <article><span>All requests</span><strong>{appointments.length}</strong></article>
-      <article className="needsAttention"><span>New · review</span><strong>{appointments.filter(item => !item.status || item.status === "New").length}</strong></article>
-      <article><span>Open appointments</span><strong>{openAppointments.length}</strong></article>
+    <section className="stats jtsAdminStats" aria-label="Operational snapshot">
+      <article><span>New requests</span><strong>{appointments.filter(item => !item.status || item.status === "New").length}</strong></article>
+      <article><span>Confirmed today</span><strong>{todayDiary.length}</strong></article>
+      <article><span>Active appointments</span><strong>{openAppointments.length}</strong></article>
       <article><span>Looks to review</span><strong>{reviews.filter(item => !item.published && item.status !== "hidden").length}</strong></article>
     </section>
     <nav className="adminTabs" aria-label="Operations sections">
@@ -530,7 +543,26 @@ function Dashboard() {
       <button className={tab === "styleFeed" ? "active" : ""} onClick={() => setTab("styleFeed")}>John&apos;s style feed · photos &amp; videos</button>
     </nav>
     {loading ? <section className="adminPanel"><p>Loading JTS Operations…</p></section> : tab === "overview" ? <section id="admin-overview" className="adminPanel jtsOpsOverview" style={{scrollMarginTop:16}}>
-      <div className="jtsOpsSectionHead"><div><span className="kicker">BUSINESS PULSE · 30 DAYS</span><h2>Overview</h2></div><span className="jtsOpsLiveLabel"><i /> Live Firebase records</span></div>
+      <div className="jtsOpsSectionHead"><div><span className="kicker">THE SALON DIARY · TODAY</span><h2>Today's appointments</h2></div><button type="button" className="jtsOpsTextAction" onClick={() => setTab("appointments")}>All appointments ↗</button></div>
+      {todayDiary.length ? <div className="jtsOpsDiaryList">{todayDiary.map(item => {
+        const revealSensitive = revealedAppointments[item.id] === true;
+        const serviceName = (item.items || []).map(service => service.name || "Service").join(" · ") || "Appointment";
+        return <article key={item.id} className="jtsOpsDiaryRow">
+          <time>{new Date(item.scheduledFor!).toLocaleTimeString("en-GB", {hour:"2-digit",minute:"2-digit",timeZone:"Africa/Gaborone"})}</time>
+          <div><strong>{revealSensitive ? (item.customerName || "Customer") : "Customer ·••••"}</strong><span>{serviceName} · {money(item.total)}</span></div>
+          <span className="jtsAppointmentStatus status-{item.status?.toLowerCase().replace(/[^a-z]+/g, "-")}">{item.status}</span>
+          <button type="button" className="jtsSensitiveToggle" aria-pressed={revealSensitive} onClick={() => setRevealedAppointments(current => ({...current,[item.id]:!current[item.id]}))}>{revealSensitive ? "Hide" : "Show"}</button>
+        </article>;
+      })}</div> : <div className="jtsOpsDiaryEmpty"><strong>No confirmed appointments today.</strong><span>New requests are not part of the diary until John confirms the slot and deposit.</span></div>}
+
+      <div className="jtsOpsSectionHead jtsOpsSubhead"><div><span className="kicker">WORK TO DO</span><h2>Needs your attention</h2></div><button type="button" className="jtsOpsTextAction" onClick={() => setTab("appointments")}>Open queue ↗</button></div>
+      <div className="jtsOpsActionGrid">
+        <button type="button" onClick={() => setTab("appointments")}><strong>{analytics.newRequests}</strong><span>New requests to review</span></button>
+        <button type="button" onClick={() => setTab("appointments")}><strong>{analytics.proofsAwaitingReview}</strong><span>Deposit proofs to verify</span></button>
+        <button type="button" onClick={() => setTab("appointments")}><strong>{analytics.unreadMessages}</strong><span>Unread customer replies</span></button>
+      </div>
+
+      <div className="jtsOpsSectionHead jtsOpsSubhead"><div><span className="kicker">BUSINESS PULSE · LAST 30 DAYS</span><h2>Business performance</h2></div><span className="jtsOpsLiveLabel"><i /> Live Firebase records</span></div>
       <div className="jtsOpsMetricGrid" aria-label="Appointment activity">
         <article><span>New requests</span><strong>{analytics.newRequests}</strong></article>
         <article><span>Confirmed / in service</span><strong>{analytics.confirmed}</strong></article>
@@ -538,41 +570,33 @@ function Dashboard() {
         <article><span>Cancelled</span><strong>{analytics.cancelled}</strong></article>
       </div>
 
-      <div className="jtsOpsSectionHead jtsOpsSubhead"><div><span className="kicker">ACTION QUEUE</span><h2>Needs attention</h2></div><button type="button" className="jtsOpsTextAction" onClick={() => setTab("appointments")}>Open queue ↗</button></div>
-      <div className="jtsOpsActionGrid">
-        <button type="button" onClick={() => setTab("appointments")}><strong>{analytics.newRequests}</strong><span>Requests to review</span></button>
-        <button type="button" onClick={() => setTab("appointments")}><strong>{analytics.proofsAwaitingReview}</strong><span>Deposit proofs</span></button>
-        <button type="button" onClick={() => setTab("appointments")}><strong>{analytics.unreadMessages}</strong><span>Unread replies</span></button>
-        <button type="button" onClick={() => setTab("appointments")}><strong>{analytics.todayConfirmed}</strong><span>Confirmed today</span></button>
-      </div>
-
-      <div className="jtsOpsSectionHead jtsOpsSubhead"><div><span className="kicker">FINANCIAL RECONCILIATION · BWP</span><h2>Requested vs collected</h2></div></div>
+      <div className="jtsOpsSectionHead jtsOpsSubhead"><div><span className="kicker">FINANCIAL RECONCILIATION · BWP</span><h2>From requests to collections</h2></div></div>
       <div className="jtsOpsFinanceGrid">
-        <article><span>Requested value*</span><strong>{money(analytics.requestedValue)}</strong></article>
-        <article><span>50% deposits expected*</span><strong>{money(analytics.expectedDeposits)}</strong></article>
-        <article><span>Deposits received</span><strong>{money(analytics.recordedDeposits)}</strong></article>
-        <article><span>Balances received</span><strong>{money(analytics.recordedBalances)}</strong></article>
+        <article><span>Requested service value</span><strong>{money(analytics.requestedValue)}</strong></article>
+        <article><span>Confirmed value</span><strong>{money(analytics.confirmedValue)}</strong></article>
+        <article><span>Completed service value</span><strong>{money(analytics.completedValue)}</strong></article>
+        <article><span>Recorded collections</span><strong>{money(analytics.collectedValue)}</strong></article>
       </div>
-      <p className="jtsOpsOutstanding"><strong>Outstanding against requested value: {money(analytics.outstandingRecorded)}</strong><span>Estimate only — not confirmed debt or revenue.</span></p>
+      <div className="jtsOpsCollectionNote"><span>Deposit received {money(analytics.recordedDeposits)}</span><span>Balance received {money(analytics.recordedBalances)}</span><span>Expected deposits on confirmed visits {money(analytics.expectedConfirmedDeposits)}</span><strong>Deposit gap · {money(analytics.depositGap)}</strong></div>
 
       <div className="jtsOpsLowerGrid">
         <section className="jtsOpsTrendSection" aria-labelledby="jts-trending-title">
-          <div className="jtsOpsSectionHead"><div><span className="kicker">CUSTOMER DEMAND</span><h2 id="jts-trending-title">Trending services</h2></div></div>
+          <div className="jtsOpsSectionHead"><div><span className="kicker">CUSTOMER DEMAND · NON-CANCELLED</span><h2 id="jts-trending-title">Most requested services</h2></div></div>
           {analytics.serviceCounts.length ? <ol className="jtsOpsTrendList">{analytics.serviceCounts.map((service,index)=><li key={service.name}><span className="jtsOpsRank">{index+1}</span><div><strong>{service.name}</strong><small>{service.count} requested</small></div><b>{money(service.value)}</b></li>)}</ol> : <p className="jtsOpsMuted">No service demand recorded in the last 30 days yet.</p>}
         </section>
         <section className="jtsOpsRelationship" aria-labelledby="jts-repeat-title">
-          <span className="kicker">CUSTOMER RELATIONSHIPS</span><h2 id="jts-repeat-title">Repeat business</h2>
+          <span className="kicker">CUSTOMER RELATIONSHIPS · ALL RECORDED VISITS</span><h2 id="jts-repeat-title">Returning customers</h2>
           <strong className="jtsOpsRepeatCount">{analytics.returningCustomers}</strong>
-          <p>Customer identities with more than one completed visit in this 30-day cohort.</p>
+          <p>Customer accounts with more than one completed appointment in the available records.</p>
           <small>Guest identities not linked across devices may appear separately.</small>
         </section>
       </div>
-      <details className="jtsOpsDefinitions"><summary>How these figures are calculated</summary>
-        <p>Requested service value includes non-cancelled requests whether or not the appointment was completed. Expected deposits use the published 50% rule. Only amounts explicitly recorded by authorized staff count as collections. Cancelled requests are excluded from requested value; recorded collections remain separately visible.</p>
-        <p>{analytics.unknownLegacy ? analytics.unknownLegacy + " older/legacy record(s) in this 30-day window are excluded from appointment KPIs until their appointment identity and status are deliberately mapped." : "No unknown legacy statuses found in this 30-day window."}</p>
-        <p>Source: live authorized appointment documents. Vercel Analytics and Speed Insights measure browsing/performance—not customers, bookings or money. Firebase records remain the operational source of truth. No customer names, phone numbers, booking IDs or private message content are sent to analytics.</p>
+      <details className="jtsOpsDefinitions"><summary>How figures are calculated</summary>
+        <p>Activity, requested value and service demand use identifiable appointment requests created in the last 30 days. Cancelled requests are excluded from requested value and service demand. Confirmed value includes Confirmed and In service appointments. Completed service value includes completed appointments. Recorded collections are admin-entered deposits plus balances; verify Orange Money before recording. Deposit gap compares expected 50% deposits for confirmed/in-service appointments with recorded deposits and is an operational follow-up estimate, not proof of debt.</p>
+        <p>{analytics.unknownLegacy ? analytics.unknownLegacy + " older/legacy record(s) in this 30-day window are excluded from appointment KPIs until their identity and status are deliberately mapped." : "No unknown legacy records found in this 30-day window."}</p>
+        <p>Source: authorized appointment documents in Firebase. Vercel Analytics and Speed Insights measure browsing and performance, not customers, bookings or money. Customer names, phone numbers, booking IDs and private message content are not sent to analytics.</p>
       </details>
-    </section> : tab === "appointments" ? <section id="admin-appointments" className="adminPanel" style={{scrollMarginTop:16}}>
+    </section>tab === "appointments" ? <section id="admin-appointments" className="adminPanel" style={{scrollMarginTop:16}}>
       <div className="panelHeading"><div><span className="kicker">THE APPOINTMENT QUEUE</span><h2>Appointments</h2></div><span className="jtsQueueCount">{openAppointments.length} active</span></div>
       {appointments.length === 0 ? <div className="emptyState"><h3>No appointment requests yet</h3><p>New requests submitted through the JTS booking form will appear here.</p></div> : <div className="queue">
         {appointments.map(item => {
