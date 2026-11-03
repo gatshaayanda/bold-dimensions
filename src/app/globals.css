@@ -2098,7 +2098,7 @@ input, select, textarea, button {
 .jtsPublicLookbook .jtsCategoryCompactBody h3{font:500 1.12rem/1.2 Georgia,serif}
 .jtsPublicLookbook .jtsCategoryCompactBody button{border-color:#8c7547;background:#17150f;color:#f6e9ca;cursor:pointer}
 .jtsPublicLookbook .jtsCategoryCompactBody button:hover,.jtsPublicLookbook .jtsCategoryCompactBody button:focus-visible{outline:2px solid #e7ce91;outline-offset:2px;background:#242014}
-.jtsPublicLookbookNote{margin:13px 0 0;color:#aead a7;font-size:.7rem;line-height:1.5}
+.jtsPublicLookbookNote{margin:13px 0 0;color:#aeada7;font-size:.7rem;line-height:1.5}
 .jtsPublicLookbook .jtsPriceModal{max-width:650px}
 @media(max-width:760px){
  .jtsPublicLookbook{padding:23px 14px 24px}
