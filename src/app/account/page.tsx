@@ -8,13 +8,30 @@ import ConversationThread from "@/components/ConversationThread";
 import { getCustomerOrders, subscribeToCustomerOrders, subscribeToCustomerConversations, ensureBookingConversation, type Conversation, type FoodOrder } from "@/lib/firebase/data";
 
 const INITIAL_BOOKINGS_VISIBLE = 3;
+const TERMINAL_STATUSES = new Set(["Cancelled", "Collected", "Delivered", "Completed"]);
+const CONFIRMED_STATUSES = new Set(["Accepted", "Confirmed", "Preparing", "Ready", "Delivering", "In service"]);
 
-function label(status: string) {
-  return status === "New" ? "Request received" : status === "Collected" || status === "Delivered" ? "Completed" : status;
+function normalizedStatus(status: string) {
+  if (status === "New" || status === "Requested") return "Request received";
+  if (status === "Accepted" || status === "Confirmed") return "Confirmed";
+  if (["Preparing", "Ready", "Delivering", "In service"].includes(status)) return "In service";
+  if (["Collected", "Delivered", "Completed"].includes(status)) return "Completed";
+  if (status === "Cancelled") return "Cancelled";
+  if (status === "Reviewing") return "Being reviewed";
+  return status || "Status unavailable";
 }
+function label(status: string) { return normalizedStatus(status); }
 function dateText(value: string) {
   const d = new Date(value);
-  return Number.isFinite(d.getTime()) ? d.toLocaleString("en-GB", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : value;
+  return Number.isFinite(d.getTime()) ? new Intl.DateTimeFormat("en-GB", { timeZone: "Africa/Gaborone", weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZoneName: undefined }).format(d) : value;
+}
+function progressStage(status: string) {
+  if (status === "Cancelled") return -1;
+  if (["Collected", "Delivered", "Completed"].includes(status)) return 3;
+  if (["Preparing", "Ready", "Delivering", "In service"].includes(status)) return 2;
+  if (["Accepted", "Confirmed"].includes(status)) return 2;
+  if (status === "Reviewing") return 1;
+  return 0;
 }
 function firebaseErrorCode(cause: unknown) {
   return typeof cause === "object" && cause && "code" in cause ? String((cause as { code?: unknown }).code ?? "") : "";
@@ -154,9 +171,11 @@ export default function AccountPage() {
   }
 
   const nextOrder = useMemo(
-    () => orders.filter(order => new Date(order.scheduledFor).getTime() >= Date.now() && !["Cancelled", "Collected", "Delivered"].includes(order.status)).sort((a, b) => a.scheduledFor.localeCompare(b.scheduledFor))[0],
+    () => orders.filter(order => new Date(order.scheduledFor).getTime() >= Date.now() && !TERMINAL_STATUSES.has(order.status)).sort((a, b) => a.scheduledFor.localeCompare(b.scheduledFor))[0],
     [orders]
   );
+  const nextOrderIsConfirmed = Boolean(nextOrder && CONFIRMED_STATUSES.has(nextOrder.status));
+  const nextOrderStage = nextOrder ? progressStage(nextOrder.status) : 0;
   const recentOrders = useMemo(
     () => [...orders].sort((a, b) => b.scheduledFor.localeCompare(a.scheduledFor)),
     [orders]
@@ -166,11 +185,11 @@ export default function AccountPage() {
   return <main className="jtsBookingPage jtsStyleAccount"><div className="jtsContainer jtsBookingWrap">
     <div className="jtsBookingTop"><Link href="/" className="jtsBack">← John The Stylist Bw</Link><div className="jtsAccountTopLinks"><Link href="/feed" className="jtsGhost">Style feed ↗</Link><Link href="/order" className="jtsGhost">Book appointment</Link></div></div>
 
-    <header className="jtsAccountHero jtsAccountUtilityHero">
-      <span className="jtsEyebrow">MY JTS ACCOUNT</span>
-      <h1>Your appointments.</h1>
-      <p>Booking details, updates and private messages—all in one place.</p>
-      <div className="jtsAccountHeroActions"><Link href="/order" className="jtsButton jtsButtonGold">Request an appointment ↗</Link><Link href="/feed" className="jtsGhost">Browse styles</Link></div>
+    <header className="jtsAccountHero jtsAccountUtilityHero jtsAccountLivingHero">
+      <span className="jtsEyebrow">YOUR JOHN THE STYLIST BW SPACE</span>
+      <h1>My JTS.</h1>
+      <p>Your appointments, conversations with John and style history — together.</p>
+      <div className="jtsAccountHeroActions"><Link href="/order" className="jtsButton jtsButtonGold">Book a style ↗</Link><Link href="/feed" className="jtsGhost">Explore the style feed</Link></div>
     </header>
 
     {(error || message) && <p className={error ? "jtsFormError" : "jtsStyleStatus"} role="status" aria-live="polite">{error || message}</p>}
@@ -185,33 +204,43 @@ export default function AccountPage() {
           : <><p>Sign in to access saved bookings, or continue with a guest session on this device.</p><button className="googleSignInButton jtsAccountGoogleButton" type="button" onClick={() => void connectGoogle()} disabled={!ready || busy}><GoogleBrandMark />{busy ? "Connecting…" : "Continue with Google"}</button><div className="jtsAccountAuthFallback"><span>Prefer not to sign in?</span><button type="button" className="jtsStyleTextLink" onClick={() => void startGuest()} disabled={!ready || busy}>Open guest booking history</button></div></>}
     </section>
 
-    <section className="jtsStyleNext" aria-labelledby="account-next-title">
-      <div><span className="jtsEyebrow">NEXT APPOINTMENT</span>
-        {nextOrder ? <><h2 id="account-next-title">{nextOrder.items.map(item => item.name).join(" · ")}</h2><p>{dateText(nextOrder.scheduledFor)} · {label(nextOrder.status)}</p><small>Ref #{nextOrder.id.slice(0, 8).toUpperCase()} · Requests are not confirmed until John confirms the slot and deposit.</small></>
-        : <><h2 id="account-next-title">Nothing scheduled yet.</h2><p>When you request an appointment, its status will appear here.</p></>}
+    <section className="jtsStyleNext jtsAccountNext" aria-labelledby="account-next-title">
+      <div className="jtsAccountNextHeading"><span className="jtsEyebrow">{nextOrderIsConfirmed ? "YOUR NEXT APPOINTMENT" : "YOUR NEXT REQUEST"}</span>
+        {nextOrder ? <><h2 id="account-next-title">{nextOrder.items.map(item => item.name).join(" · ")}</h2><p>{dateText(nextOrder.scheduledFor)}</p><span className="jtsAccountStatus">{label(nextOrder.status)}</span><small>Ref #{nextOrder.id.slice(0, 8).toUpperCase()}</small></>
+        : <><h2 id="account-next-title">Your next style starts here.</h2><p>Choose a service and request a date that works for you.</p></>}
       </div>
-      <Link href={nextOrder ? "/orders/" + nextOrder.id : "/order"} className="jtsButton jtsButtonGold">{nextOrder ? "View appointment ↗" : "Book an appointment ↗"}</Link>
+      {nextOrder && <div className="jtsAccountProgress" aria-label={"Appointment progress: " + label(nextOrder.status)}>
+        {["Request received", "Being reviewed", "Confirmed", "Completed"].map((step, index) => <div className={index <= nextOrderStage ? "isReached" : ""} key={step}><i aria-hidden="true"/><span>{step}</span></div>)}
+        {nextOrder.status === "Cancelled" && <p>This request was cancelled. It is kept in your history.</p>}
+      </div>}
+      <div className="jtsAccountNextActions"><Link href={nextOrder ? "/orders/" + nextOrder.id : "/order"} className="jtsButton jtsButtonGold">{nextOrder ? "Open this request ↗" : "Request an appointment ↗"}</Link>{nextOrder && <a href="https://wa.me/26778053564" className="jtsGhost">Message John on WhatsApp ↗</a>}</div>
+      <p className="jtsAccountTruth">A request is not confirmed until John confirms the slot and verifies the deposit.</p>
     </section>
 
     <section className="jtsAccountPrivateInbox" id="account-payment-proof" aria-labelledby="account-private-title">
-      <div className="jtsAccountUtilityHeading"><div><span className="jtsEyebrow">PRIVATE INBOX</span><h2 id="account-private-title">Messages &amp; payment proof</h2></div><span className="jtsAccountLiveDot">Private</span></div>
+      <div className="jtsAccountUtilityHeading"><div><span className="jtsEyebrow">PRIVATE INBOX</span><h2 id="account-private-title">Talk with John</h2><p className="jtsAccountInboxIntro">Replies, appointment questions and payment proof stay in the private conversation linked to your booking.</p></div><span className="jtsAccountLiveDot">Private</span></div>
       {!user ? <div className="jtsStyleEmpty"><p>Connect your account or open your guest booking history to see private appointment conversations.</p></div>
       : !ready ? <div className="jtsStyleEmpty">Loading your appointment messages…</div>
       : conversations.length === 0 ? <div className="jtsStyleEmpty"><p>Your private appointment conversations will appear here.</p></div>
-      : <div className="jtsAccountPrivateList">{conversations.map(conversation => <details className="jtsAccountPrivateItem" key={conversation.id}>
-          <summary className="jtsAccountPrivateMeta"><strong>{conversation.title}</strong><span>{conversation.unreadForCustomer ? "New reply" : "Open conversation"}</span><small>{conversation.lastMessagePreview || "No messages yet"} · {dateText(conversation.lastMessageAt)}</small></summary>
-          <ConversationThread conversationId={conversation.id} role="customer" userId={user.uid} title="Booking conversation" purpose={conversation.bookingId ? "deposit-proof" : undefined} />
-        </details>)}</div>}
+      : <div className="jtsAccountPrivateList">{conversations.map(conversation => {
+          const relatedOrder = orders.find(order => order.id === conversation.bookingId);
+          return <article className="jtsAccountConversationCard" key={conversation.id}>
+            <div className="jtsAccountConversationHead"><div><span className="jtsEyebrow">{conversation.bookingId ? "APPOINTMENT CONVERSATION" : "PRIVATE MESSAGE"}</span><strong>{relatedOrder ? relatedOrder.items.map(item => item.name).join(" · ") : conversation.title}</strong><small>{conversation.bookingId ? "Ref #" + conversation.bookingId.slice(0, 8).toUpperCase() : "Your private JTS inbox"}</small></div>{conversation.unreadForCustomer ? <span className="jtsAccountUnread">New reply</span> : <span className="jtsAccountReadState">{conversation.status === "resolved" ? "Resolved" : "Private"}</span>}</div>
+            <p className="jtsAccountMessagePreview">{conversation.lastMessagePreview || "Your private conversation is ready. Send John a message about this appointment."}</p>
+            <small className="jtsAccountMessageTime">{dateText(conversation.lastMessageAt)}</small>
+            <details className="jtsAccountConversationExpand"><summary>Open conversation and reply <span aria-hidden="true">＋</span></summary><ConversationThread conversationId={conversation.id} role="customer" userId={user.uid} title="Private conversation with John" purpose={conversation.bookingId ? "deposit-proof" : undefined} /></details>
+          </article>;
+        })}</div>}
       <p className="jtsAccountNotificationNote">Messages and payment screenshots are private to you and authorized JTS staff. A screenshot is not payment verification; John checks the Orange Money account.</p>
     </section>
 
-    <section className="jtsStyleHistory" aria-labelledby="account-history-title"><div className="jtsStyleSectionHead"><div><span className="jtsEyebrow">YOUR RECORD</span><h2 id="account-history-title">Booking history</h2><p>{orders.length} {orders.length === 1 ? "request" : "requests"} on this account.</p></div><Link href="/order" className="jtsStyleTextLink">New booking ↗</Link></div>
+    <section className="jtsStyleHistory" aria-labelledby="account-history-title"><div className="jtsStyleSectionHead"><div><span className="jtsEyebrow">YOUR RECORD</span><h2 id="account-history-title">Your style history</h2><p>{orders.length} {orders.length === 1 ? "booking record" : "booking records"} saved here. Reopen any one to see its details and conversation.</p></div><Link href="/order" className="jtsStyleTextLink">New booking ↗</Link></div>
       {!user ? <div className="jtsStyleEmpty"><p>Open your private booking session above to load your history.</p></div>
       : !ready ? <div className="jtsStyleEmpty">Loading your bookings…</div>
       : orders.length > 0 ? <><div className="jtsStyleBookingList">{visibleOrders.map(order => <article key={order.id} className="jtsBookingRow jtsStyleBookingRow"><div><span className="jtsEyebrow">{label(order.status)}</span><h3>{order.items.map(item => item.name).join(" · ")}</h3><p>{dateText(order.scheduledFor)}</p><small>Reference #{order.id.slice(0, 8).toUpperCase()} · {order.status}</small></div><Link href={"/orders/" + order.id} className="jtsGhost">Details ↗</Link></article>)}</div>{recentOrders.length > INITIAL_BOOKINGS_VISIBLE && <button type="button" className="jtsAccountShowBookings" onClick={() => setShowAllBookings(value => !value)}>{showAllBookings ? "Show recent bookings" : "View all " + recentOrders.length + " bookings"}</button>}</>
       : <div className="jtsStyleEmpty"><h3>Your first appointment starts here.</h3><p>Choose a service and request a date that works for you.</p><Link href="/order" className="jtsButton jtsButtonGold">Request your first appointment ↗</Link></div>}
     </section>
 
-    <p className="jtsAccountNote"><strong>Appointment information:</strong> a request is not confirmed until John confirms the appointment and deposit separately.</p>
+    <p className="jtsAccountNote"><strong>Your account is private.</strong> Only you and authorized JTS staff can access your appointment details and conversations.</p>
   </div></main>;
 }

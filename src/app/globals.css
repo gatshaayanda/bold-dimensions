@@ -2192,3 +2192,61 @@ input, select, textarea, button {
  .adminPage .jtsOpsTrendSection,.adminPage .jtsOpsRelationship{padding:11px}
  .adminPage .adminPanel:not(.jtsOpsOverview){padding:12px}
 }
+
+
+/* Customer account — living appointment and communication workspace */
+.jtsStyleAccount .jtsAccountLivingHero{padding:32px 0 22px;border-bottom:1px solid #34302a}
+.jtsStyleAccount .jtsAccountLivingHero h1{font-size:clamp(2.8rem,6vw,4.8rem);margin:10px 0 12px}
+.jtsStyleAccount .jtsAccountUtilityAuth{display:grid;grid-template-columns:1fr;gap:10px;margin:18px 0;padding:18px 20px}
+.jtsStyleAccount .jtsAccountUtilityAuth h2{font-size:1.15rem;margin:0}
+.jtsStyleAccount .jtsAccountUtilityAuth p{margin:0}
+.jtsStyleAccount .jtsAccountNext{display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,.8fr);align-items:start;gap:20px;margin:22px 0;padding:24px;border-color:#78601a;background:radial-gradient(circle at 0 0,rgba(255,200,0,.11),transparent 48%),#151515}
+.jtsStyleAccount .jtsAccountNextHeading h2{font-size:clamp(1.8rem,4vw,2.8rem);line-height:1.05;margin:10px 0}
+.jtsStyleAccount .jtsAccountNextHeading p{font-size:1rem;margin:0 0 8px}
+.jtsStyleAccount .jtsAccountNextHeading small{display:block;color:#a9a195;margin-top:8px}
+.jtsAccountStatus{display:inline-flex;align-items:center;min-height:28px;padding:4px 10px;border:1px solid #665323;border-radius:99px;color:#ffe17a;font-size:.72rem;font-weight:850}
+.jtsAccountProgress{display:grid;gap:10px;padding:14px;border:1px solid #39352d;border-radius:11px;background:#0d0d0e}
+.jtsAccountProgress>div{display:grid;grid-template-columns:12px 1fr;align-items:center;gap:9px;color:#817b72;font-size:.76rem}
+.jtsAccountProgress i{width:9px;height:9px;border:1px solid #615b50;border-radius:50%}
+.jtsAccountProgress>div.isReached{color:#f5ead2}
+.jtsAccountProgress>div.isReached i{background:#ffc800;border-color:#ffc800;box-shadow:0 0 0 3px rgba(255,200,0,.12)}
+.jtsAccountNextActions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.jtsAccountTruth{grid-column:1/-1;margin:0;color:#aaa296;font-size:.74rem;line-height:1.5}
+.jtsStyleAccount .jtsAccountPrivateInbox{margin:32px 0;padding:22px 0;border-top:1px solid #39352d;border-bottom:1px solid #39352d}
+.jtsStyleAccount .jtsAccountUtilityHeading{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+.jtsAccountInboxIntro{max-width:620px;margin:8px 0 0;color:#aaa296;font-size:.82rem;line-height:1.55}
+.jtsAccountPrivateList{display:grid;gap:12px;margin-top:18px}
+.jtsAccountConversationCard{min-width:0;padding:16px;border:1px solid #39352d;border-radius:12px;background:#121212}
+.jtsAccountConversationHead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.jtsAccountConversationHead>div{display:grid;gap:6px;min-width:0}
+.jtsAccountConversationHead strong{font-size:1rem;line-height:1.3;overflow-wrap:anywhere}
+.jtsAccountConversationHead small,.jtsAccountMessageTime{color:#938c82;font-size:.7rem}
+.jtsAccountUnread,.jtsAccountReadState{flex:0 0 auto;padding:5px 9px;border:1px solid #665323;border-radius:99px;color:#ffe17a;font-size:.65rem;font-weight:900}
+.jtsAccountReadState{border-color:#39352d;color:#aaa296}
+.jtsAccountMessagePreview{margin:12px 0 5px;color:#e0d9cd;font-size:.84rem;line-height:1.5;overflow-wrap:anywhere}
+.jtsAccountConversationExpand{margin-top:13px;border-top:1px solid #34302a;padding-top:11px}
+.jtsAccountConversationExpand>summary{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:40px;cursor:pointer;color:#f5d77b;font-size:.76rem;font-weight:900;list-style:none}
+.jtsAccountConversationExpand>summary::-webkit-details-marker{display:none}
+.jtsAccountConversationExpand[open]>summary span{transform:rotate(45deg)}
+.jtsAccountConversationExpand .jtsPrivateThread{margin-top:10px}
+.jtsStyleAccount .jtsStyleHistory{padding:30px 0}
+.jtsStyleAccount .jtsStyleSectionHead{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;margin-bottom:17px}
+.jtsStyleAccount .jtsStyleSectionHead h2{font-size:clamp(1.8rem,4vw,2.5rem);margin:8px 0}
+.jtsStyleAccount .jtsStyleBookingList{gap:9px}
+.jtsStyleAccount .jtsStyleBookingRow{padding:15px 17px}
+.jtsStyleAccount .jtsAccountNotificationNote{margin-top:16px;color:#aaa296;font-size:.73rem;line-height:1.55}
+@media(max-width:760px){
+ .jtsStyleAccount .jtsAccountNext{grid-template-columns:1fr;padding:18px;gap:15px}
+ .jtsStyleAccount .jtsAccountUtilityAuth{padding:16px}
+ .jtsStyleAccount .jtsAccountPrivateInbox{padding:20px 0}
+ .jtsStyleAccount .jtsAccountUtilityHeading{align-items:flex-start}
+ .jtsStyleAccount .jtsStyleSectionHead{align-items:flex-start;flex-direction:column}
+ .jtsAccountNextActions{align-items:stretch;flex-direction:column}
+ .jtsAccountNextActions>*{width:100%;text-align:center}
+}
+@media(max-width:420px){
+ .jtsAccountConversationCard{padding:13px}
+ .jtsAccountConversationHead{gap:8px}
+ .jtsAccountUnread,.jtsAccountReadState{font-size:.6rem;padding:4px 7px}
+ .jtsStyleAccount .jtsAccountLivingHero{padding:26px 0 18px}
+}

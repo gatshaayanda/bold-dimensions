@@ -775,3 +775,41 @@ The current `/account` route is an existing customer workspace. Improve it in pl
 7. Verify guest and Google-linked sessions, UID continuity, customer-only reads, live updates, every status mapping, timezone display, deposit-proof recovery, private attachment access and mobile interactions. Run typecheck, lint and production build; inspect the diff before committing.
 
 The account phase is a refinement of the existing foundation, not a rewrite. Never claim end-to-end, device or payment QA from source inspection or a successful build alone.
+
+## Customer account experience — research-informed implementation checkpoint (2026-11-03)
+
+### User need and communication model
+- My JTS is the customer's ongoing private workspace with John, not a generic account-record viewer. Its primary jobs are: understand the next request/appointment, know the next action, communicate with John/staff on the same booking, submit/revisit payment evidence, and return to previous styles/bookings.
+- Customer conversations must use the existing booking-linked private thread and the exact same conversation ID/booking ID/customer UID used by Operations. Staff replies and customer messages must update the existing unread/read state and remain visible only to the owning customer and authorized staff.
+- The account must never imply that a WhatsApp click or an in-app message is a completed support action. The private in-app thread is the source of truth for appointment-specific communication; WhatsApp is an optional external contact route.
+- Use live data to create a sense of continuity: latest actual message preview/time, real unread state, actual appointment status, real customer booking history. Do not invent activity, notifications, response times, availability, popularity or customer imagery.
+
+### Research principles applied
+- Baymard Institute, Accounts & Self-Service UX research: account/self-service is a particularly personal post-transaction experience; users need clear paths to order tracking, history and account tasks. Research overview: https://baymard.com/research/self-service
+- Baymard Institute, Accounts & Self-Service UX Best Practices (2025 update): dashboards should provide direct paths to important account features and accurate status after an action; avoid leaving users uncertain whether a request was received. https://baymard.com/research-articles/current-state-accounts-selfservice
+- Baymard Institute, Order Tracking UX: keep relevant tracking information and navigation within the service rather than sending users on unnecessary detours. https://baymard.com/research-articles/integrate-tracking-info
+- Nielsen Norman Group, 10 Usability Heuristics: recognition rather than recall; show status and next actions so customers do not have to remember details from other screens. https://www.nngroup.com/articles/ten-usability-heuristics/
+- GOV.UK Digital Service Standard (updated 22 April 2026): design around user needs, measure outcomes, and keep users informed about progress where possible. https://www.gov.uk/government/publications/government-functional-standard-govs-005-digital/government-functional-standard-govs-005-digital-html
+- These findings guide the design; they are not evidence of measured conversion lift or a substitute for testing with JTS customers.
+
+### Approved account interaction and visual rules
+- Use a concise branded My JTS entry, not a large generic dashboard masthead.
+- The next item is labelled **Next request** until an authorized staff status makes it confirmed; show **Next appointment** only for confirmed/in-service records. Completed and cancelled records are never selected as the next upcoming item.
+- Display current and legacy status values consistently: New/Requested, Reviewing, Accepted/Confirmed, In service (including mapped legacy Preparing/Ready/Delivering), Completed (including mapped legacy Collected/Delivered), Cancelled. Preserve unknown values rather than guessing.
+- Display appointment and conversation timestamps in Africa/Gaborone without modifying stored timestamps.
+- Show a compact truthful progress sequence and the exact booking reference. A status step is not proof of deposit receipt; payment verification remains staff-controlled.
+- The private inbox is organized around the actual appointment/service and real latest message, with unread replies visible and a direct expand-to-reply interaction. Keep attachment upload, proof submission, message sending, read updates and staff inbox linkage intact.
+- Style history retains access to booking details and private conversation; completed, cancelled and active states remain distinct. Do not add fabricated style photos. Use only media already attached to the actual authorized service/booking if a future media-led account feature is implemented.
+- Keep account access/Google linking optional and guest-first. Do not change authentication, UID ownership, profile schema, notification preferences, Firestore rules, UploadThing authorization, PWA/offline behaviour, booking writes or payment verification in this presentation checkpoint.
+- Keep the black, metallic-gold, white and silver identity, responsive spacing, accessible labels and touch targets. No fake unread counts or synthetic activity.
+
+### Analytics relevance to the customer
+- Customer-facing account analytics should be personal utility, not business surveillance or a chart dashboard: their own current status, next step, own history and private message state are operational account data, not Vercel analytics.
+- Do not show customer-facing visitor counts, public popularity metrics, revenue, other customers' activity, staff performance or cross-customer comparisons.
+- Do not add a customer-facing request number until the trusted atomic allocator and identity-continuity requirements in docs/ANALYTICS-MEASUREMENT-PLAN.md are implemented and tested.
+- Keep privacy-safe coarse events such as jts_account_viewed and jts_google_account_connected; never send booking IDs/references, names, phone/email, message content, timestamps, media URLs, payment amounts or evidence to analytics.
+- Public measurement currently includes Vercel page/performance analytics and the coarse jts_service_viewed category event. It does not yet establish complete public lookbook/feed engagement or a verified public conversion funnel. Do not describe page views as customer interest, bookings or revenue. Any further public events must be coarse, consent/privacy-reviewed where applicable, best-effort and PII-free.
+
+### Release gate
+- Verify guest and Google-linked account access, guest-to-Google UID continuity, current and legacy status labels, terminal-state exclusion, Gaborone timezone, same booking thread on customer and admin sides, new reply/unread state, send/reply, image/video upload, deposit proof, read updates, private attachment access and narrow-mobile layout.
+- Run identity verification, TypeScript, lint and production build; inspect diff and deployment SHA. Physical device and real customer/admin end-to-end QA remain separate and must not be claimed from source/build success alone.
