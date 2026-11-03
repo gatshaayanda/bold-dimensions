@@ -813,3 +813,11 @@ The account phase is a refinement of the existing foundation, not a rewrite. Nev
 ### Release gate
 - Verify guest and Google-linked account access, guest-to-Google UID continuity, current and legacy status labels, terminal-state exclusion, Gaborone timezone, same booking thread on customer and admin sides, new reply/unread state, send/reply, image/video upload, deposit proof, read updates, private attachment access and narrow-mobile layout.
 - Run identity verification, TypeScript, lint and production build; inspect diff and deployment SHA. Physical device and real customer/admin end-to-end QA remain separate and must not be claimed from source/build success alone.
+
+
+## Iteration 13 visual-reference application — My JTS account (2026-11-03)
+- Canonical reference inspected: `iteration13/docs/assets/washride-home-reference.jpeg` and `docs/VISUAL-DIRECTION-STANDARD.md`.
+- Transfer the reference's mobile-app composition (immediate identity, purposeful focal area, dominant primary action, compact supporting destination cards, coherent icon/surface system and polished contrast) into the salon's own visual language. Do not copy WashRide branding, car imagery, blue palette or literal layout.
+- My JTS uses black, metallic gold, warm white and silver. The account identity stays compact; the real next request/confirmed appointment is the focal task; private inbox and style history are secondary shortcuts; full message/history content remains available in its existing authorized sections.
+- Preserve guest/Google identity, UID-scoped Firebase reads, same booking-linked private conversation IDs, unread/read state, private media/payment proof, status truth, Gaborone timezone, booking routes, analytics events, and all existing actions. This visual pass must not alter schema, rules, booking/payment writes, UploadThing authorization, PWA/install or offline behavior.
+- Keep the account compact at phone widths, with clear section separation and accessible focus/touch targets. Verify no horizontal overflow and test the actual customer/admin conversation together; build success alone is not device or end-to-end QA.
