@@ -1870,3 +1870,61 @@ input, select, textarea, button {
  .jtsAdminWelcomeActions .button{width:100%}
  .adminPage .jtsGuidePanel{right:10px;bottom:76px;width:calc(100vw - 20px);max-width:calc(100vw - 20px);max-height:calc(100dvh - 100px)}
 }
+
+
+/* JTS Operations — align the admin workspace with the compact public booking experience. */
+.adminPage{padding:18px 0 42px;background:#050505;color:#f7f7f5}
+.adminAuthorized{background:#050505}
+.adminShell{width:min(1080px,calc(100% - 32px))}
+.adminHeader{align-items:center;gap:16px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #282a2d}
+.adminHeader h1{font:600 clamp(1.8rem,4vw,2.8rem)/1.05 Georgia,serif;letter-spacing:-.025em;margin:6px 0}
+.adminHeader p{font-size:.82rem;color:#969793;line-height:1.45}
+.adminHeader>.button{flex:0 0 auto}
+.jtsAdminWelcome{margin:12px 0;padding:14px 16px;border:1px solid #303136;border-radius:13px;background:#0b0c0e;box-shadow:none}
+.jtsAdminWelcome .jtsEyebrow,.adminPage .kicker{color:#b9a36b}
+.jtsAdminWelcome h2{font:600 clamp(1.2rem,3vw,1.55rem)/1.2 Georgia,serif}
+.jtsAdminWelcome p{font-size:.78rem;color:#969793}
+.jtsAdminWelcomeActions .button{min-height:40px}
+.adminPage .stats{gap:8px;margin:12px 0}
+.adminPage .stats article{padding:11px 13px;background:#0b0c0e;border:1px solid #292b2f;border-radius:12px}
+.adminPage .stats span{font-size:.63rem;letter-spacing:.07em;color:#969793}
+.adminPage .stats strong{font:600 1.55rem/1.1 Georgia,serif;color:#d8c28a;margin-top:5px}
+.adminPage .adminTabs{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 14px;padding:0}
+.adminPage .adminTabs button{min-height:40px;padding:9px 12px;border:1px solid #303136;border-radius:9px;background:#0b0c0e;color:#b9bab6;font-size:.7rem;font-weight:750}
+.adminPage .adminTabs button.active{background:#d5c18b;color:#111;border-color:#d5c18b}
+.adminPage .adminPanel{padding:17px;background:#0b0c0e;border:1px solid #292b2f;border-radius:14px;box-shadow:none}
+.adminPage .panelHeading{margin-bottom:12px}
+.adminPage .panelHeading h2{font:600 1.35rem/1.2 Georgia,serif;color:#f7f7f5}
+.adminPage .panelHeading .kicker{font-size:.6rem;letter-spacing:.13em}
+.adminPage .queueRow,.adminPage .financeCard,.adminPage .menuAdminList article{background:#090a0b;border-color:#292b2f;border-radius:11px}
+.adminPage .queueRow{padding:12px}
+.adminPage .queueRow h3{font:600 1rem Georgia,serif}
+.adminPage .financeGrid{gap:8px}
+.adminPage .financeCard{padding:13px}
+.adminPage .financeCard>span,.adminPage .varianceGrid span{font-size:.62rem;letter-spacing:.06em;color:#969793}
+.adminPage .financeCard strong{font:600 1.15rem Georgia,serif;color:#f4f3ef}
+.adminPage .adminNotice{position:static!important;top:auto!important;z-index:auto!important;box-shadow:none!important}
+.adminPage .analyticsFootnote{margin:14px 0 4px;padding:10px 12px;border-left:2px solid #8e7a4d;background:#101113;color:#9b9d99;font-size:.72rem;line-height:1.55}
+.adminPage .adminPanel>p>small{color:#81837f;font-size:.68rem;line-height:1.55}
+.adminAccountBar{border-color:#282a2d;color:#92948f}
+.adminAccountBar>.button{border:1px solid #36383c;background:#101113;color:#eee}
+@media(max-width:760px){
+ .adminPage{padding:12px 0 30px}
+ .adminShell{width:calc(100% - 24px)}
+ .adminHeader{align-items:flex-start;flex-direction:column;margin-bottom:10px}
+ .adminHeader h1{font-size:clamp(1.7rem,7vw,2.25rem)}
+ .adminHeader>.button{width:auto;min-height:40px}
+ .jtsAdminWelcome{margin:9px 0;padding:12px}
+ .adminPage .stats{margin:9px 0}
+ .adminPage .adminTabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+ .adminPage .adminTabs button{min-height:43px;padding:8px 6px;font-size:.66rem}
+ .adminPage .adminPanel{padding:12px}
+ .adminPage .panelHeading h2{font-size:1.18rem}
+}
+@media(max-width:380px){
+ .adminPage .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .adminPage .stats article{padding:9px}
+ .adminPage .stats span{font-size:.58rem}
+ .adminPage .stats strong{font-size:1.3rem}
+ .adminPage .adminTabs{grid-template-columns:minmax(0,1fr)}
+}
