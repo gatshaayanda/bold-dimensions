@@ -698,3 +698,38 @@ The detailed measurement specification is [docs/ANALYTICS-MEASUREMENT-PLAN.md](.
 - The booking collection and status vocabulary still contain legacy food-order compatibility. Audit and map real records before calculating appointment KPIs; unknown legacy values must not silently count as completed/confirmed.
 - Build the admin action queue and trustworthy period summaries before customer/public social-proof surfaces. Reconcile every metric against source records and test public/customer/staff access separately.
 - Do not weaken Firestore/Storage rules or alter PWA/offline behavior to implement analytics.
+
+
+## Visual experience direction — decision-first, image-led product (2026-11-03)
+
+The JTS experience must help customers choose a look and help John recognise the work. It is not a generic appointment form with decorative salon photos.
+
+### Shared product principle
+- Use genuine, owner/customer-authorized JTS imagery to help people recognise a style, service, customer result or appointment. Images must carry decision-making information; do not add stock/generated hair photos as if they are John's work.
+- Keep each screen visually calm. One primary task per screen, concise labels, clear hierarchy, progressive disclosure and obvious next actions. Avoid dashboards made of equal-weight panels, repeated calls to action, excessive badges, decorative colour, and long explanatory copy.
+- Use imagery selectively: image-led where a person is choosing or recognising a look; compact text-led controls where a person is completing an operational task. Every image needs a clear purpose and useful alt text when informative.
+- Preserve privacy by default. Customer names, phone numbers, private messages, reference photos and payment evidence must remain behind the existing authorized customer/staff boundary. Mask sensitive details in overview previews; reveal only in the relevant authorized task.
+
+### Operations — task-first visual workspace
+- Operations is John's working desk, not an analytics landing page. The first screen must answer: what needs my decision now, what is happening today, and what should I do next?
+- Put the actionable request queue before the salon diary and business-performance reporting. Preview a small number of next requests using real service/category media when available, exact service name, requested date/time, amount and current status. If no authorized media exists, use a restrained neutral fallback; never invent a hairstyle image.
+- A preview action must open the real request in the existing appointment queue. The full queue remains the source of truth for customer identity, WhatsApp/contact, notes, private messages and payment-proof review.
+- Keep the confirmed salon diary separate from new/unconfirmed requests. A request is not an appointment; do not show requests as confirmed diary entries or imply that a requested time is reserved.
+- Present the diary as a chronological, glanceable schedule. Keep the next action visible, reduce scanning and scrolling, and use concise status labels plus text (not colour alone).
+- Group navigation by work priority. Daily work (today, requests, availability) should be easier to find than salon maintenance (customer looks/reviews, services/prices, style feed). Use short labels and comfortable mobile touch targets.
+- Keep business pulse and financial reconciliation secondary to daily work. Preserve the analytics measurement contract, source-record definitions, privacy rules and distinction between requested value, confirmed value, completed service value and recorded collections.
+- Do not add fake customer portraits, fabricated reviews, made-up appointment details, automatic confirmation, unverified payment state or unsupported push-notification claims.
+
+### Delivery sequence — admin first, then customer surfaces
+1. Operations/admin visual flow: request triage, real-media previews, appointment queue clarity, confirmed diary and supporting salon-management navigation.
+2. Customer accounts: personal style history, previous appointment context, private messages/payment-proof status, repeat booking and clear next action. Preserve guest access and optional Google linking.
+3. Booking: image-led look discovery connected to the exact supplied service and price, inspiration/reference upload where supported, progressive booking steps, real availability and explicit request/deposit/confirmation states.
+4. Public viewing: curated real work, service-linked lookbook, customer-approved reviews and clear paths from inspiration to the matching service/booking.
+
+Each phase is a separate implementation and QA checkpoint. Do not start customer-account, booking or public-viewing redesign while the admin phase is being QA'd unless the owner explicitly changes the sequence. Preserve the protected PWA install/offline, Firebase schema/rules/auth, booking and payment invariants unless separately approved.
+
+### UX evidence and validation
+- Apply progressive disclosure and cognitive-load principles: expose only the information needed for the current decision, keep related information together, and make actions and errors explicit.
+- Treat salon imagery as a choice aid, not decoration: connect a displayed look to the actual service/price where possible, and use only authentic authorized media.
+- Competitor patterns from Fresha and Booksy are references for portfolio-to-service discovery, client context and appointment workflows, not templates to copy wholesale.
+- Validate with actual mobile use and observed task completion: time to locate/review a request, ability to distinguish requests from confirmed appointments, success of private replies/payment-proof review, and ability to navigate salon-management areas. Do not claim conversion or productivity improvement without measured evidence.
