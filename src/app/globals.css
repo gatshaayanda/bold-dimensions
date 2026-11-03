@@ -1758,3 +1758,86 @@ input, select, textarea, button {
 .jtsSensitiveToggle:focus-visible{outline:2px solid #f0d58a;outline-offset:3px}
 .jtsSensitiveMasked{color:#bdb5a8!important;letter-spacing:.04em}
 @media(max-width:560px){.jtsSensitiveHeading{align-items:stretch;flex-direction:column}.jtsSensitiveToggle{width:100%;min-height:44px}}
+
+
+/* JTS admin responsive pass — fluid layouts from narrow phones through desktop. */
+.adminPage,.adminAuthorized{width:100%;max-width:100%;overflow-x:clip}
+.adminShell,.adminAccountBar,.adminPanel,.adminHeader,.jtsAdminWelcome,.jtsAdminWelcome>div{min-width:0;max-width:100%}
+.adminShell{width:min(1180px,calc(100% - 32px))}
+.adminPage :where(h1,h2,h3,h4,p,small,strong,span,a,button,label){overflow-wrap:anywhere}
+.adminPage :where(input,select,textarea){max-width:100%;min-width:0}
+.adminPage .stats{grid-template-columns:repeat(4,minmax(0,1fr))}
+.adminPage .adminTabs{display:flex;flex-wrap:wrap;overflow:visible;white-space:normal}
+.adminPage .adminTabs button{max-width:100%;white-space:normal;line-height:1.25}
+.adminPage .queueRow,.adminPage .jtsAppointmentMain,.adminPage .jtsAppointmentReconciliation,.adminPage .adminConversationView{min-width:0;max-width:100%}
+.adminPage .queueActions{min-width:0;max-width:100%;flex-wrap:wrap}
+.adminPage .queueActions>*{min-width:0;max-width:100%}
+.adminPage .financeGrid,.adminPage .varianceGrid,.adminPage .adminTwoCol,.adminPage .inboxGrid{min-width:0}
+.adminPage .adminNotice{max-width:100%;overflow-wrap:anywhere}
+.adminPage .adminPanel{scroll-margin-top:12px}
+.adminPage .jtsAppointmentFacts,.adminPage .jtsAppointmentTop{min-width:0;flex-wrap:wrap}
+.adminPage .jtsAppointmentContact{overflow-wrap:anywhere}
+.adminPage .jtsAppointmentReconciliation .queueActions{justify-content:flex-start}
+.adminPage .jtsAppointmentReconciliation .queueActions .button{flex:1 1 210px}
+.adminPage .jtsSensitiveToggle{max-width:100%}
+.adminPage .panelHeading{min-width:0;flex-wrap:wrap}
+.adminPage .panelHeading>div{min-width:0}
+.adminPage .adminForm,.adminPage .adminForm>*{min-width:0;max-width:100%}
+.adminPage .menuAdminList article,.adminPage .conversationRow,.adminPage .inboxRow{min-width:0}
+.adminPage .conversationRow small,.adminPage .inboxRow small{min-width:0;max-width:100%}
+.adminPage .messageBubble{overflow-wrap:anywhere;word-break:break-word}
+.adminPage .adminEditorModal,.adminPage .adminDeleteDialog{width:min(720px,calc(100vw - 28px));max-width:calc(100vw - 28px);max-height:calc(100dvh - 28px);overflow:auto}
+@media(max-width:900px){
+ .adminPage .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .adminPage .adminTwoCol,.adminPage .financeGrid{grid-template-columns:minmax(0,1fr)}
+ .adminPage .varianceGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .adminPage .adminTabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+ .adminPage .adminTabs button{width:100%;min-height:46px;padding:9px 8px;text-align:center}
+ .adminPage .jtsAdminWelcome{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+ .adminPage .jtsAdminWelcomeActions{display:flex;flex-wrap:wrap}
+}
+@media(max-width:600px){
+ .adminPage{padding:10px 0 28px}
+ .adminShell{width:calc(100% - 24px)}
+ .adminAccountBar{width:calc(100% - 24px);gap:10px;flex-wrap:wrap;padding:10px 0}
+ .adminHeader{gap:10px}
+ .adminHeader>div{min-width:0;width:100%}
+ .adminHeader h1{font-size:clamp(1.8rem,8vw,2.5rem);line-height:1.08}
+ .adminHeader>.button{width:100%}
+ .adminPage .jtsAdminWelcome{padding:14px;border-radius:12px}
+ .adminPage .jtsAdminWelcome h2{font-size:clamp(1.35rem,6vw,1.8rem);line-height:1.2}
+ .adminPage .jtsAdminWelcomeActions{display:grid;grid-template-columns:1fr;gap:8px}
+ .adminPage .jtsAdminWelcomeActions .button{width:100%;min-height:46px}
+ .adminPage .stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+ .adminPage .jtsAdminStats article{min-width:0;padding:10px}
+ .adminPage .jtsAdminStats span{font-size:.62rem;line-height:1.3}
+ .adminPage .jtsAdminStats strong{font-size:clamp(1.25rem,7vw,1.65rem);line-height:1.1;overflow-wrap:anywhere}
+ .adminPage .adminTabs{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:7px 0}
+ .adminPage .adminTabs button{font-size:.68rem;min-height:48px;padding:9px 7px}
+ .adminPage .adminPanel{padding:12px;border-radius:11px}
+ .adminPage .panelHeading{align-items:flex-start;gap:7px}
+ .adminPage .panelHeading h2{font-size:1.12rem}
+ .adminPage .queueRow{grid-template-columns:minmax(0,1fr);gap:9px}
+ .adminPage .queueActions{display:grid;grid-template-columns:minmax(0,1fr);width:100%}
+ .adminPage .queueActions>*{width:100%;justify-content:center}
+ .adminPage .jtsAppointmentReconciliation .queueActions .button{width:100%;flex:auto}
+ .adminPage .financeGrid,.adminPage .varianceGrid{grid-template-columns:minmax(0,1fr)}
+ .adminPage .menuAdminList article{align-items:stretch}
+ .adminPage .menuAdminList article>div:last-child{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+ .adminPage .menuAdminList article>div:last-child .button{width:100%}
+ .adminPage .dateField,.adminPage .paymentInput{width:100%;max-width:100%}
+ .adminPage .conversationHeader{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+ .adminPage .inboxList{max-height:340px}
+ .adminPage .adminConversationView{padding:10px}
+ .adminPage .adminNotice{position:relative;top:auto}
+ .adminPage .adminEditorModal,.adminPage .adminDeleteDialog{width:calc(100vw - 20px);max-width:calc(100vw - 20px);max-height:calc(100dvh - 20px);padding:14px}
+}
+@media(max-width:380px){
+ .adminShell,.adminAccountBar{width:calc(100% - 18px)}
+ .adminPage .adminTabs{grid-template-columns:minmax(0,1fr)}
+ .adminPage .stats{grid-template-columns:minmax(0,1fr)}
+ .adminPage .jtsAdminStats article{display:flex;justify-content:space-between;align-items:center;gap:10px}
+ .adminPage .jtsAdminStats strong{margin:0;flex:0 0 auto}
+ .adminPage .menuAdminList article>div:last-child{grid-template-columns:minmax(0,1fr)}
+ .adminPage .panelHeading>span{font-size:.7rem}
+}
