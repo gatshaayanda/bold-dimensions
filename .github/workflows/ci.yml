@@ -1,4 +1,4 @@
-name: JTS Styles CI
+name: Bold Dimensions CI
 
 on:
   push:
