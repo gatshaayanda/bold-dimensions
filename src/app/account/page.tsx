@@ -47,6 +47,8 @@ function googleErrorMessage(code: string) {
   return { error: "We couldn't connect Google right now. Your current booking session is unchanged. Please try again, or contact John if it keeps happening.", message: "" };
 }
 
+function weatherDescription(code:number){if(code===0)return "Clear skies";if([1,2].includes(code))return "Partly cloudy";if(code===3)return "Overcast";if([45,48].includes(code))return "Misty conditions";if([51,53,55,56,57].includes(code))return "Light drizzle";if([61,63,65,66,67,80,81,82].includes(code))return "Rain around";if([71,73,75,77,85,86].includes(code))return "Cold or wintry showers";if([95,96,99].includes(code))return "Thunderstorms possible";return "Gaborone weather";}
+
 function GoogleBrandMark() {
   return (
     <svg className="googleSignInMark" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
@@ -67,6 +69,20 @@ export default function AccountPage() {
   const [showAllBookings, setShowAllBookings] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [weather, setWeather] = useState<{temperature:number;code:number;rain:number|null}|null>(null);
+  const [weatherLoading, setWeatherLoading] = useState(true);
+  const [greetingHour, setGreetingHour] = useState(12);
+
+  useEffect(() => {
+    setGreetingHour(new Date().getHours());
+    let active = true;
+    fetch("https://api.open-meteo.com/v1/forecast?latitude=-24.6282&longitude=25.9231&current=temperature_2m,weather_code,precipitation_probability&timezone=Africa%2FGaborone")
+      .then(response => { if (!response.ok) throw new Error("Weather unavailable"); return response.json(); })
+      .then(data => { if (active && data.current) setWeather({temperature:Math.round(data.current.temperature_2m),code:Number(data.current.weather_code),rain:data.current.precipitation_probability == null ? null : Number(data.current.precipitation_probability)}); })
+      .catch(() => { if (active) setWeather(null); })
+      .finally(() => { if (active) setWeatherLoading(false); });
+    return () => { active = false; };
+  }, []);
 
   useEffect(() => {
     const stop = onAuthStateChanged(auth, next => {
@@ -186,7 +202,7 @@ export default function AccountPage() {
     <div className="jtsBookingTop jtsAccountAppBar"><Link href="/" className="jtsAccountWordmark"><span>JOHN THE STYLIST <small>BW</small></span></Link><div className="jtsAccountTopLinks"><Link href="/feed" className="jtsGhost">Style feed ↗</Link><Link href="/order" className="jtsButton jtsButtonGold">Book appointment <span aria-hidden="true">↗</span></Link></div></div>
 
     <header className="jtsAccountHero jtsAccountUtilityHero jtsAccountLivingHero jtsAccountCompactHero">
-      <div><span className="jtsEyebrow">YOUR PERSONAL SALON SPACE</span><h1>My JTS<span>.</span></h1><p>Your next appointment, all in one place.</p></div>
+      <div><span className="jtsEyebrow">YOUR PERSONAL SALON SPACE</span><h1>{greetingHour < 12 ? "Dumela, " : greetingHour < 17 ? "Good afternoon, " : "Good evening, "}{(user?.displayName?.trim().split(/\s+/)[0] || orders.find(order => order.customerId === user?.uid)?.customerName?.trim().split(/\s+/)[0] || "there")}<span>.</span></h1><p>Your JTS appointments and conversations, together.</p></div>
       
     </header>
 
@@ -205,6 +221,10 @@ export default function AccountPage() {
       <p className="jtsAccountTruth">A request is not confirmed until John confirms the slot and verifies the deposit.</p>
     </section>
 
+    <section className="jtsAccountWeather" aria-label="Gaborone weather">
+      <div><span className="jtsEyebrow">GABORONE TODAY</span><strong>{weatherLoading ? "Checking the weather…" : weather ? weatherDescription(weather.code) : "Weather update unavailable"}</strong><small>{weather ? "A quick look before you head out" : "Check your local forecast before travelling"}</small></div>
+      <div className="jtsAccountWeatherReading">{weather ? <><strong>{weather.temperature}°</strong>{weather.rain !== null && <small>{weather.rain}% rain chance</small>}</> : <span aria-hidden="true">☀</span>}</div>
+    </section>
     <div className="jtsAccountQuickFacts" aria-label="Account overview">
       <a href="#account-inbox-disclosure"><strong>{conversations.filter(item => item.unreadForCustomer).length}</strong><span>New replies</span></a>
       <a href="#account-history-disclosure"><strong>{orders.length}</strong><span>Bookings</span></a>
