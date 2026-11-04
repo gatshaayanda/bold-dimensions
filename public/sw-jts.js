@@ -9,7 +9,7 @@ firebase.messaging().onBackgroundMessage((payload)=>{
  const title=payload.notification?.title||payload.data?.title||"Bold Dimensions";
  const body=payload.notification?.body||payload.data?.body||"You have a service request update.";
  const link=payload.fcmOptions?.link||payload.data?.link||"/account";
- self.registration.showNotification(title,{body,icon:"/icon-192.png",badge:"/bold-dimensions-icon.svg",tag:payload.data?.appointmentId?"bd-service-request-"+payload.data.appointmentId:"bd-notification",data:{link}});
+ self.registration.showNotification(title,{body,icon:"/icon-192.png",badge:"/icon-192.png",tag:payload.data?.appointmentId?"bd-service-request-"+payload.data.appointmentId:"bd-notification",data:{link}});
 });
 
 self.addEventListener("notificationclick",(event)=>{
