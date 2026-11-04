@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { signInAnonymously } from "firebase/auth";
 import { auth } from "@/lib/firebase/client";
 import { createServiceRequest, SERVICE_AREAS, type ServiceAreaId } from "@/lib/bold-dimensions";
+import BdMobileDock from "@/components/bd-mobile-dock";
 
 export default function OrderForm(){
  const router=useRouter();
@@ -70,5 +71,5 @@ export default function OrderForm(){
     </section>}
    </form>
   </div>
- </main>;
+  <BdMobileDock/>\n </main>;
 }
