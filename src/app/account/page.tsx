@@ -190,8 +190,8 @@ export default function AccountPage() {
       <div className="jtsAccountHeroSeal" aria-hidden="true"><span>J</span><small>STYLE<br/>RECORD</small></div>
     </header>
     <nav className="jtsAccountLaunchGrid" aria-label="Your JTS shortcuts">
-      <a href="#account-private-title" className="jtsAccountLaunchCard"><span className="jtsAccountLaunchIcon" aria-hidden="true">✉</span><span><strong>Private inbox</strong><small>Talk with John</small></span><b aria-hidden="true">↗</b></a>
-      <a href="#account-history-title" className="jtsAccountLaunchCard"><span className="jtsAccountLaunchIcon" aria-hidden="true">▤</span><span><strong>Style history</strong><small>Your past bookings</small></span><b aria-hidden="true">↗</b></a>
+      <a href="#account-inbox-disclosure" className="jtsAccountLaunchCard"><span className="jtsAccountLaunchIcon" aria-hidden="true">✉</span><span><strong>Private inbox</strong><small>Talk with John</small></span><b aria-hidden="true">↗</b></a>
+      <a href="#account-history-disclosure" className="jtsAccountLaunchCard"><span className="jtsAccountLaunchIcon" aria-hidden="true">▤</span><span><strong>Style history</strong><small>Your past bookings</small></span><b aria-hidden="true">↗</b></a>
     </nav>
 
     {(error || message) && <p className={error ? "jtsFormError" : "jtsStyleStatus"} role="status" aria-live="polite">{error || message}</p>}
@@ -221,7 +221,7 @@ export default function AccountPage() {
     </section>
     </details>
 
-    <details className="jtsAccountDisclosure jtsAccountInboxDisclosure">
+    <details id="account-inbox-disclosure" className="jtsAccountDisclosure jtsAccountInboxDisclosure">
       <summary><span><strong>Private inbox</strong><small>{conversations.length ? `${conversations.length} conversation${conversations.length === 1 ? "" : "s"} · ${conversations.filter(item => item.unreadForCustomer).length} new replies` : "Private messages with John"}</small></span><b>Open +</b></summary>
     <section className="jtsAccountPrivateInbox jtsAccountSecondarySection" id="account-payment-proof" aria-labelledby="account-private-title">
       <div className="jtsAccountUtilityHeading"><div><span className="jtsEyebrow">PRIVATE INBOX</span><h2 id="account-private-title">Talk with John</h2><p className="jtsAccountInboxIntro">Replies, appointment questions and payment proof stay in the private conversation linked to your booking.</p></div><span className="jtsAccountLiveDot">Private</span></div>
@@ -241,7 +241,7 @@ export default function AccountPage() {
     </section>
     </details>
 
-    <details className="jtsAccountDisclosure jtsAccountHistoryDisclosure">
+    <details id="account-history-disclosure" className="jtsAccountDisclosure jtsAccountHistoryDisclosure">
       <summary><span><strong>Style history</strong><small>{orders.length} {orders.length === 1 ? "booking" : "bookings"} saved to your account</small></span><b>View +</b></summary>
     <section className="jtsStyleHistory jtsAccountSecondarySection" aria-labelledby="account-history-title"><div className="jtsStyleSectionHead"><div><span className="jtsEyebrow">YOUR RECORD</span><h2 id="account-history-title">Your style history</h2><p>{orders.length} {orders.length === 1 ? "booking record" : "booking records"} saved here. Reopen any one to see its details and conversation.</p></div><Link href="/order" className="jtsStyleTextLink">New booking ↗</Link></div>
       {!user ? <div className="jtsStyleEmpty"><p>Open your private booking session above to load your history.</p></div>
