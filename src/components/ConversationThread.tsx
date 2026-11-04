@@ -57,7 +57,7 @@ export default function ConversationThread({conversationId,role,userId,title="Pr
     {attachment&&<div className="bdConversationPending"><span>{attachment.name} ready to send</span><button type="button" onClick={()=>setAttachment(null)}>Remove</button></div>}
     {uploading&&<div className="bdConversationProgress"><span style={{width:progress+"%"}}/></div>}
     {(error||notice)&&<p className={error?"bdFormError":"bdInlineSuccess"} role="status">{error||notice}</p>}
-    <div className="bdConversationActions"><small>Only the customer and authorized team can read this conversation.</small><button type="submit" className="bdPrimary" disabled={sending||uploading||(!draft.trim()&&!attachment)}>{sending?"Sending…":"Send privately ↗"}</button></div>
+    <div className="bdConversationActions"><small>Conversation messages are access-controlled. Uploaded media is hosted by UploadThing.</small><button type="submit" className="bdPrimary" disabled={sending||uploading||(!draft.trim()&&!attachment)}>{sending?"Sending…":"Send privately ↗"}</button></div>
    </form>
    {role==="admin"&&conversation?.status!=="resolved"&&<button type="button" className="bdConversationResolve" onClick={()=>void resolve()}>Mark conversation resolved</button>}
   </div>
