@@ -53,3 +53,35 @@
 .bdStatus-New{border-color:var(--bd-orange);color:#ffc39e}.bdStatus-Completed{border-color:#6fae9a;color:#a9e5d0}.bdStatus-Cancelled{border-color:#b36e6e;color:#ffc0c0}
 @media(max-width:760px){.bdAdminTop{padding:10px 14px;gap:9px}.bdAdminTop>span{max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.bdAdminMain{width:calc(100% - 28px);padding-top:18px}.bdAdminWelcome{align-items:start;flex-direction:column;gap:10px}.bdAdminStats{grid-template-columns:repeat(2,1fr);gap:7px}.bdAdminStats article{padding:10px}.bdAdminSection{padding:13px;margin-top:16px}.bdAdminSectionHead{align-items:flex-start;flex-direction:column}.bdAdminRequest{padding:11px}.bdAdminRequestControls{align-items:stretch}.bdAdminRequestControls label{width:100%}.bdAdminRequestControls select{width:100%}.bdAdminExpand{margin-left:0}.bdAdminPrivate{grid-template-columns:1fr 1fr}.bdAdminScopeGrid{grid-template-columns:1fr}.bdAdminWorkActions{align-items:stretch;flex-direction:column}.bdAdminWorkActions .bdPrimary{width:100%}.bdAdminFilters{width:100%}.bdAdminFilters button{flex:1}}
 @media(max-width:400px){.bdAdminPrivate{grid-template-columns:1fr}.bdAdminRequestMain{flex-direction:column}.bdAdminSectionHead h2{font-size:1.35rem}.bdAdminStats strong{font-size:1.5rem}}
+
+
+/* Homepage first-view compactness follows the Iteration 13 mobile app composition. */
+.bdHero{display:block;padding:30px 0 24px}
+.bdHeroCopy{max-width:720px}
+.bdHero h1{font-size:clamp(2.65rem,6vw,4.45rem);margin:10px 0}
+.bdHeroCopy>p{max-width:560px;margin:8px 0;font-size:.86rem}
+.bdActions{margin-top:15px}
+.bdTrustLine{margin-top:13px}
+.bdServicesSection{padding-top:18px}
+.bdAreaGrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.bdAreaCard{min-height:120px;padding:13px;grid-template-columns:25px 1fr 16px;gap:9px}
+.bdAreaCard h3{font-size:1.02rem}
+.bdAreaCard p{font-size:.67rem}
+@media(max-width:760px){
+ .bdHero{padding:24px 0 19px}
+ .bdHero h1{font-size:clamp(2.5rem,10vw,3.35rem);line-height:.93}
+ .bdHeroCopy>p{font-size:.78rem;line-height:1.5;max-width:340px}
+ .bdActions{gap:8px;margin-top:13px}
+ .bdPrimary,.bdSecondary{min-height:44px;padding:0 13px;font-size:.67rem}
+ .bdTrustLine{font-size:.58rem;margin-top:10px}
+ .bdServicesSection{padding-top:15px}
+ .bdAreaGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+ .bdAreaCard{min-height:104px;padding:11px;grid-template-columns:19px 1fr 12px;gap:7px}
+ .bdAreaCard:nth-child(3){grid-column:1/-1}
+ .bdAreaCard h3{font-size:.91rem}
+ .bdAreaCard p{font-size:.62rem;line-height:1.4}
+ .bdAreaNumber{font-size:.57rem}
+ .bdSectionHead{margin-bottom:10px}
+ .bdSectionHead h2{font-size:1.55rem}
+ .bdHow{padding-top:17px}
+}
