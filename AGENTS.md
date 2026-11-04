@@ -20,7 +20,7 @@ The app is a service-request and customer follow-up tool. It is not currently a 
 
 Do not claim authorised Massey Ferguson dealer status, equipment stock, guaranteed coverage, technician availability, response times, published prices, warranties or service guarantees unless the owner verifies them.
 
-Use only the supplied logo at `public/brand/bold-dimensions-logo.jpg`. Its visible identity uses navy/blue, cyan, purple and orange. Keep the original asset intact. `public/jts.jpg` and `public/jts-logo.svg` are compatibility paths for inherited components and must contain the Bold Dimensions logo, not JTS branding.
+Use only the supplied logo at `public/brand/bold-dimensions-logo.jpg`. Its visible identity uses navy/blue, cyan, purple and orange. Keep the original asset intact. `public/jts.jpg` is a compatibility path containing the supplied full logo. `public/jts-logo.svg` is a compatibility path for the simplified Bold Dimensions app mark; neither may contain JTS branding.
 
 Known public contact details from business research:
 - +267 73 207 038
