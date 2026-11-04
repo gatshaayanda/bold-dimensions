@@ -27,5 +27,6 @@ export async function sendServiceConversationMessage(id:string,senderId:string,r
  batch.set(messageRef,{senderId,senderRole:role,text:clean,...(attachment?{attachment}:{}),createdAt:now});
  batch.update(doc(db,"conversations",id),{updatedAt:now,lastMessageAt:now,lastMessagePreview:(clean||(attachment?"Shared "+attachment.type:"")).slice(0,160),...(role==="customer"?{unreadForAdmin:true,unreadForCustomer:false,status:"open"}:{unreadForCustomer:true,unreadForAdmin:false,status:"waiting"})});
  await batch.commit();
+ return messageRef.id;
 }
 export async function resolveServiceConversation(id:string){await updateDoc(doc(db,"conversations",id),{status:"resolved",updatedAt:new Date().toISOString()})}
