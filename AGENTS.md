@@ -46,7 +46,7 @@ The request form should collect:
 
 Do not collect payment before the business has assessed and quoted the work. Do not invent a price, appointment time or service availability. A submitted request is not a confirmed visit or booking.
 
-Customer request history is private and scoped to the signed-in Firebase UID. Tracking must not expose another customer's request. A local copy may help recover the reference on the same device, but it must never be presented as live backend status.
+Customer request history is private and scoped to the signed-in Firebase UID. Every request creates a matching private `conversations/{requestId}` record with a `messages` subcollection. Tracking and the admin request record both expose that private thread; messages and attachments are visible only to the customer and authorized staff. Tracking must not expose another customer's request. A local copy may help recover the reference on the same device, but it must never be presented as live backend status.
 
 ## 4. Service request data model
 The current client model is in `src/lib/bold-dimensions.ts`. Primary Firestore collection: `serviceRequests`.
@@ -57,6 +57,8 @@ Fields:
 - `location`, `description`, `urgency`, `preferredContact`;
 - `status`, `createdAt`, `updatedAt`;
 - optional admin-managed `scheduledFor`, `quoteAmount`, `quoteNote`, `internalNote`.
+
+Conversation records use the matching service request ID, a customer UID, status/unread metadata and message subcollection. Message attachments use UploadThing endpoints `customerServiceMedia` and `adminBusinessMedia`; never open Firebase Storage rules for uploads.
 
 Status progression:
 `New → Reviewing → Quote prepared → Awaiting customer → Scheduled → In progress → Completed`, with `Cancelled` available.
