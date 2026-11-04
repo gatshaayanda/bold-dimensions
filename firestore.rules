@@ -16,8 +16,9 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role in ['owner', 'staff'];
     }
 
-    function validServiceRequestCreate() {
+    function validServiceRequestCreate(requestId) {
       let data = request.resource.data;
+      let conversationPath = /databases/$(database)/documents/conversations/$(requestId);
       return data.keys().hasOnly([
           'customerId', 'customerName', 'phone', 'email', 'areaId', 'serviceType',
           'equipment', 'makeModel', 'location', 'description', 'urgency',
@@ -55,7 +56,9 @@ service cloud.firestore {
         && data.preferredContact in ['WhatsApp', 'Phone', 'Email']
         && data.status == 'New'
         && data.createdAt is string
-        && data.updatedAt is string;
+        && data.updatedAt is string
+        && existsAfter(conversationPath)
+        && getAfter(conversationPath).data.customerId == request.auth.uid;
     }
 
     function validServiceRequestStaffUpdate() {
@@ -163,7 +166,7 @@ service cloud.firestore {
     }
 
     match /serviceRequests/{requestId} {
-      allow create: if signedIn() && validServiceRequestCreate();
+      allow create: if signedIn() && validServiceRequestCreate(requestId);
       allow read: if isAdmin() || (signedIn() && resource.data.customerId == request.auth.uid);
       allow update: if isAdmin() && validServiceRequestStaffUpdate();
       allow delete: if isAdmin();
