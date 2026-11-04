@@ -2302,3 +2302,29 @@ input, select, textarea, button {
  .jtsAccountLaunchCard small{font-size:9px}
 }
 @media(prefers-reduced-motion:reduce){.jtsAccountLaunchCard{transition:none}}
+
+
+/* Compact customer workspace: facts sit between the next action and shortcuts. */
+.jtsAccountQuickFacts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 0 12px}
+.jtsAccountQuickFacts a{display:flex;align-items:center;gap:9px;min-width:0;padding:10px 12px;border:1px solid rgba(212,175,55,.18);border-radius:12px;background:#111;color:#f5f2e9;text-decoration:none}
+.jtsAccountQuickFacts strong{font-size:18px;line-height:1;color:#d8b85a;white-space:nowrap}
+.jtsAccountQuickFacts span{font-size:10px;line-height:1.25;color:#b9b4a9}
+.jtsAccountDisclosure{margin:10px 0;border:1px solid rgba(212,175,55,.2);border-radius:13px;background:rgba(255,255,255,.025);overflow:hidden}
+.jtsAccountDisclosure>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:58px;padding:12px 15px;cursor:pointer;list-style:none}
+.jtsAccountDisclosure>summary::-webkit-details-marker{display:none}
+.jtsAccountDisclosure>summary>span{display:grid;gap:3px;min-width:0}
+.jtsAccountDisclosure>summary strong{font-size:13px;color:#f4f1e9}
+.jtsAccountDisclosure>summary small{font-size:10px;color:#aaa397}
+.jtsAccountDisclosure>summary>b{font-size:10px;font-weight:600;color:#d8b85a;white-space:nowrap}
+.jtsAccountDisclosure[open]>summary{border-bottom:1px solid rgba(212,175,55,.16)}
+.jtsAccountDisclosure>.jtsAccountSecondarySection,.jtsAccountDisclosure>.jtsAccountUtilityAuth{margin:0;padding:16px;border:0}
+.jtsAccountConversationExpand{margin-top:12px;border-top:1px solid rgba(212,175,55,.15);padding-top:10px}
+.jtsAccountNote{margin:18px 0 30px;font-size:10px;line-height:1.5;color:#a9a397}
+@media(max-width:560px){
+ .jtsAccountQuickFacts{gap:6px}
+ .jtsAccountQuickFacts a{display:grid;gap:4px;justify-items:start;padding:9px 8px}
+ .jtsAccountQuickFacts strong{font-size:16px}
+ .jtsAccountQuickFacts span{font-size:9px}
+ .jtsAccountAppBar{flex-wrap:wrap}
+ .jtsAccountCompactHero{margin-bottom:10px}
+}
