@@ -196,16 +196,6 @@ export default function AccountPage() {
 
     {(error || message) && <p className={error ? "jtsFormError" : "jtsStyleStatus"} role="status" aria-live="polite">{error || message}</p>}
 
-    <section className="jtsStylePanel jtsAccountUtilityAuth" aria-labelledby="account-connection-title">
-      <div className="jtsAccountUtilityHeading"><span className="jtsEyebrow">ACCOUNT ACCESS</span><span className={user && !user.isAnonymous ? "jtsStyleConnected" : "jtsAccountGuestBadge"}>{user && !user.isAnonymous ? "✓ Google connected" : user ? "Guest session" : "Not connected"}</span></div>
-      <h2 id="account-connection-title">{user && !user.isAnonymous ? "Your history is saved." : "Keep your bookings together."}</h2>
-      {user && !user.isAnonymous
-        ? <p>You&apos;re signed in with Google. Use the same account when you return.</p>
-        : user
-          ? <><p>Connect Google to keep this guest booking identity and its history.</p><button className="googleSignInButton jtsAccountGoogleButton" type="button" onClick={() => void connectGoogle()} disabled={busy}><GoogleBrandMark />{busy ? "Connecting…" : "Continue with Google"}</button></>
-          : <><p>Sign in to access saved bookings, or continue with a guest session on this device.</p><button className="googleSignInButton jtsAccountGoogleButton" type="button" onClick={() => void connectGoogle()} disabled={!ready || busy}><GoogleBrandMark />{busy ? "Connecting…" : "Continue with Google"}</button><div className="jtsAccountAuthFallback"><span>Prefer not to sign in?</span><button type="button" className="jtsStyleTextLink" onClick={() => void startGuest()} disabled={!ready || busy}>Open guest booking history</button></div></>}
-    </section>
-
     <section className="jtsStyleNext jtsAccountNext jtsAccountFocus" aria-labelledby="account-next-title">
       <div className="jtsAccountNextHeading"><span className="jtsEyebrow">{nextOrderIsConfirmed ? "YOUR NEXT APPOINTMENT" : "YOUR NEXT REQUEST"}</span>
         {nextOrder ? <><h2 id="account-next-title">{nextOrder.items.map(item => item.name).join(" · ")}</h2><p>{dateText(nextOrder.scheduledFor)}</p><span className="jtsAccountStatus">{label(nextOrder.status)}</span><small>Ref #{nextOrder.id.slice(0, 8).toUpperCase()}</small></>
@@ -218,6 +208,21 @@ export default function AccountPage() {
       <p className="jtsAccountTruth">A request is not confirmed until John confirms the slot and verifies the deposit.</p>
     </section>
 
+    <details className="jtsAccountDisclosure jtsAccountAccessDisclosure">
+      <summary><span><strong>Account access</strong><small>{user && !user.isAnonymous ? "Google connected" : user ? "Guest session · connect to keep your history" : "Sign in or continue as a guest"}</small></span><b>Manage +</b></summary>
+    <section className="jtsStylePanel jtsAccountUtilityAuth" aria-labelledby="account-connection-title">
+      <div className="jtsAccountUtilityHeading"><span className="jtsEyebrow">ACCOUNT ACCESS</span><span className={user && !user.isAnonymous ? "jtsStyleConnected" : "jtsAccountGuestBadge"}>{user && !user.isAnonymous ? "✓ Google connected" : user ? "Guest session" : "Not connected"}</span></div>
+      <h2 id="account-connection-title">{user && !user.isAnonymous ? "Your history is saved." : "Keep your bookings together."}</h2>
+      {user && !user.isAnonymous
+        ? <p>You&apos;re signed in with Google. Use the same account when you return.</p>
+        : user
+          ? <><p>Connect Google to keep this guest booking identity and its history.</p><button className="googleSignInButton jtsAccountGoogleButton" type="button" onClick={() => void connectGoogle()} disabled={busy}><GoogleBrandMark />{busy ? "Connecting…" : "Continue with Google"}</button></>
+          : <><p>Sign in to access saved bookings, or continue with a guest session on this device.</p><button className="googleSignInButton jtsAccountGoogleButton" type="button" onClick={() => void connectGoogle()} disabled={!ready || busy}><GoogleBrandMark />{busy ? "Connecting…" : "Continue with Google"}</button><div className="jtsAccountAuthFallback"><span>Prefer not to sign in?</span><button type="button" className="jtsStyleTextLink" onClick={() => void startGuest()} disabled={!ready || busy}>Open guest booking history</button></div></>}
+    </section>
+    </details>
+
+    <details className="jtsAccountDisclosure jtsAccountInboxDisclosure">
+      <summary><span><strong>Private inbox</strong><small>{conversations.length ? `${conversations.length} conversation${conversations.length === 1 ? "" : "s"} · ${conversations.filter(item => item.unreadForCustomer).length} new replies` : "Private messages with John"}</small></span><b>Open +</b></summary>
     <section className="jtsAccountPrivateInbox jtsAccountSecondarySection" id="account-payment-proof" aria-labelledby="account-private-title">
       <div className="jtsAccountUtilityHeading"><div><span className="jtsEyebrow">PRIVATE INBOX</span><h2 id="account-private-title">Talk with John</h2><p className="jtsAccountInboxIntro">Replies, appointment questions and payment proof stay in the private conversation linked to your booking.</p></div><span className="jtsAccountLiveDot">Private</span></div>
       {!user ? <div className="jtsStyleEmpty"><p>Connect your account or open your guest booking history to see private appointment conversations.</p></div>
@@ -234,13 +239,17 @@ export default function AccountPage() {
         })}</div>}
       <p className="jtsAccountNotificationNote">Messages and payment screenshots are private to you and authorized JTS staff. A screenshot is not payment verification; John checks the Orange Money account.</p>
     </section>
+    </details>
 
+    <details className="jtsAccountDisclosure jtsAccountHistoryDisclosure">
+      <summary><span><strong>Style history</strong><small>{orders.length} {orders.length === 1 ? "booking" : "bookings"} saved to your account</small></span><b>View +</b></summary>
     <section className="jtsStyleHistory jtsAccountSecondarySection" aria-labelledby="account-history-title"><div className="jtsStyleSectionHead"><div><span className="jtsEyebrow">YOUR RECORD</span><h2 id="account-history-title">Your style history</h2><p>{orders.length} {orders.length === 1 ? "booking record" : "booking records"} saved here. Reopen any one to see its details and conversation.</p></div><Link href="/order" className="jtsStyleTextLink">New booking ↗</Link></div>
       {!user ? <div className="jtsStyleEmpty"><p>Open your private booking session above to load your history.</p></div>
       : !ready ? <div className="jtsStyleEmpty">Loading your bookings…</div>
       : orders.length > 0 ? <><div className="jtsStyleBookingList">{visibleOrders.map(order => <article key={order.id} className="jtsBookingRow jtsStyleBookingRow"><div><span className="jtsEyebrow">{label(order.status)}</span><h3>{order.items.map(item => item.name).join(" · ")}</h3><p>{dateText(order.scheduledFor)}</p><small>Reference #{order.id.slice(0, 8).toUpperCase()} · {order.status}</small></div><Link href={"/orders/" + order.id} className="jtsGhost">Details ↗</Link></article>)}</div>{recentOrders.length > INITIAL_BOOKINGS_VISIBLE && <button type="button" className="jtsAccountShowBookings" onClick={() => setShowAllBookings(value => !value)}>{showAllBookings ? "Show recent bookings" : "View all " + recentOrders.length + " bookings"}</button>}</>
       : <div className="jtsStyleEmpty"><h3>Your first appointment starts here.</h3><p>Choose a service and request a date that works for you.</p><Link href="/order" className="jtsButton jtsButtonGold">Request your first appointment ↗</Link></div>}
     </section>
+    </details>
 
     <p className="jtsAccountNote"><strong>Your account is private.</strong> Only you and authorized JTS staff can access your appointment details and conversations.</p>
   </div></main>;
