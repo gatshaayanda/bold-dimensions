@@ -49,7 +49,7 @@ Do not collect payment before the business has assessed and quoted the work. Do 
 Customer request history is private and scoped to the signed-in Firebase UID. Every request creates a matching private `conversations/{requestId}` record with a `messages` subcollection. Tracking and the admin request record both expose that private thread; message records are visible only to the customer and authorized staff. UploadThing attachment URLs are separately hosted links and must not be described as Firebase-private files. Tracking must not expose another customer's request. A local copy may help recover the reference on the same device, but it must never be presented as live backend status.
 
 ## 4. Service request data model
-The current client model is in `src/lib/bold-dimensions.ts`. Primary Firestore collection: `serviceRequests`.
+The public service data is in `src/lib/bold-dimensions-config.ts`; Firebase request operations are in `src/lib/bold-dimensions.ts`. Primary Firestore collection: `serviceRequests`.
 
 Fields:
 - `customerId`, `customerName`, `phone`, optional `email`;
@@ -104,6 +104,7 @@ Protected behavior:
 - embedded-browser handoff to the normal browser, preserving the original URL;
 - keep service-worker registration at `/sw-jts.js` unless a verified migration is approved;
 - preserve offline/reconnect messaging and waiting-worker update lifecycle;
+- preserve FCM registration, per-user notification preferences and foreground/background delivery. Use only `NEXT_PUBLIC_FIREBASE_VAPID_KEY` from the new Bold Dimensions Firebase project; never reuse the inherited JTS VAPID key.
 - do not cache private customer/admin data or API responses.
 
 The worker's Firebase Messaging config must match `the-wall-ab746`. The cache namespace must match `brand.serviceWorkerCache` in `src/config/brand.ts`. Increment the cache version for shell changes. Legacy `jts` filenames and event names may remain as technical compatibility identifiers; customer-visible text must say Bold Dimensions.
