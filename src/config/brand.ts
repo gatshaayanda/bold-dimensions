@@ -5,7 +5,7 @@ export const brand = {
   themeColor: "#173B72",
   backgroundColor: "#07152D",
   logo: "/brand/bold-dimensions-logo.jpg",
-  iconSvg: "/jts-logo.svg",
+  iconSvg: "/bold-dimensions-icon.svg",
   icon192: "/icon-192.png",
   icon512: "/icon-512.png",
   manifest: "/manifest.webmanifest",
