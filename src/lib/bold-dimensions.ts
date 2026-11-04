@@ -1,5 +1,5 @@
 "use client";
-import { addDoc, collection, doc, onSnapshot, orderBy, query, updateDoc, where } from "firebase/firestore";
+import { collection, doc, onSnapshot, orderBy, query, updateDoc, where, writeBatch } from "firebase/firestore";
 import type { Unsubscribe } from "firebase/firestore";
 import { db } from "@/lib/firebase/client";
 import type { ServiceRequest } from "@/lib/bold-dimensions-config";
@@ -7,7 +7,7 @@ export { SERVICE_AREAS, requestStatusSteps } from "@/lib/bold-dimensions-config"
 export type { ServiceAreaId, ServiceRequest, ServiceRequestStatus } from "@/lib/bold-dimensions-config";
 
 const requests=collection(db,"serviceRequests");
-export async function createServiceRequest(input:Omit<ServiceRequest,"id"|"status"|"createdAt"|"updatedAt"|"scheduledFor"|"quoteAmount"|"quoteNote"|"internalNote">){const now=new Date().toISOString();const ref=await addDoc(requests,{...input,status:"New",createdAt:now,updatedAt:now});return ref.id}
+export async function createServiceRequest(input:Omit<ServiceRequest,"id"|"status"|"createdAt"|"updatedAt"|"scheduledFor"|"quoteAmount"|"quoteNote"|"internalNote">){const now=new Date().toISOString();const requestRef=doc(requests);const batch=writeBatch(db);batch.set(requestRef,{...input,status:"New",createdAt:now,updatedAt:now});batch.set(doc(db,"conversations",requestRef.id),{customerId:input.customerId,customerName:input.customerName,serviceRequestId:requestRef.id,title:input.serviceType,status:"open",createdAt:now,updatedAt:now,lastMessageAt:now,lastMessagePreview:"",unreadForCustomer:false,unreadForAdmin:false});await batch.commit();return requestRef.id}
 export function subscribeToCustomerServiceRequests(uid:string,onChange:(items:ServiceRequest[])=>void,onError:(error:Error)=>void):Unsubscribe{return onSnapshot(query(requests,where("customerId","==",uid)),snapshot=>onChange(snapshot.docs.map(item=>({id:item.id,...item.data()} as ServiceRequest)).sort((a,b)=>b.createdAt.localeCompare(a.createdAt))),error=>onError(error instanceof Error?error:new Error("Your service requests could not be loaded.")))}
 export function subscribeToServiceRequests(onChange:(items:ServiceRequest[])=>void,onError:(error:Error)=>void):Unsubscribe{return onSnapshot(query(requests,orderBy("createdAt","desc")),snapshot=>onChange(snapshot.docs.map(item=>({id:item.id,...item.data()} as ServiceRequest))),error=>onError(error instanceof Error?error:new Error("The service request queue could not be loaded.")))}
 export function subscribeToServiceRequest(id:string,onChange:(item:ServiceRequest|null)=>void,onError:(error:Error)=>void):Unsubscribe{return onSnapshot(doc(db,"serviceRequests",id),snapshot=>onChange(snapshot.exists()?({id:snapshot.id,...snapshot.data()} as ServiceRequest):null),error=>onError(error instanceof Error?error:new Error("Service request unavailable.")))}
