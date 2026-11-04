@@ -9,6 +9,7 @@ import {brand} from "@/config/brand";
 import "./globals.css";
 import "./pwa.css";
 import "./jts-account.css";
+import "./bold-dimensions.css";
 
 const siteUrl=process.env.NEXT_PUBLIC_BASE_URL||"http://localhost:3000";
 type HandoffContext="whatsapp"|"instagram"|"facebook"|"messenger"|"linkedin"|"embedded"|"browser";
