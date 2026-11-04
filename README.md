@@ -11,7 +11,7 @@ A mobile-first customer and operations app for requesting support across agricul
 - Access the app from a supported mobile browser or install it as a PWA.
 
 ## PWA
-- Branded standalone app using the owner-supplied Bold Dimensions logo.
+- Branded standalone app using a Bold Dimensions app mark derived from the supplied identity; the full supplied logo is used in the customer interface.
 - Home-screen install prompt when the browser supports it.
 - Truthful iOS/iPadOS Share → Add to Home Screen guidance.
 - Existing embedded-browser handoff preserved.
