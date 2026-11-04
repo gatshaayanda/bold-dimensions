@@ -2,7 +2,6 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-
     function signedIn() {
       return request.auth != null;
     }
@@ -13,351 +12,82 @@ service cloud.firestore {
 
     function isAdmin() {
       return signedIn()
-        && (
-          (
-            request.auth.token.email_verified == true
-            && request.auth.token.email in ['gatshaayanda@gmail.com', 'chikohoraknowledge4@gmail.com']
-          )
-          || (
-            exists(/databases/$(database)/documents/admins/$(request.auth.uid))
-            && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role in ['owner', 'staff', 'Owner', 'Staff']
-          )
-        );
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+        && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role in ['owner', 'staff'];
     }
 
-    function validOrder() {
-      // Every customer order must belong to a Firebase Auth session. Guests use Anonymous Auth; this is still authentication, not a sign-in requirement.
-      return request.resource.data.keys().hasOnly([
-          'customerId',
-          'createdAt',
-          'customerName',
-          'phone',
-          'mode',
-          'scheduledFor',
-          'deliveryLocation',
-          'instructions',
-          'items',
-          'total',
-          'status'
+    function validServiceRequestCreate() {
+      let data = request.resource.data;
+      return data.keys().hasOnly([
+          'customerId', 'customerName', 'phone', 'email', 'areaId', 'serviceType',
+          'equipment', 'makeModel', 'location', 'description', 'urgency',
+          'preferredContact', 'status', 'createdAt', 'updatedAt'
         ])
-        && request.resource.data.keys().hasAll([
-          'createdAt',
-          'customerName',
-          'phone',
-          'mode',
-          'scheduledFor',
-          'deliveryLocation',
-          'instructions',
-          'items',
-          'total',
-          'status'
+        && data.keys().hasAll([
+          'customerId', 'customerName', 'phone', 'areaId', 'serviceType',
+          'equipment', 'makeModel', 'location', 'description', 'urgency',
+          'preferredContact', 'status', 'createdAt', 'updatedAt'
         ])
-        && request.resource.data.createdAt is string
-        && request.resource.data.customerName is string
-        && request.resource.data.phone is string
-        && request.resource.data.mode in ['pickup', 'delivery']
-        && request.resource.data.scheduledFor is string
-        && request.resource.data.deliveryLocation is string
-        && request.resource.data.instructions is string
-        && request.resource.data.items is list
-        && request.resource.data.items.size() > 0
-        && request.resource.data.total is number
-        && request.resource.data.total >= 0
-        && request.resource.data.status == 'New'
-        && (
-          !request.resource.data.keys().hasAny(['customerId'])
-          || request.resource.data.customerId is string
-        );
+        && data.customerId is string
+        && data.customerId == request.auth.uid
+        && data.customerName is string
+        && data.customerName.size() > 0
+        && data.customerName.size() <= 100
+        && data.phone is string
+        && data.phone.size() >= 7
+        && data.phone.size() <= 30
+        && (!data.keys().hasAny(['email']) || (data.email is string && data.email.size() <= 160))
+        && data.areaId in ['agricultural-machinery', 'air-conditioning', 'solar-water-heating']
+        && data.serviceType is string
+        && data.serviceType.size() > 0
+        && data.serviceType.size() <= 100
+        && data.equipment is string
+        && data.equipment.size() <= 100
+        && data.makeModel is string
+        && data.makeModel.size() <= 100
+        && data.location is string
+        && data.location.size() > 0
+        && data.location.size() <= 180
+        && data.description is string
+        && data.description.size() >= 10
+        && data.description.size() <= 1500
+        && data.urgency in ['Standard', 'Urgent']
+        && data.preferredContact in ['WhatsApp', 'Phone', 'Email']
+        && data.status == 'New'
+        && data.createdAt is string
+        && data.updatedAt is string;
     }
 
-    function validCustomer(uid) {
-      return request.resource.data.keys().hasOnly([
-          'uid',
-          'name',
-          'email',
-          'phone',
-          'preferredDeliveryLocation',
-          'notes',
-          'createdAt',
-          'updatedAt'
+    function validServiceRequestStaffUpdate() {
+      let data = request.resource.data;
+      return data.diff(resource.data).affectedKeys().hasOnly([
+          'status', 'quoteAmount', 'quoteNote', 'internalNote', 'updatedAt'
         ])
-        && request.resource.data.uid == uid
-        && request.resource.data.name is string
-        && request.resource.data.email is string
-        && request.resource.data.phone is string
-        && request.resource.data.preferredDeliveryLocation is string
-        && request.resource.data.notes is string
-        && request.resource.data.createdAt is string
-        && request.resource.data.updatedAt is string;
-    }
-
-    function validReconciliation() {
-      return request.resource.data.keys().hasOnly([
-        'date',
-        'actualCash',
-        'actualETransfer',
-        'actualOther',
-        'notes',
-        'updatedAt'
-      ])
-      && request.resource.data.keys().hasAll([
-        'date',
-        'actualCash',
-        'actualETransfer',
-        'actualOther',
-        'notes',
-        'updatedAt'
-      ])
-      && request.resource.data.date is string
-      && request.resource.data.actualCash is number
-      && request.resource.data.actualCash >= 0
-      && request.resource.data.actualETransfer is number
-      && request.resource.data.actualETransfer >= 0
-      && request.resource.data.actualOther is number
-      && request.resource.data.actualOther >= 0
-      && request.resource.data.notes is string
-      && request.resource.data.updatedAt is string;
+        && data.customerId == resource.data.customerId
+        && data.status in [
+          'New', 'Reviewing', 'Quote prepared', 'Awaiting customer',
+          'Scheduled', 'In progress', 'Completed', 'Cancelled'
+        ]
+        && data.updatedAt is string
+        && (!data.keys().hasAny(['quoteAmount']) || (data.quoteAmount is number && data.quoteAmount >= 0))
+        && (!data.keys().hasAny(['quoteNote']) || (data.quoteNote is string && data.quoteNote.size() <= 1200))
+        && (!data.keys().hasAny(['internalNote']) || (data.internalNote is string && data.internalNote.size() <= 1200));
     }
 
     match /admins/{uid} {
+      // Admin roles are provisioned deliberately by the project owner in Firebase Console.
       allow read: if isOwner(uid);
       allow create, update, delete: if false;
     }
 
-    match /customers/{uid} {
-      allow read: if isOwner(uid);
-      allow create, update: if isOwner(uid) && validCustomer(uid);
-      allow delete: if false;
-    }
-
-    match /orders/{orderId} {
-      allow create: if validOrder()
-        && request.resource.data.keys().hasAll(['customerId'])
-        && isOwner(request.resource.data.customerId);
-
-      allow read: if isAdmin()
-        || (
-          resource.data.keys().hasAny(['customerId'])
-          && isOwner(resource.data.customerId)
-        );
-
-      allow update, delete: if isAdmin();
-    }
-
-    match /appointmentAvailability/{dateId} {
-      // Customers need to read date closures to choose an available day. Only authorized staff can change them.
-      allow read: if true;
-      allow create, update: if isAdmin()
-        && request.resource.data.keys().hasOnly(['date', 'available', 'reason', 'updatedAt'])
-        && request.resource.data.keys().hasAll(['date', 'available', 'reason', 'updatedAt'])
-        && request.resource.data.date == dateId
-        && request.resource.data.available == false
-        && request.resource.data.reason is string
-        && request.resource.data.reason.size() <= 120
-        && request.resource.data.updatedAt is string;
-      allow delete: if isAdmin();
-    }
-
-    match /menu/{itemId} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-
-    match /businessSettings/{settingId} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-
-    match /notificationPreferences/{uid} {
-      allow read: if isOwner(uid);
-      allow create, update: if isOwner(uid)
-        && request.resource.data.keys().hasOnly(['enabled','leadMinutes','updatedAt'])
-        && request.resource.data.enabled is bool
-        && request.resource.data.leadMinutes in [5,10,15,20,30,45,60]
-        && request.resource.data.updatedAt is string;
-      allow delete: if isOwner(uid);
-    }
-
-    match /notificationTokens/{uid}/tokens/{tokenId} {
-      allow create, update: if isOwner(uid)
-        && request.resource.data.keys().hasOnly(['token','admin','updatedAt'])
-        && request.resource.data.token is string
-        && request.resource.data.token.size() > 0
-        && request.resource.data.admin is bool
-        && request.resource.data.updatedAt is string;
-      allow delete: if isOwner(uid);
-      allow read: if false;
-    }
-
-    match /conversations/{conversationId} {
-      // Staff may create only the deterministic private thread for the customer
-      // already attached to the referenced booking. Customers may create their own threads.
-      allow create: if (
-          (isAdmin()
-            && request.resource.data.bookingId is string
-            && conversationId == 'booking-' + request.resource.data.bookingId
-            && exists(/databases/$(database)/documents/orders/$(request.resource.data.bookingId))
-            && get(/databases/$(database)/documents/orders/$(request.resource.data.bookingId)).data.customerId == request.resource.data.customerId)
-          || (signedIn() && request.resource.data.customerId == request.auth.uid)
-        )
-        && request.resource.data.keys().hasOnly(['customerId','customerName','bookingId','title','status','createdAt','updatedAt','lastMessageAt','lastMessagePreview','unreadForCustomer','unreadForAdmin'])
-        && request.resource.data.customerId is string
-        && request.resource.data.title is string
-        && request.resource.data.title.size() <= 120
-        && (!request.resource.data.keys().hasAny(['bookingId']) || request.resource.data.bookingId is string)
-        && request.resource.data.status == 'open'
-        && request.resource.data.createdAt is string
-        && request.resource.data.updatedAt is string
-        && request.resource.data.lastMessageAt is string
-        && request.resource.data.lastMessagePreview is string
-        && request.resource.data.unreadForCustomer is bool
-        && request.resource.data.unreadForAdmin is bool;
+    match /serviceRequests/{requestId} {
+      allow create: if signedIn() && validServiceRequestCreate();
       allow read: if isAdmin() || (signedIn() && resource.data.customerId == request.auth.uid);
-      allow update: if isAdmin()
-        || (signedIn()
-          && resource.data.customerId == request.auth.uid
-          && request.resource.data.customerId == resource.data.customerId
-          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['updatedAt','lastMessageAt','lastMessagePreview','unreadForCustomer','unreadForAdmin','customerLastReadAt','status','depositProofSubmittedAt'])
-          && request.resource.data.updatedAt is string
-          && request.resource.data.lastMessageAt is string
-          && request.resource.data.lastMessagePreview is string
-          && request.resource.data.unreadForCustomer is bool
-          && request.resource.data.unreadForAdmin is bool
-          && request.resource.data.status in ['open','waiting','resolved']
-          && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['depositProofSubmittedAt']) || (request.resource.data.depositProofSubmittedAt is string && request.resource.data.depositProofSubmittedAt.size() <= 40)));
-      allow delete: if isAdmin();
-
-      match /messages/{messageId} {
-        function validPrivateAttachment() {
-          return !request.resource.data.keys().hasAny(['attachment'])
-            || (request.resource.data.attachment is map
-              && request.resource.data.attachment.keys().hasOnly(['url','name','type','size'])
-              && request.resource.data.attachment.keys().hasAll(['url','name','type','size'])
-              && request.resource.data.attachment.url is string
-              && request.resource.data.attachment.url.matches('https://.*')
-              && request.resource.data.attachment.name is string
-              && request.resource.data.attachment.name.size() > 0
-              && request.resource.data.attachment.name.size() <= 180
-              && request.resource.data.attachment.type in ['image','video']
-              && request.resource.data.attachment.size is int
-              && request.resource.data.attachment.size > 0
-              && request.resource.data.attachment.size <= 8388608);
-        }
-        allow read: if isAdmin() || (signedIn() && get(/databases/$(database)/documents/conversations/$(conversationId)).data.customerId == request.auth.uid);
-        allow create: if signedIn()
-          && request.resource.data.keys().hasOnly(['senderId','senderRole','text','createdAt','attachment'])
-          && request.resource.data.keys().hasAll(['senderId','senderRole','text','createdAt'])
-          && request.resource.data.senderId == request.auth.uid
-          && request.resource.data.senderRole in ['customer','admin']
-          && request.resource.data.text is string
-          && request.resource.data.text.size() <= 2000
-          && (request.resource.data.text.size() > 0 || request.resource.data.keys().hasAny(['attachment']))
-          && request.resource.data.createdAt is string
-          && validPrivateAttachment()
-          && (
-            (request.resource.data.senderRole == 'customer' && get(/databases/$(database)/documents/conversations/$(conversationId)).data.customerId == request.auth.uid)
-            || (request.resource.data.senderRole == 'admin' && isAdmin())
-          );
-        allow update, delete: if false;
-      }
-    }
-
-    match /styleFeed/{postId} {
-      // Owner/staff manage the public style portfolio; visitors only see published looks.
-      allow read: if isAdmin() || resource.data.published == true;
-      allow create: if isAdmin()
-        && request.resource.data.keys().hasOnly(['title','caption','imageUrl','mediaUrl','mediaType','service','tags','published','createdAt','createdAtServer','createdBy'])
-        && request.resource.data.keys().hasAll(['title','caption','imageUrl','service','tags','published','createdAt','createdBy'])
-        && request.resource.data.title is string
-        && request.resource.data.title.size() > 0
-        && request.resource.data.title.size() <= 100
-        && request.resource.data.caption is string
-        && request.resource.data.caption.size() <= 700
-        && request.resource.data.imageUrl is string
-        && request.resource.data.imageUrl.size() > 0
-        && (!request.resource.data.keys().hasAny(['mediaUrl']) || (request.resource.data.mediaUrl is string && request.resource.data.mediaUrl.size() > 0))
-        && (!request.resource.data.keys().hasAny(['mediaType']) || request.resource.data.mediaType in ['image', 'video'])
-        && request.resource.data.service is string
-        && request.resource.data.tags is list
-        && request.resource.data.tags.size() <= 8
-        && request.resource.data.published is bool
-        && request.resource.data.createdAt is string
-        && request.resource.data.createdBy == request.auth.uid;
-      allow update: if isAdmin()
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['title','caption','imageUrl','mediaUrl','mediaType','service','tags','published','updatedAt'])
-        && request.resource.data.title is string
-        && request.resource.data.title.size() > 0
-        && request.resource.data.title.size() <= 100
-        && request.resource.data.caption is string
-        && request.resource.data.caption.size() <= 700
-        && request.resource.data.imageUrl is string
-        && request.resource.data.imageUrl.size() > 0
-        && (!request.resource.data.keys().hasAny(['mediaUrl']) || (request.resource.data.mediaUrl is string && request.resource.data.mediaUrl.size() > 0))
-        && (!request.resource.data.keys().hasAny(['mediaType']) || request.resource.data.mediaType in ['image', 'video'])
-        && request.resource.data.service is string
-        && request.resource.data.tags is list
-        && request.resource.data.tags.size() <= 8
-        && request.resource.data.published is bool;
+      allow update: if isAdmin() && validServiceRequestStaffUpdate();
       allow delete: if isAdmin();
     }
 
-    match /customerStyleReviews/{reviewId} {
-      function validCustomerStyleReview() {
-        return request.resource.data.keys().hasOnly([
-            'customerId', 'customerName', 'title', 'caption', 'imageUrl', 'imageKey',
-            'service', 'rating', 'comparison', 'previousReviewId', 'createdAt',
-            'published', 'status'
-          ])
-          && request.resource.data.keys().hasAll([
-            'customerId', 'customerName', 'title', 'caption', 'imageUrl', 'imageKey',
-            'service', 'rating', 'comparison', 'previousReviewId', 'createdAt',
-            'published', 'status'
-          ])
-          && request.resource.data.customerId == request.auth.uid
-          && request.resource.data.customerName is string
-          && request.resource.data.customerName.size() <= 60
-          && request.resource.data.title is string
-          && request.resource.data.title.size() > 0
-          && request.resource.data.title.size() <= 80
-          && request.resource.data.caption is string
-          && request.resource.data.caption.size() > 0
-          && request.resource.data.caption.size() <= 700
-          && request.resource.data.imageUrl is string
-          && request.resource.data.imageUrl.matches('https://.*')
-          && request.resource.data.imageKey is string
-          && request.resource.data.imageKey.size() > 0
-          && request.resource.data.service is string
-          && request.resource.data.service.size() <= 80
-          && request.resource.data.rating is int
-          && request.resource.data.rating >= 1
-          && request.resource.data.rating <= 5
-          && request.resource.data.comparison in ['first', 'happier', 'same', 'less-happy']
-          && request.resource.data.previousReviewId is string
-          && request.resource.data.createdAt is string
-          && request.resource.data.published == true
-          && request.resource.data.status == 'published';
-      }
-
-      allow create: if signedIn() && !isAdmin() && validCustomerStyleReview();
-      allow read: if isAdmin()
-        || (signedIn() && resource.data.customerId == request.auth.uid)
-        || resource.data.published == true;
-      // Customers' reviews are an immutable history. Owner/staff can moderate, edit, or remove them.
-      allow update: if isAdmin()
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-          'customerName', 'title', 'caption', 'imageUrl', 'imageKey', 'service',
-          'rating', 'comparison', 'published', 'status', 'moderatedAt', 'moderatedBy'
-        ])
-        && request.resource.data.customerId == resource.data.customerId
-        && request.resource.data.createdAt == resource.data.createdAt;
-      allow delete: if isAdmin();
-    }
-
-    match /dailyReconciliations/{date} {
-      allow read: if isAdmin();
-      allow create, update: if isAdmin() && validReconciliation();
-    }
-
+    // No other collection is readable or writable until its product workflow is defined.
     match /{document=**} {
       allow read, write: if false;
     }
