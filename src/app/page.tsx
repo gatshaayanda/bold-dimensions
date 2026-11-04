@@ -1,70 +1,21 @@
-"use client";
-
 import Link from "next/link";
-import JtsInstallButton from "@/app/jts-install-button";
-import JtsHomeHeroVisual from "@/components/jts-home-hero-visual";
-import PublicServiceCards from "@/components/public-service-cards";
-
-function Logo() {
-  return <Link href="/" className="jtsAppLogo" aria-label="John The Stylist Bw home">
-    <img src="/jts.jpg" alt="" />
-    <span><b>JOHN THE STYLIST BW</b><small>CUTS · COLOUR · STYLE</small></span>
-  </Link>;
-}
+import Image from "next/image";
+import { SERVICE_AREAS } from "@/lib/bold-dimensions";
 
 export default function Home() {
-  return <main className="jtsAppHome">
-    <header className="jtsAppHeader">
-      <Logo />
-      <span>GABORONE, BOTSWANA</span>
-      <Link href="/account" className="jtsAppAccount" aria-label="My JTS account">◉</Link>
-    </header>
-
-    <section className="jtsAppHero">
-      <div className="jtsAppHeroVisual"><JtsHomeHeroVisual /></div>
-      <div className="jtsAppHeroCopy">
-        <span className="jtsAppKicker">JOHN THE STYLIST BW · G WEST</span>
-        <h1>Your look.<br /><em>Your signature.</em></h1>
-        <p>Precision cuts, colour and statement styles by John.</p>
-        <div className="jtsPublicHeroActions">
-          <Link href="/services" className="jtsAppBook"><strong>Explore styles</strong><b>↗</b></Link>
-          <Link href="/order" className="jtsPublicBookSecondary">Book with John <span>↗</span></Link>
-        </div>
-      </div>
-    </section>
-
-    <section className="jtsPublicLookbook" aria-labelledby="jts-public-lookbook-title">
-      <div className="jtsPublicSectionHeading">
-        <div><span className="jtsAppKicker">THE JTS STYLE EDIT</span><h2 id="jts-public-lookbook-title">Find your <em>starting point.</em></h2><p>Explore real service categories, see the work and choose what feels right.</p></div>
-        <Link href="/services">View all services <span>↗</span></Link>
-      </div>
-      <PublicServiceCards />
-      <p className="jtsPublicLookbookNote">Every style leads to its actual service and published price. Not sure what to choose? Ask John when you book.</p>
-    </section>
-
-    <section className="jtsAppShortcuts" aria-label="JTS customer destinations">
-      <Link href="/account"><span>◉</span><strong>My appointments</strong><small>Bookings & history</small><b>↗</b></Link>
-      <Link href="/services"><span>✂</span><strong>Services & prices</strong><small>Explore four categories</small><b>↗</b></Link>
-      <Link href="/studio"><span>✳</span><strong>Style Studio</strong><small>Play with your next look</small><b>↗</b></Link>
-      <a href="https://www.google.com/maps/search/?api=1&query=Star+Tattoos+G+West+Gaborone+Botswana" target="_blank" rel="noreferrer"><span>⌖</span><strong>Find JTS</strong><small>G West · Gaborone</small><b>↗</b></a>
-    </section>
-
-    <section className="jtsAppInstall">
-      <div><span className="jtsAppKicker">KEEP JTS CLOSE</span><strong>Your next appointment, one tap away.</strong><small>Install John The Stylist Bw on your home screen.</small></div>
-      <JtsInstallButton />
-    </section>
-
-    <footer className="jtsAppFooter">
-      <Logo />
-      <span>Beauty · Colour · Cuts · Barbering</span>
-      <Link href="/admin" className="jtsAdminAccessLink" aria-label="Admin login">admin</Link>
-    </footer>
-
-    <nav className="jtsHomeDock" aria-label="Quick navigation">
-      <Link href="/"><span>⌂</span><small>Home</small></Link>
-      <Link href="/services"><span>✂</span><small>Looks</small></Link>
-      <Link href="/order"><span>▦</span><small>Book</small></Link>
-      <Link href="/account"><span>◉</span><small>Account</small></Link>
-    </nav>
-  </main>;
+ return <main className="bdApp">
+  <header className="bdHeader">
+   <Link href="/" className="bdBrand"><Image src="/brand/bold-dimensions-logo.jpg" alt="Bold Dimensions" width={58} height={58} priority/><span><strong>BOLD DIMENSIONS</strong><small>SERVICE & EQUIPMENT HUB</small></span></Link>
+   <nav><Link href="/services">Services</Link><Link href="/account">My requests</Link><Link className="bdHeaderCta" href="/order">Request support <span>↗</span></Link></nav>
+  </header>
+  <section className="bdHero">
+   <div className="bdHeroCopy"><span className="bdEyebrow">TECHNICAL SUPPORT · BOTSWANA</span><h1>Keep your<br/><em>systems working.</em></h1><p>One place to request support for agricultural machinery, air conditioning and solar water heating.</p><div className="bdActions"><Link className="bdPrimary" href="/order">Request a service <span>↗</span></Link><Link className="bdSecondary" href="/services">Explore services</Link></div><div className="bdTrustLine"><span>Three service areas</span><i/><span>Direct team follow-up</span></div></div>
+   <div className="bdHeroArt"><div className="bdOrbit bdOrbitOne"/><div className="bdOrbit bdOrbitTwo"/><Image src="/brand/bold-dimensions-logo.jpg" alt="" width={320} height={320} priority/><span>ENGINEERING SUPPORT · BOTSWANA</span></div>
+  </section>
+  <section className="bdServicesSection"><div className="bdSectionHead"><div><span className="bdEyebrow">WHAT DO YOU NEED HELP WITH?</span><h2>Choose your <em>service area.</em></h2></div><Link href="/services">All services ↗</Link></div><div className="bdAreaGrid">{SERVICE_AREAS.map((area,index)=><Link href={"/order?area="+area.id} className="bdAreaCard" key={area.id}><span className="bdAreaNumber">0{index+1}</span><div><h3>{area.name}</h3><p>{area.intro}</p></div><span className="bdAreaArrow">↗</span></Link>)}</div></section>
+  <section className="bdHow"><div><span className="bdEyebrow">A CLEARER WAY TO GET SUPPORT</span><h2>From request<br/><em>to resolution.</em></h2></div><ol><li><b>01</b><span><strong>Tell us what you need</strong><small>Choose a service area and share the equipment details.</small></span></li><li><b>02</b><span><strong>We review your request</strong><small>The team checks the details and follows up with you.</small></span></li><li><b>03</b><span><strong>Agree the next step</strong><small>Confirm the assessment, quote or service arrangement directly.</small></span></li></ol></section>
+  <section className="bdContact"><div><span className="bdEyebrow">NEED TO SPEAK TO THE TEAM?</span><h2>Let’s get the right<br/><em>support moving.</em></h2></div><div className="bdContactLinks"><a href="tel:+26773207038">+267 73 207 038</a><a href="tel:+2673961158">+267 396 1158</a><a href="mailto:sales@bolddimensions.co.bw">sales@bolddimensions.co.bw</a><Link href="/order" className="bdPrimary">Start a request ↗</Link></div></section>
+  <footer className="bdFooter"><Link href="/" className="bdBrand"><Image src="/brand/bold-dimensions-logo.jpg" alt="" width={38} height={38}/><span><strong>BOLD DIMENSIONS</strong><small>SERVICE & EQUIPMENT HUB</small></span></Link><span>Technical support · Botswana</span><Link href="/admin">Team access</Link></footer>
+  <nav className="bdMobileDock" aria-label="Quick navigation"><Link href="/">Home</Link><Link href="/services">Services</Link><Link href="/order">Request</Link><Link href="/account">My requests</Link></nav>
+ </main>;
 }
