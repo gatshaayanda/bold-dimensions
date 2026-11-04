@@ -56,7 +56,7 @@ Fields:
 - `areaId`, `serviceType`, optional `equipment`, `makeModel`;
 - `location`, `description`, `urgency`, `preferredContact`;
 - `status`, `createdAt`, `updatedAt`;
-- optional admin-managed `quoteAmount`, `quoteNote`, `internalNote`.
+- optional admin-managed `scheduledFor`, `quoteAmount`, `quoteNote`, `internalNote`.
 
 Status progression:
 `New → Reviewing → Quote prepared → Awaiting customer → Scheduled → In progress → Completed`, with `Cancelled` available.
