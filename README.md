@@ -7,7 +7,7 @@ A mobile-first customer and operations app for requesting support across agricul
 ## Customer experience
 - Discover the relevant service area.
 - Submit a service or installation request with equipment and location details.
-- Track requests and communicate with the Bold Dimensions team.
+- Track requests, exchange private messages with the Bold Dimensions team and share relevant photos/videos.
 - Access the app from a supported mobile browser or install it as a PWA.
 
 ## PWA
@@ -24,12 +24,12 @@ A mobile-first customer and operations app for requesting support across agricul
 - Browser configuration is supplied through `NEXT_PUBLIC_FIREBASE_*` environment variables.
 - The service worker uses the same public Firebase web-app configuration.
 - Never commit Firebase Admin service-account JSON, private keys or other server credentials.
-- Firestore and Storage rules will be finalized after the customer, request and admin data workflows are reviewed.
+- Firestore and Storage rules are defined in `firestore.rules` and `storage.rules`; Firebase deployment is manual and project-specific.
 
 ## Operations
 - Admin access requires Firebase Authentication plus an `admins/{uid}` Firestore document with `role: owner` or `role: staff`. Create that role record deliberately in the Firebase Console after the intended Google account signs in and its UID is known.
 - Do not weaken Firestore or UploadThing authorization to make a screen work.
-- Customer records and conversations must remain scoped to the authenticated customer and authorized staff.
+- Customer records and conversations must remain scoped to the authenticated customer and authorized staff. Each service request has a matching private conversation and messages subcollection. Attachments use `customerServiceMedia` / `adminBusinessMedia` through UploadThing.
 
 ## Development
 ```bash
