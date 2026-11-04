@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { SERVICE_AREAS } from "@/lib/bold-dimensions";
+import BdMobileDock from "@/components/bd-mobile-dock";
 
 export default function Home(){
  return <main className="bdApp">
@@ -15,6 +16,6 @@ export default function Home(){
   <section className="bdHow"><div><span className="bdEyebrow">HOW IT WORKS</span><h2>From request<br/><em>to resolution.</em></h2></div><ol><li><b>01</b><span><strong>Tell us what you need</strong><small>Choose a service area and share the equipment details.</small></span></li><li><b>02</b><span><strong>We review your request</strong><small>The team checks the details and follows up with you.</small></span></li><li><b>03</b><span><strong>Agree the next step</strong><small>Confirm the assessment, quote or service arrangement directly.</small></span></li></ol></section>
   <section className="bdContact"><div><span className="bdEyebrow">NEED TO SPEAK TO THE TEAM?</span><h2>Let’s get the right<br/><em>support moving.</em></h2></div><div className="bdContactLinks"><a href="tel:+26773207038">+267 73 207 038</a><a href="tel:+2673961158">+267 396 1158</a><a href="mailto:sales@bolddimensions.co.bw">sales@bolddimensions.co.bw</a><Link href="/order" className="bdPrimary">Start a request ↗</Link></div></section>
   <footer className="bdFooter"><Link href="/" className="bdBrand"><Image src="/brand/bold-dimensions-logo.jpg" alt="" width={34} height={34}/><span><strong>BOLD DIMENSIONS</strong><small>SERVICE & EQUIPMENT HUB</small></span></Link><span>Technical support · Botswana</span><Link href="/admin">Team access</Link></footer>
-  <nav className="bdMobileDock" aria-label="Quick navigation"><Link href="/">Home</Link><Link href="/services">Services</Link><Link href="/order">Request</Link><Link href="/account">My requests</Link></nav>
+  <BdMobileDock/>
  </main>;
 }
