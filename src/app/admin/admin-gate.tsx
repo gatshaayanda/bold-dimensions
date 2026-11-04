@@ -16,7 +16,7 @@ export default function AdminGate({children}:{children:React.ReactNode}){
    stopRole=onSnapshot(doc(db,"admins",next.uid),snapshot=>{
     const role=String(snapshot.data()?.role??"").toLowerCase();
     setAuthorized(snapshot.exists()&&["owner","staff"].includes(role));setChecking(false);
-    setError(snapshot.exists()?"":"This account has not been assigned a Bold Dimensions admin role.");
+    setError(snapshot.exists()&&["owner","staff"].includes(role)?"":"This account has not been assigned a Bold Dimensions admin role.");
    },()=>{setAuthorized(false);setChecking(false);setError("Admin access could not be verified. Check the Firebase connection and role rules.")});
   });
   return()=>{if(stopRole)stopRole();stopAuth()};
