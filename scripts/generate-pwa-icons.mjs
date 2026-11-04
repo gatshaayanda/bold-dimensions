@@ -6,17 +6,17 @@ const root = process.cwd();
 const source = path.join(root, "public/brand/bold-dimensions-logo.jpg");
 const pngSignature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
 const sourceBytes = await fs.readFile(source);
-const sourceMetadata = await sharp(sourceBytes).metadata();
+const sourceMetadata = await sharp(sourceBytes, { failOn: "none" }).metadata();
 
 if (sourceMetadata.format !== "jpeg" || !sourceMetadata.width || !sourceMetadata.height) {
-  throw new Error("PWA icon source public/jts-logo.svg is not a readable JPEG image.");
+  throw new Error("PWA icon source public/jts-logo.svg is could not be decoded from the supplied JPEG. Re-upload a clean logo image if icon generation fails.");
 }
 
 for (const size of [192, 512]) {
   const target = path.join(root, `public/icon-${size}.png`);
   const temporary = target + ".generated";
 
-  await sharp(sourceBytes)
+  await sharp(sourceBytes, { failOn: "none" })
     .resize(size, size, { fit: "contain", background: "#07152D" })
     .png({ compressionLevel: 9 })
     .toFile(temporary);
