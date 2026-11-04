@@ -198,3 +198,24 @@
 .jtsStyleAccount .jtsStyleFeedInvite{order:9}
 .jtsStyleAccount .jtsAccountGame{order:11}
 .jtsStyleAccount .jtsAccountNote{order:12}
+
+/* Compact account controls: keep secondary account surfaces closed until requested. */
+.jtsStyleAccount .jtsAccountDisclosure{margin:10px 0;border:1px solid #302d27;border-radius:13px;background:#101010;overflow:hidden}
+.jtsStyleAccount .jtsAccountDisclosure>summary{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:58px;padding:12px 15px;list-style:none;cursor:pointer}
+.jtsStyleAccount .jtsAccountDisclosure>summary::-webkit-details-marker{display:none}
+.jtsStyleAccount .jtsAccountDisclosure>summary>span{display:grid;gap:3px;min-width:0}
+.jtsStyleAccount .jtsAccountDisclosure>summary strong{color:#f4f1e9;font-size:13px}
+.jtsStyleAccount .jtsAccountDisclosure>summary small{color:#9e9b93;font-size:11px;line-height:1.4}
+.jtsStyleAccount .jtsAccountDisclosure>summary>b{flex:none;color:#d8b85a;font-size:10px;letter-spacing:.04em}
+.jtsStyleAccount .jtsAccountDisclosure[open]>summary{border-bottom:1px solid #302d27;background:#15140f}
+.jtsStyleAccount .jtsAccountDisclosure>section{margin:0!important;border:0!important;border-radius:0!important}
+.jtsStyleAccount .jtsAccountAccessDisclosure>section{padding:15px!important}
+.jtsStyleAccount .jtsAccountInboxDisclosure>section,.jtsStyleAccount .jtsAccountHistoryDisclosure>section{padding:16px!important}
+.jtsStyleAccount .jtsAccountInboxDisclosure .jtsAccountInboxIntro{max-width:58ch}
+.jtsStyleAccount .jtsAccountDisclosure:focus-within>summary{outline:2px solid #d8b85a;outline-offset:-3px}
+@media(max-width:560px){
+ .jtsStyleAccount .jtsAccountDisclosure{margin:8px 0;border-radius:11px}
+ .jtsStyleAccount .jtsAccountDisclosure>summary{min-height:54px;padding:11px 12px}
+ .jtsStyleAccount .jtsAccountDisclosure>section{padding:12px!important}
+}
+
