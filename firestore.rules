@@ -188,6 +188,28 @@ service cloud.firestore {
       }
     }
 
+    match /notificationPreferences/{uid} {
+      allow read: if isOwner(uid);
+      allow create, update: if isOwner(uid)
+        && request.resource.data.keys().hasOnly(['enabled', 'leadMinutes', 'updatedAt'])
+        && request.resource.data.enabled is bool
+        && request.resource.data.leadMinutes in [5, 10, 15, 20, 30, 45, 60]
+        && request.resource.data.updatedAt is string;
+      allow delete: if isOwner(uid);
+    }
+
+    match /notificationTokens/{uid}/tokens/{tokenId} {
+      allow read: if isOwner(uid) || isAdmin();
+      allow create, update: if isOwner(uid)
+        && request.resource.data.keys().hasOnly(['token', 'admin', 'updatedAt'])
+        && request.resource.data.token is string
+        && request.resource.data.token.size() > 0
+        && request.resource.data.token.size() <= 4096
+        && request.resource.data.admin == isAdmin()
+        && request.resource.data.updatedAt is string;
+      allow delete: if isOwner(uid);
+    }
+
     // No other collection is readable or writable until its product workflow is defined.
     match /{document=**} {
       allow read, write: if false;
