@@ -69,11 +69,91 @@ service cloud.firestore {
           'Scheduled', 'In progress', 'Completed', 'Cancelled'
         ]
         && data.updatedAt is string
-        && (!data.keys().hasAny(['scheduledFor']) || data.scheduledFor is string)
+        && (!data.keys().hasAny(['scheduledFor']) || (data.scheduledFor is string && data.scheduledFor.size() <= 40))
         && (data.status != 'Scheduled' || data.keys().hasAny(['scheduledFor']))
         && (!data.keys().hasAny(['quoteAmount']) || (data.quoteAmount is number && data.quoteAmount >= 0))
         && (!data.keys().hasAny(['quoteNote']) || (data.quoteNote is string && data.quoteNote.size() <= 1200))
         && (!data.keys().hasAny(['internalNote']) || (data.internalNote is string && data.internalNote.size() <= 1200));
+    }
+
+    function validConversationCreate(conversationId) {
+      let data = request.resource.data;
+      let requestPath = /databases/$(database)/documents/serviceRequests/$(conversationId);
+      return data.keys().hasOnly([
+          'customerId', 'customerName', 'serviceRequestId', 'title', 'status',
+          'createdAt', 'updatedAt', 'lastMessageAt', 'lastMessagePreview',
+          'unreadForCustomer', 'unreadForAdmin'
+        ])
+        && data.keys().hasAll([
+          'customerId', 'customerName', 'serviceRequestId', 'title', 'status',
+          'createdAt', 'updatedAt', 'lastMessageAt', 'lastMessagePreview',
+          'unreadForCustomer', 'unreadForAdmin'
+        ])
+        && data.customerId == request.auth.uid
+        && data.serviceRequestId == conversationId
+        && existsAfter(requestPath)
+        && getAfter(requestPath).data.customerId == request.auth.uid
+        && data.customerName is string
+        && data.customerName.size() > 0
+        && data.customerName.size() <= 100
+        && data.title is string
+        && data.title.size() > 0
+        && data.title.size() <= 120
+        && data.status == 'open'
+        && data.createdAt is string
+        && data.updatedAt is string
+        && data.lastMessageAt is string
+        && data.lastMessagePreview == ''
+        && data.unreadForCustomer == false
+        && data.unreadForAdmin == false;
+    }
+
+    function validConversationUpdate() {
+      let data = request.resource.data;
+      let changed = data.diff(resource.data).affectedKeys();
+      return changed.hasOnly([
+          'updatedAt', 'lastMessageAt', 'lastMessagePreview', 'unreadForCustomer',
+          'unreadForAdmin', 'status', 'customerLastReadAt', 'adminLastReadAt'
+        ])
+        && data.customerId == resource.data.customerId
+        && data.serviceRequestId == resource.data.serviceRequestId
+        && data.title == resource.data.title
+        && data.updatedAt is string
+        && (!changed.hasAny(['lastMessageAt']) || data.lastMessageAt is string)
+        && (!changed.hasAny(['lastMessagePreview']) || (data.lastMessagePreview is string && data.lastMessagePreview.size() <= 160))
+        && (!changed.hasAny(['unreadForCustomer']) || data.unreadForCustomer is bool)
+        && (!changed.hasAny(['unreadForAdmin']) || data.unreadForAdmin is bool)
+        && (!changed.hasAny(['customerLastReadAt']) || data.customerLastReadAt is string)
+        && (!changed.hasAny(['adminLastReadAt']) || data.adminLastReadAt is string)
+        && data.status in ['open', 'waiting', 'resolved'];
+    }
+
+    function validConversationMessageCreate(conversationId) {
+      let data = request.resource.data;
+      let parentPath = /databases/$(database)/documents/conversations/$(conversationId);
+      let parent = get(parentPath).data;
+      return exists(parentPath)
+        && (isAdmin() || parent.customerId == request.auth.uid)
+        && data.keys().hasOnly(['senderId', 'senderRole', 'text', 'attachment', 'createdAt'])
+        && data.keys().hasAll(['senderId', 'senderRole', 'text', 'createdAt'])
+        && data.senderId == request.auth.uid
+        && data.senderRole == (isAdmin() ? 'admin' : 'customer')
+        && data.text is string
+        && data.text.size() <= 2000
+        && data.createdAt is string
+        && (!data.keys().hasAny(['attachment']) || (
+          data.attachment is map
+          && data.attachment.keys().hasOnly(['url', 'name', 'type', 'size'])
+          && data.attachment.keys().hasAll(['url', 'name', 'type', 'size'])
+          && data.attachment.url is string
+          && data.attachment.url.size() <= 2048
+          && data.attachment.name is string
+          && data.attachment.name.size() <= 255
+          && data.attachment.type in ['image', 'video']
+          && data.attachment.size is number
+          && data.attachment.size > 0
+          && data.attachment.size <= 8388608
+        ));
     }
 
     match /admins/{uid} {
@@ -87,6 +167,25 @@ service cloud.firestore {
       allow read: if isAdmin() || (signedIn() && resource.data.customerId == request.auth.uid);
       allow update: if isAdmin() && validServiceRequestStaffUpdate();
       allow delete: if isAdmin();
+    }
+
+    match /conversations/{conversationId} {
+      allow create: if signedIn() && validConversationCreate(conversationId);
+      allow read: if isAdmin() || (signedIn() && resource.data.customerId == request.auth.uid);
+      allow update: if signedIn()
+        && validConversationUpdate()
+        && (isAdmin() || (
+          resource.data.customerId == request.auth.uid
+          && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['status']) || request.resource.data.status == 'open')
+        ));
+      allow delete: if isAdmin();
+
+      match /messages/{messageId} {
+        allow create: if signedIn() && validConversationMessageCreate(conversationId);
+        allow read: if isAdmin()
+          || (signedIn() && get(/databases/$(database)/documents/conversations/$(conversationId)).data.customerId == request.auth.uid);
+        allow update, delete: if false;
+      }
     }
 
     // No other collection is readable or writable until its product workflow is defined.
