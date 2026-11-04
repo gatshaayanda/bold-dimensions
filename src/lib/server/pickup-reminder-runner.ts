@@ -306,10 +306,11 @@ async function sendConversationMessageNotification(conversationId:string,message
     const admins=await db.collection("admins").get();
     for(const admin of admins.docs){
       const pref=(await db.collection("notificationPreferences").doc(admin.id).get()).data();
-      if(pref?.enabled)recipientUids.push(admin.id);
+      if(pref?.enabled&&["owner","staff"].includes(String(admin.data()?.role||"").toLowerCase()))recipientUids.push(admin.id);
     }
   }else{
-    if(customerId)recipientUids.push(customerId);
+    const customerPrefs=(await db.collection("notificationPreferences").doc(customerId).get()).data();
+    if(customerId&&customerPrefs?.enabled)recipientUids.push(customerId);
   }
   const customerName=String(conversation.customerName||"customer").trim();
   const title=senderRole==="customer"?customerName+" sent a message":"Bold Dimensions replied to your service request";
@@ -327,7 +328,7 @@ async function sendConversationMessageNotification(conversationId:string,message
       if(result.sent){await markSent(jobId,deliveryData);sent++;}else await releaseDelivery(jobId);
     }catch(error){await releaseDelivery(jobId).catch(()=>{});console.error("Bold Dimensions conversation notification failed for "+uid+":",error);}
   }
-  return {sent,recipient:senderRole==="customer"?"kitchen":"customer"};
+  return {sent,recipient:senderRole==="customer"?"team":"customer"};
 }
 
 
