@@ -68,9 +68,9 @@ The customer and admin screens now use `serviceRequests`. Firestore rules must b
 
 ## 5. Admin and authorization
 - Admin route is `/admin`.
-- Access is through Firebase Authentication and the signed-in user's `admins/{uid}` document with role `owner` or `staff`.
-- No hard-coded email allowlists, inherited JTS UIDs, synthetic one-word admin account or public admin access.
-- The role record must be provisioned deliberately in the dedicated Bold Dimensions Firebase project.
+- Access is through the server-side `ADMIN_PASSWORD` check at `/api/admin/login`, which issues a Firebase custom token for the fixed Bold Dimensions admin identity with the `admin: true` custom claim.
+- No `admins/{uid}` Firestore collection or manual role document is required. Firestore rules and UploadThing staff endpoints authorize the Firebase ID token's `admin` claim.
+- Keep `ADMIN_PASSWORD` server-only; never expose it through a `NEXT_PUBLIC_` variable, client bundle, Firestore document or log. Do not add a hard-coded password, email allowlist or inherited JTS UID.
 - Admin can review service requests, reveal private customer details only when needed, update status, prepare a quote and maintain private work notes.
 - Sensitive customer details are masked until an authorized operator reveals them.
 - Keep admin sections compact but separated enough to scan. Do not cram all operational details into one dense card.
