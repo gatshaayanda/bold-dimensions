@@ -61,7 +61,7 @@ service cloud.firestore {
     function validServiceRequestStaffUpdate() {
       let data = request.resource.data;
       return data.diff(resource.data).affectedKeys().hasOnly([
-          'status', 'quoteAmount', 'quoteNote', 'internalNote', 'updatedAt'
+          'status', 'scheduledFor', 'quoteAmount', 'quoteNote', 'internalNote', 'updatedAt'
         ])
         && data.customerId == resource.data.customerId
         && data.status in [
@@ -69,6 +69,8 @@ service cloud.firestore {
           'Scheduled', 'In progress', 'Completed', 'Cancelled'
         ]
         && data.updatedAt is string
+        && (!data.keys().hasAny(['scheduledFor']) || data.scheduledFor is string)
+        && (data.status != 'Scheduled' || data.keys().hasAny(['scheduledFor']))
         && (!data.keys().hasAny(['quoteAmount']) || (data.quoteAmount is number && data.quoteAmount >= 0))
         && (!data.keys().hasAny(['quoteNote']) || (data.quoteNote is string && data.quoteNote.size() <= 1200))
         && (!data.keys().hasAny(['internalNote']) || (data.internalNote is string && data.internalNote.size() <= 1200));
