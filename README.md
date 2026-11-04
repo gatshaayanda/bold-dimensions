@@ -27,7 +27,7 @@ A mobile-first customer and operations app for requesting support across agricul
 - Firestore and Storage rules will be finalized after the customer, request and admin data workflows are reviewed.
 
 ## Operations
-- Admin access remains protected by Firebase Authentication and the Firestore admin-role boundary.
+- Admin access requires Firebase Authentication plus an `admins/{uid}` Firestore document with `role: owner` or `role: staff`. Create that role record deliberately in the Firebase Console after the intended Google account signs in and its UID is known.
 - Do not weaken Firestore or UploadThing authorization to make a screen work.
 - Customer records and conversations must remain scoped to the authenticated customer and authorized staff.
 
