@@ -39,7 +39,7 @@ export default function ConversationThread({conversationId,role,userId,title="Pr
   event.preventDefault();setError("");setNotice("");
   if(!draft.trim()&&!attachment){setError("Write a message or attach a photo/video.");return}
   setSending(true);
-  try{await sendServiceConversationMessage(conversationId,userId,role,draft,attachment||undefined);setDraft("");setAttachment(null);setNotice("Private message sent.")}
+  try{const messageId=await sendServiceConversationMessage(conversationId,userId,role,draft,attachment||undefined);setDraft("");setAttachment(null);setNotice("Private message sent.");const current=auth.currentUser;if(current)void current.getIdToken().then(token=>fetch("/api/notifications/message-created",{method:"POST",headers:{Authorization:"Bearer "+token,"Content-Type":"application/json"},body:JSON.stringify({conversationId,messageId})})).catch(error=>console.warn("[Bold Dimensions] Message notification could not be sent.",error))}
   catch(cause){setError(cause instanceof Error?cause.message:"Your message could not be sent. Try again.")}
   finally{setSending(false)}
  }
