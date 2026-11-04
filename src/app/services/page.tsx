@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { SERVICE_AREAS } from "@/lib/bold-dimensions";
+import { SERVICE_AREAS } from "@/lib/bold-dimensions-config";
 import BdMobileDock from "@/components/bd-mobile-dock";
 
 export const metadata={title:"Services",description:"Agricultural machinery, air conditioning and solar water-heating service enquiries."};
