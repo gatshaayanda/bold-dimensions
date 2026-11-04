@@ -245,8 +245,8 @@ async function sendTestNotification(uid:string,deviceToken:string):Promise<Notif
   const title=isStaff?"Bold Dimensions operations alerts are on":"Bold Dimensions notifications are on";
   const body=isStaff
     ? "This device is ready for new service request and customer message alerts."
-    : "Hi "+firstName+", this device is ready for your Bold Dimensions pickup reminders.";
-  const link=isKitchenAdmin?"/admin":"/account";
+    : "Hi "+firstName+", this device is ready for your Bold Dimensions service request and message updates.";
+  const link=isStaff?"/admin":"/account";
   const result=await sendToDeviceToken(uid,deviceToken,{
     notification:{title,body},
     data:{title,body,link,test:"true"},
