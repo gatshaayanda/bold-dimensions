@@ -239,9 +239,7 @@ async function runPickupReminders():Promise<{orders:number;reminders:number;sent
 }
 
 async function sendTestNotification(uid:string,deviceToken:string):Promise<NotificationResult>{
-  const [userRecord,adminSnapshot]=await Promise.all([
-    getAuth().getUser(uid)
-  ]);
+  const userRecord=await getAuth().getUser(uid);
   const displayName=(userRecord.displayName||"").trim();
   const firstName=displayName.split(/\s+/)[0]||"there";
   const isStaff=userRecord.customClaims?.admin===true;
