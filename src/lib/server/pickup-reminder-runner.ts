@@ -117,12 +117,12 @@ async function remindUser(uid:string,leadMinutes:number,order:ReminderOrder,admi
   const customerName=(order.customerName||"customer").trim();
   const title=admin
     ?"Pickup in "+leadMinutes+" minutes · "+customerName
-    :"Your JTS Styles pickup is in "+leadMinutes+" minutes";
+    :"Your Bold Dimensions pickup is in "+leadMinutes+" minutes";
   const body=admin
     ?customerName+" · "+items+" · "+timeText
     :"Hi "+customerName.split(/\s+/)[0]+", your pickup is at "+timeText+". "+items;
   const link=admin?"/admin":"/account";
-  const publicUrl=process.env.NEXT_PUBLIC_BASE_URL||"https://john-the-stylist-bw.vercel.app";
+  const publicUrl=process.env.NEXT_PUBLIC_BASE_URL||"https://localhost:3000";
 
   const deliveryData={
     orderId:order.id,
@@ -141,9 +141,9 @@ async function remindUser(uid:string,leadMinutes:number,order:ReminderOrder,admi
       webpush:{
         fcmOptions:{link:publicUrl+link},
         notification:{
-          tag:"jts-appointment-"+order.id,
-          icon:"/icon.svg",
-          badge:"/icon.svg"
+          tag:"bd-service-appointment-"+order.id,
+          icon:"/icon-192.png",
+          badge:"/icon-192.png"
         }
       }
     });
@@ -163,7 +163,7 @@ async function remindUser(uid:string,leadMinutes:number,order:ReminderOrder,admi
 
 async function runPickupReminders():Promise<{orders:number;reminders:number;sent:number}>{
   const now=Date.now();
-  // Do not range-query scheduledFor as a string. JTS Styles has deliberately supported
+  // Do not range-query scheduledFor as a string. Bold Dimensions has deliberately supported
   // both legacy datetime-local values and explicit +02:00/Z values, and those textual
   // representations are not safely comparable as Firestore strings. Read the small
   // pickup queue and compare the parsed instants in Gaborone/UTC time instead.
@@ -230,7 +230,7 @@ async function runPickupReminders():Promise<{orders:number;reminders:number;sent
   }
 
   const summary={orders:ordersSnapshot.size,reminders,sent};
-  console.log("JTS Styles pickup reminders:",JSON.stringify(summary));
+  console.log("Bold Dimensions pickup reminders:",JSON.stringify(summary));
   return summary;
 }
 
@@ -242,17 +242,17 @@ async function sendTestNotification(uid:string,deviceToken:string):Promise<Notif
   const displayName=(userRecord.displayName||"").trim();
   const firstName=displayName.split(/\s+/)[0]||"there";
   const isKitchenAdmin=adminSnapshot.exists&&["owner","staff"].includes(String(adminSnapshot.data()?.role||"").toLowerCase());
-  const title=isKitchenAdmin?"JTS Styles kitchen alerts are on":"JTS Styles notifications are on";
+  const title=isKitchenAdmin?"Bold Dimensions kitchen alerts are on":"Bold Dimensions notifications are on";
   const body=isKitchenAdmin
     ? "This device is ready for new-order and pickup alerts."
-    : "Hi "+firstName+", this device is ready for your JTS Styles pickup reminders.";
+    : "Hi "+firstName+", this device is ready for your Bold Dimensions pickup reminders.";
   const link=isKitchenAdmin?"/admin":"/account";
   const result=await sendToDeviceToken(uid,deviceToken,{
     notification:{title,body},
     data:{title,body,link,test:"true"},
     webpush:{
-      fcmOptions:{link:(process.env.NEXT_PUBLIC_BASE_URL||"https://john-the-stylist-bw.vercel.app")+link},
-      notification:{tag:"jts-test-notification",icon:"/icon.svg",badge:"/icon.svg"}
+      fcmOptions:{link:(process.env.NEXT_PUBLIC_BASE_URL||"https://localhost:3000")+link},
+      notification:{tag:"bd-test-notification",icon:"/icon-192.png",badge:"/icon-192.png"}
     }
   });
   if(!result.sent)throw new Error(result.reason||"no-token");
@@ -273,16 +273,16 @@ async function sendNewOrderNotifications(orderId:string,customerUid:string):Prom
   const customerName=(order.customerName||"customer").trim();
   const title="New order · "+customerName;
   const body=items+(typeof order.total==="number"?" · P"+order.total.toFixed(2):"")+" · "+(order.mode==="delivery"?"Delivery":"Pickup")+" "+timeText;
-  const publicUrl=process.env.NEXT_PUBLIC_BASE_URL||"https://john-the-stylist-bw.vercel.app";
+  const publicUrl=process.env.NEXT_PUBLIC_BASE_URL||"https://localhost:3000";
   for(const adminDoc of adminsSnapshot.docs){
     const uid=adminDoc.id; const pref=(await db.collection("notificationPreferences").doc(uid).get()).data();
     if(!pref?.enabled)continue; admins++;
     const jobId="new-order_"+orderId+"_"+uid; const deliveryData={orderId,recipientUid:uid,type:"new-order",admin:true};
     if(!await claimDelivery(jobId,deliveryData))continue;
     try{
-      const result=await sendToUser(uid,{notification:{title,body},data:{title,body,link:"/admin",orderId},webpush:{fcmOptions:{link:publicUrl+"/admin"},notification:{tag:"jts-new-booking-"+orderId,icon:"/icon.svg",badge:"/icon.svg"}}});
+      const result=await sendToUser(uid,{notification:{title,body},data:{title,body,link:"/admin",orderId},webpush:{fcmOptions:{link:publicUrl+"/admin"},notification:{tag:"bd-new-service-request-"+orderId,icon:"/icon-192.png",badge:"/icon-192.png"}}});
       if(result.sent){await markSent(jobId,deliveryData);sent++;}else await releaseDelivery(jobId);
-    }catch(error){await releaseDelivery(jobId).catch(()=>{});console.error("JTS Styles new-order notification failed for "+uid+":",error);}
+    }catch(error){await releaseDelivery(jobId).catch(()=>{});console.error("Bold Dimensions new-order notification failed for "+uid+":",error);}
   }
   return {sent,admins};
 }
@@ -312,22 +312,57 @@ async function sendConversationMessageNotification(conversationId:string,message
     if(customerId)recipientUids.push(customerId);
   }
   const customerName=String(conversation.customerName||"customer").trim();
-  const title=senderRole==="customer"?customerName+" sent a message":"JTS Styles replied to you";
+  const title=senderRole==="customer"?customerName+" sent a message":"Bold Dimensions replied to you";
   const preview=String(message.text||"Attachment sent");
   const body=preview.length>120?preview.slice(0,117)+"…":preview;
-  const link=senderRole==="customer"?"/admin":"/account";
-  const publicUrl=process.env.NEXT_PUBLIC_BASE_URL||"https://john-the-stylist-bw.vercel.app";
+  const link=senderRole==="customer"?"/admin":"/orders/"+conversationId;
+  const publicUrl=process.env.NEXT_PUBLIC_BASE_URL||"https://localhost:3000";
   let sent=0;
   for(const uid of recipientUids){
     const jobId="conversation-message_"+conversationId+"_"+messageId+"_"+uid;
     const deliveryData={conversationId,messageId,recipientUid:uid,type:"conversation-message"};
     if(!await claimDelivery(jobId,deliveryData))continue;
     try{
-      const result=await sendToUser(uid,{notification:{title,body},data:{title,body,link,conversationId,messageId},webpush:{fcmOptions:{link:publicUrl+link},notification:{tag:"jts-conversation-"+conversationId,icon:"/icon.svg",badge:"/icon.svg"}}});
+      const result=await sendToUser(uid,{notification:{title,body},data:{title,body,link,conversationId,messageId},webpush:{fcmOptions:{link:publicUrl+link},notification:{tag:"bd-conversation-"+conversationId,icon:"/icon-192.png",badge:"/icon-192.png"}}});
       if(result.sent){await markSent(jobId,deliveryData);sent++;}else await releaseDelivery(jobId);
-    }catch(error){await releaseDelivery(jobId).catch(()=>{});console.error("JTS Styles conversation notification failed for "+uid+":",error);}
+    }catch(error){await releaseDelivery(jobId).catch(()=>{});console.error("Bold Dimensions conversation notification failed for "+uid+":",error);}
   }
   return {sent,recipient:senderRole==="customer"?"kitchen":"customer"};
 }
 
-export {runPickupReminders,sendTestNotification,sendNewOrderNotifications,sendConversationMessageNotification};
+
+async function sendNewServiceRequestNotifications(requestId:string,customerUid:string):Promise<{sent:number;admins:number}>{
+  const requestSnapshot=await db.collection("serviceRequests").doc(requestId).get();
+  if(!requestSnapshot.exists)throw new Error("Service request not found.");
+  const serviceRequest=requestSnapshot.data() as Record<string,unknown>;
+  if(serviceRequest.customerId!==customerUid)throw new Error("Service request does not belong to this customer.");
+  const adminsSnapshot=await db.collection("admins").get();
+  const customerName=String(serviceRequest.customerName||"A customer").trim();
+  const serviceType=String(serviceRequest.serviceType||"Service request");
+  const location=String(serviceRequest.location||"Location not supplied");
+  const title="New service request · "+customerName;
+  const body=serviceType+" · "+location;
+  const publicUrl=process.env.NEXT_PUBLIC_BASE_URL||"http://localhost:3000";
+  let sent=0,admins=0;
+  for(const adminDoc of adminsSnapshot.docs){
+    const uid=adminDoc.id;
+    if(!["owner","staff"].includes(String(adminDoc.data()?.role||"").toLowerCase()))continue;
+    const pref=(await db.collection("notificationPreferences").doc(uid).get()).data();
+    if(!pref?.enabled)continue;
+    admins++;
+    const jobId="new-service-request_"+requestId+"_"+uid;
+    const deliveryData={serviceRequestId:requestId,recipientUid:uid,type:"new-service-request",admin:true};
+    if(!await claimDelivery(jobId,deliveryData))continue;
+    try{
+      const result=await sendToUser(uid,{
+        notification:{title,body},
+        data:{title,body,link:"/admin",serviceRequestId:requestId},
+        webpush:{fcmOptions:{link:publicUrl+"/admin"},notification:{tag:"bd-new-service-request-"+requestId,icon:"/icon-192.png",badge:"/icon-192.png"}}
+      });
+      if(result.sent){await markSent(jobId,deliveryData);sent++}else await releaseDelivery(jobId);
+    }catch(error){await releaseDelivery(jobId).catch(()=>{});console.error("[Bold Dimensions] New service request notification failed for "+uid+":",error)}
+  }
+  return {sent,admins};
+}
+
+export {runPickupReminders,sendTestNotification,sendNewOrderNotifications,sendConversationMessageNotification,sendNewServiceRequestNotifications};
