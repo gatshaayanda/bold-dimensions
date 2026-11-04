@@ -3,13 +3,13 @@ importScripts("https://www.gstatic.com/firebasejs/11.9.0/firebase-app-compat.js"
 firebase.initializeApp({apiKey:"AIzaSyCCpiTA4h_SuFQ02LKxtnUPL8aeUM22aMM",authDomain:"the-wall-ab746.firebaseapp.com",projectId:"the-wall-ab746",storageBucket:"the-wall-ab746.firebasestorage.app",messagingSenderId:"591554003595",appId:"1:591554003595:web:e0bcf57ec06ab196638a8e",measurementId:"G-RHX7RR8CWF"});
 
 const CACHE_VERSION="bold-dimensions-shell-v2";
-const SHELL=["/offline","/manifest.webmanifest","/icon-192.png","/icon-512.png","/brand/bold-dimensions-logo.jpg","/jts.jpg","/jts-logo.svg"];
+const SHELL=["/offline","/manifest.webmanifest","/icon-192.png","/icon-512.png","/brand/bold-dimensions-logo.jpg","/bold-dimensions-icon.svg"];
 
 firebase.messaging().onBackgroundMessage((payload)=>{
  const title=payload.notification?.title||payload.data?.title||"Bold Dimensions";
  const body=payload.notification?.body||payload.data?.body||"You have a service request update.";
  const link=payload.fcmOptions?.link||payload.data?.link||"/account";
- self.registration.showNotification(title,{body,icon:"/brand/bold-dimensions-logo.jpg",badge:"/brand/bold-dimensions-logo.jpg",tag:payload.data?.appointmentId?"bd-service-request-"+payload.data.appointmentId:"bd-notification",data:{link}});
+ self.registration.showNotification(title,{body,icon:"/icon-192.png",badge:"/bold-dimensions-icon.svg",tag:payload.data?.appointmentId?"bd-service-request-"+payload.data.appointmentId:"bd-notification",data:{link}});
 });
 
 self.addEventListener("notificationclick",(event)=>{
