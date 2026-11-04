@@ -21,9 +21,7 @@ async function requireAdmin(request: Request) {
   if (!match) throw new Error("Sign in before uploading service request media.");
   const app = getAdminApp();
   const decoded = await getAuth(app).verifyIdToken(match[1]);
-  const role = await getFirestore(app).collection("admins").doc(decoded.uid).get();
-  const authorized = role.exists && ["owner", "staff"].includes(String(role.data()?.role || "").toLowerCase());
-  if (!authorized) throw new Error("Only authorized Bold Dimensions staff can upload business media.");
+  if (decoded.admin !== true) throw new Error("Only authorized Bold Dimensions staff can upload business media.");
   return { uid: decoded.uid };
 }
 
