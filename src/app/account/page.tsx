@@ -186,13 +186,10 @@ export default function AccountPage() {
     <div className="jtsBookingTop jtsAccountAppBar"><Link href="/" className="jtsAccountWordmark"><span>JOHN THE STYLIST <small>BW</small></span></Link><div className="jtsAccountTopLinks"><Link href="/feed" className="jtsGhost">Style feed ↗</Link><Link href="/order" className="jtsButton jtsButtonGold">Book appointment <span aria-hidden="true">↗</span></Link></div></div>
 
     <header className="jtsAccountHero jtsAccountUtilityHero jtsAccountLivingHero jtsAccountCompactHero">
-      <div><span className="jtsEyebrow">YOUR PERSONAL SALON SPACE</span><h1>My JTS<span>.</span></h1><p>Your appointments, messages and style history.</p></div>
-      <div className="jtsAccountHeroSeal" aria-hidden="true"><span>J</span><small>STYLE<br/>RECORD</small></div>
+      <div><span className="jtsEyebrow">YOUR PERSONAL SALON SPACE</span><h1>My JTS<span>.</span></h1><p>Your next appointment, all in one place.</p></div>
+      
     </header>
-    <nav className="jtsAccountLaunchGrid" aria-label="Your JTS shortcuts">
-      <a href="#account-inbox-disclosure" className="jtsAccountLaunchCard"><span className="jtsAccountLaunchIcon" aria-hidden="true">✉</span><span><strong>Private inbox</strong><small>Talk with John</small></span><b aria-hidden="true">↗</b></a>
-      <a href="#account-history-disclosure" className="jtsAccountLaunchCard"><span className="jtsAccountLaunchIcon" aria-hidden="true">▤</span><span><strong>Style history</strong><small>Your past bookings</small></span><b aria-hidden="true">↗</b></a>
-    </nav>
+
 
     {(error || message) && <p className={error ? "jtsFormError" : "jtsStyleStatus"} role="status" aria-live="polite">{error || message}</p>}
 
@@ -208,7 +205,17 @@ export default function AccountPage() {
       <p className="jtsAccountTruth">A request is not confirmed until John confirms the slot and verifies the deposit.</p>
     </section>
 
-    <details className="jtsAccountDisclosure jtsAccountAccessDisclosure">
+    <div className="jtsAccountQuickFacts" aria-label="Account overview">
+      <a href="#account-inbox-disclosure"><strong>{conversations.filter(item => item.unreadForCustomer).length}</strong><span>New replies</span></a>
+      <a href="#account-history-disclosure"><strong>{orders.length}</strong><span>Bookings</span></a>
+      <a href="#account-access-disclosure"><strong>{user && !user.isAnonymous ? "✓" : user ? "Guest" : "—"}</strong><span>Account</span></a>
+    </div>
+    <nav className="jtsAccountLaunchGrid" aria-label="Your JTS shortcuts">
+      <a href="#account-inbox-disclosure" className="jtsAccountLaunchCard"><span className="jtsAccountLaunchIcon" aria-hidden="true">✉</span><span><strong>Private inbox</strong><small>Talk with John</small></span><b aria-hidden="true">↗</b></a>
+      <a href="#account-history-disclosure" className="jtsAccountLaunchCard"><span className="jtsAccountLaunchIcon" aria-hidden="true">▤</span><span><strong>Style history</strong><small>Your past bookings</small></span><b aria-hidden="true">↗</b></a>
+    </nav>
+
+    <details id="account-access-disclosure" className="jtsAccountDisclosure jtsAccountAccessDisclosure">
       <summary><span><strong>Account access</strong><small>{user && !user.isAnonymous ? "Google connected" : user ? "Guest session · connect to keep your history" : "Sign in or continue as a guest"}</small></span><b>Manage +</b></summary>
     <section className="jtsStylePanel jtsAccountUtilityAuth" aria-labelledby="account-connection-title">
       <div className="jtsAccountUtilityHeading"><span className="jtsEyebrow">ACCOUNT ACCESS</span><span className={user && !user.isAnonymous ? "jtsStyleConnected" : "jtsAccountGuestBadge"}>{user && !user.isAnonymous ? "✓ Google connected" : user ? "Guest session" : "Not connected"}</span></div>
