@@ -1,4 +1,5 @@
 "use client";
+import {getAuth} from "firebase/auth";
 import {addDoc,collection,doc,getDoc,getDocs,onSnapshot,query,setDoc,updateDoc,deleteDoc,where} from "firebase/firestore";
 import type {Unsubscribe} from "firebase/firestore";
 import {db} from "@/lib/firebase/client";
@@ -32,7 +33,7 @@ export function subscribeToMenuItems(onChange:(items:MenuItem[])=>void,onError:(
 export function subscribeToBusinessSettings(onChange:(settings:BusinessSettings|null)=>void,onError:(error:Error)=>void):Unsubscribe{return onSnapshot(doc(settingsCollection,"main"),snapshot=>onChange(snapshot.exists()?{id:snapshot.id,...snapshot.data() as Omit<BusinessSettings,"id">}:null),error=>onError(error instanceof Error?error:new Error("Business settings updates unavailable.")))}
 export async function updateFoodOrderStatus(id:string,status:OrderStatus){await updateDoc(doc(db,"orders",id),{status})}
 export async function updateFoodOrderPayment(id:string,paymentStatus:PaymentStatus,paymentMethod:PaymentMethod,amountPaid:number){await updateDoc(doc(db,"orders",id),{paymentStatus,paymentMethod,amountPaid:Math.max(0,amountPaid)})}
-export async function isAdminUser(uid:string):Promise<boolean>{const user=(await import("firebase/auth")).getAuth().currentUser;if(!user||user.uid!==uid)return false;const token=await user.getIdTokenResult();return token.claims.admin===true}
+export async function isAdminUser(uid:string):Promise<boolean>{const user=getAuth().currentUser;if(!user||user.uid!==uid)return false;const token=await user.getIdTokenResult(true);return token.claims.admin===true}
 export async function getCustomerProfile(uid:string):Promise<CustomerProfile|null>{const snapshot=await getDoc(doc(customersCollection,uid));return snapshot.exists()?{uid:snapshot.id,...snapshot.data() as Omit<CustomerProfile,"uid">}:null}
 export async function saveCustomerProfile(profile:CustomerProfile){await setDoc(doc(customersCollection,profile.uid),profile,{merge:true})}export async function getNotificationPreferences(uid:string):Promise<NotificationPreferences|null>{const snapshot=await getDoc(doc(db,"notificationPreferences",uid));return snapshot.exists()?snapshot.data() as NotificationPreferences:null}
 export async function saveNotificationPreferences(uid:string,prefs:NotificationPreferences){await setDoc(doc(db,"notificationPreferences",uid),prefs,{merge:true})}
