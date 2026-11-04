@@ -18,5 +18,5 @@ export async function POST(request:Request){
   if(typeof conversationId!=="string"||typeof messageId!=="string")throw new Error("Missing conversation message identifiers.");
   const {sendConversationMessageNotification}=await import("@/lib/server/pickup-reminder-runner");
   return NextResponse.json(await sendConversationMessageNotification(conversationId,messageId,uid));
- }catch(error){console.error("BOEMO conversation notification failed:",error);return NextResponse.json({sent:0,error:error instanceof Error?error.message:"BOEMO could not notify the recipient."},{status:400})}
+ }catch(error){console.error("Bold Dimensions conversation notification failed:",error);return NextResponse.json({sent:0,error:error instanceof Error?error.message:"Bold Dimensions could not notify the recipient."},{status:400})}
 }
