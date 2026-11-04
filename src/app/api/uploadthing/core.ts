@@ -4,7 +4,6 @@ import { getFirestore } from "firebase-admin/firestore";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 
 const f = createUploadthing();
-const ADMIN_EMAILS = new Set(["gatshaayanda@gmail.com", "chikohoraknowledge4@gmail.com"]);
 
 function getAdminApp() {
   if (getApps().length) return getApp();
@@ -22,11 +21,9 @@ async function requireAdmin(request: Request) {
   if (!match) throw new Error("Sign in before uploading public style media.");
   const app = getAdminApp();
   const decoded = await getAuth(app).verifyIdToken(match[1]);
-  const email = String(decoded.email || "").trim().toLowerCase();
   const role = await getFirestore(app).collection("admins").doc(decoded.uid).get();
-  const authorized = (decoded.email_verified === true && ADMIN_EMAILS.has(email))
-    || (role.exists && ["owner", "staff"].includes(String(role.data()?.role || "").toLowerCase()));
-  if (!authorized) throw new Error("Only authorized JTS owner/staff accounts can upload public style media.");
+  const authorized = role.exists && ["owner", "staff"].includes(String(role.data()?.role || "").toLowerCase());
+  if (!authorized) throw new Error("Only authorized Bold Dimensions staff can upload business media.");
   return { uid: decoded.uid };
 }
 
