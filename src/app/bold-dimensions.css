@@ -92,3 +92,5 @@
 .bdMobileDock a.active{color:var(--bd-cyan)}
 .bdMobileDock a.active:after{content:"";width:22px;height:2px;margin-top:2px;background:var(--bd-cyan)}
 @media(max-width:760px){.bdApp,.bdUtility{padding-bottom:calc(54px + env(safe-area-inset-bottom))}}
+
+.bdAdminIdentity{display:grid;gap:6px;padding:10px;border:1px solid var(--bd-line);background:#07152d}.bdAdminIdentity small{color:var(--bd-muted);font-size:.65rem}.bdAdminIdentity code{color:var(--bd-cyan);font-size:.65rem;overflow-wrap:anywhere}.bdAdminIdentity button{justify-self:start;border:0;background:none;padding:2px 0;color:var(--bd-cyan);font-size:.65rem;text-decoration:underline;cursor:pointer}
