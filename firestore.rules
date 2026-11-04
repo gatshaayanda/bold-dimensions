@@ -11,9 +11,7 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return signedIn()
-        && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
-        && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role in ['owner', 'staff'];
+      return signedIn() && request.auth.token.admin == true;
     }
 
     function validServiceRequestCreate(requestId) {
@@ -157,12 +155,6 @@ service cloud.firestore {
           && data.attachment.size > 0
           && data.attachment.size <= 8388608
         ));
-    }
-
-    match /admins/{uid} {
-      // Admin roles are provisioned deliberately by the project owner in Firebase Console.
-      allow read: if isOwner(uid);
-      allow create, update, delete: if false;
     }
 
     match /serviceRequests/{requestId} {
