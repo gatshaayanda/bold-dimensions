@@ -18,7 +18,7 @@ function getAdminApp() {
 
 async function requireAdmin(request: Request) {
   const match = (request.headers.get("authorization") || "").match(/^Bearer\s+(.+)$/i);
-  if (!match) throw new Error("Sign in before uploading public style media.");
+  if (!match) throw new Error("Sign in before uploading service request media.");
   const app = getAdminApp();
   const decoded = await getAuth(app).verifyIdToken(match[1]);
   const role = await getFirestore(app).collection("admins").doc(decoded.uid).get();
@@ -28,11 +28,11 @@ async function requireAdmin(request: Request) {
 }
 
 export const ourFileRouter = {
-  customerStyleImage: f({
+  customerEquipmentPhoto: f({
     image: { maxFileSize: "4MB", maxFileCount: 1 },
   }).middleware(async ({ req }) => {
     const match = (req.headers.get("authorization") || "").match(/^Bearer\s+(.+)$/i);
-    if (!match) throw new Error("Sign in to upload a customer photo.");
+    if (!match) throw new Error("Sign in to upload a customer equipment photo.");
     const decoded = await getAuth(getAdminApp()).verifyIdToken(match[1]);
     if (!decoded.uid) throw new Error("Customer identity could not be verified.");
     return { customerId: decoded.uid };
@@ -41,12 +41,12 @@ export const ourFileRouter = {
     imageUrl: file.ufsUrl || file.url,
     imageKey: file.key,
   })),
-  customerStyleMedia: f({
+  customerServiceMedia: f({
     image: { maxFileSize: "4MB", maxFileCount: 1 },
     video: { maxFileSize: "8MB", maxFileCount: 1 },
   }).middleware(async ({ req }) => {
     const match = (req.headers.get("authorization") || "").match(/^Bearer\s+(.+)$/i);
-    if (!match) throw new Error("Sign in to upload a hairstyle reference.");
+    if (!match) throw new Error("Sign in to upload a service request attachment.");
     const decoded = await getAuth(getAdminApp()).verifyIdToken(match[1]);
     if (!decoded.uid) throw new Error("Customer identity could not be verified.");
     return { customerId: decoded.uid };
@@ -57,7 +57,7 @@ export const ourFileRouter = {
     fileName: file.name,
     fileSize: file.size,
   })),
-  adminStyleMedia: f({
+  adminBusinessMedia: f({
     image: { maxFileSize: "4MB", maxFileCount: 1 },
     video: { maxFileSize: "8MB", maxFileCount: 1 },
   }).middleware(async ({ req }) => requireAdmin(req))
