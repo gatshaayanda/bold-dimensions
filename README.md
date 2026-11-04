@@ -39,6 +39,14 @@ npx tsc --noEmit
 npm run lint
 npm run build
 npm run verify:identity
-``
+```
+
+## First Firebase setup
+1. Enable **Anonymous** and **Google** sign-in providers in Firebase Authentication.
+2. Apply `firestore.rules` and `storage.rules` to project `the-wall-ab746`. The GitHub deployment workflow is manual-only.
+3. Sign in at `/admin` with the intended Google account. Copy the displayed UID and create `admins/{uid}` in Firestore with `role` set to `owner` (or `staff`).
+4. For push notifications, set `NEXT_PUBLIC_FIREBASE_VAPID_KEY` from this Firebase project's Cloud Messaging settings.
+5. For server notifications and UploadThing attachments, configure `FIREBASE_ADMIN_KEY` from a service account in `the-wall-ab746` and a new Bold Dimensions `UPLOADTHING_TOKEN`. Do not reuse JTS credentials.
+6. Set `NEXT_PUBLIC_BASE_URL` to the approved production URL when one is assigned.
 
 See `AGENTS.md` for the implementation contract and protected flows.
