@@ -26,14 +26,14 @@ export async function POST(request:Request){
   try{
     const uid=await requireUid(request);
     const body=await request.json().catch(()=>({})) as {deviceToken?:unknown};
-    if(typeof body.deviceToken!=="string"||!body.deviceToken)throw new Error("This device is not registered for BOEMO notifications yet.");
+    if(typeof body.deviceToken!=="string"||!body.deviceToken)throw new Error("This device is not registered for Bold Dimensions notifications yet.");
     const {sendTestNotification}=await import("@/lib/server/pickup-reminder-runner");
     const result=await sendTestNotification(uid,body.deviceToken);
     return NextResponse.json(result);
   }catch(error){
-    console.error("BOEMO test notification failed:",error);
+    console.error("Bold Dimensions test notification failed:",error);
     return NextResponse.json(
-      {sent:false,error:error instanceof Error?error.message:"BOEMO could not send a test notification."},
+      {sent:false,error:error instanceof Error?error.message:"Bold Dimensions could not send a test notification."},
       {status:400}
     );
   }
