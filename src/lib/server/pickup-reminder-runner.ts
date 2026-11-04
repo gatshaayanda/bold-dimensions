@@ -122,7 +122,7 @@ async function remindUser(uid:string,leadMinutes:number,order:ReminderOrder,admi
     ?customerName+" · "+items+" · "+timeText
     :"Hi "+customerName.split(/\s+/)[0]+", your pickup is at "+timeText+". "+items;
   const link=admin?"/admin":"/account";
-  const publicUrl=process.env.NEXT_PUBLIC_BASE_URL||"https://localhost:3000";
+  const publicUrl=process.env.NEXT_PUBLIC_BASE_URL||"http://localhost:3000";
 
   const deliveryData={
     orderId:order.id,
@@ -230,7 +230,7 @@ async function runPickupReminders():Promise<{orders:number;reminders:number;sent
   }
 
   const summary={orders:ordersSnapshot.size,reminders,sent};
-  console.log("Bold Dimensions pickup reminders:",JSON.stringify(summary));
+  console.log("Bold Dimensions service request and message updates:",JSON.stringify(summary));
   return summary;
 }
 
@@ -242,16 +242,16 @@ async function sendTestNotification(uid:string,deviceToken:string):Promise<Notif
   const displayName=(userRecord.displayName||"").trim();
   const firstName=displayName.split(/\s+/)[0]||"there";
   const isKitchenAdmin=adminSnapshot.exists&&["owner","staff"].includes(String(adminSnapshot.data()?.role||"").toLowerCase());
-  const title=isKitchenAdmin?"Bold Dimensions kitchen alerts are on":"Bold Dimensions notifications are on";
-  const body=isKitchenAdmin
-    ? "This device is ready for new-order and pickup alerts."
+  const title=isStaff?"Bold Dimensions operations alerts are on":"Bold Dimensions notifications are on";
+  const body=isStaff
+    ? "This device is ready for new service request and customer message alerts."
     : "Hi "+firstName+", this device is ready for your Bold Dimensions pickup reminders.";
   const link=isKitchenAdmin?"/admin":"/account";
   const result=await sendToDeviceToken(uid,deviceToken,{
     notification:{title,body},
     data:{title,body,link,test:"true"},
     webpush:{
-      fcmOptions:{link:(process.env.NEXT_PUBLIC_BASE_URL||"https://localhost:3000")+link},
+      fcmOptions:{link:(process.env.NEXT_PUBLIC_BASE_URL||"http://localhost:3000")+link},
       notification:{tag:"bd-test-notification",icon:"/icon-192.png",badge:"/icon-192.png"}
     }
   });
@@ -273,7 +273,7 @@ async function sendNewOrderNotifications(orderId:string,customerUid:string):Prom
   const customerName=(order.customerName||"customer").trim();
   const title="New order · "+customerName;
   const body=items+(typeof order.total==="number"?" · P"+order.total.toFixed(2):"")+" · "+(order.mode==="delivery"?"Delivery":"Pickup")+" "+timeText;
-  const publicUrl=process.env.NEXT_PUBLIC_BASE_URL||"https://localhost:3000";
+  const publicUrl=process.env.NEXT_PUBLIC_BASE_URL||"http://localhost:3000";
   for(const adminDoc of adminsSnapshot.docs){
     const uid=adminDoc.id; const pref=(await db.collection("notificationPreferences").doc(uid).get()).data();
     if(!pref?.enabled)continue; admins++;
@@ -312,11 +312,11 @@ async function sendConversationMessageNotification(conversationId:string,message
     if(customerId)recipientUids.push(customerId);
   }
   const customerName=String(conversation.customerName||"customer").trim();
-  const title=senderRole==="customer"?customerName+" sent a message":"Bold Dimensions replied to you";
+  const title=senderRole==="customer"?customerName+" sent a message":"Bold Dimensions replied to your service request";
   const preview=String(message.text||"Attachment sent");
   const body=preview.length>120?preview.slice(0,117)+"…":preview;
   const link=senderRole==="customer"?"/admin":"/orders/"+conversationId;
-  const publicUrl=process.env.NEXT_PUBLIC_BASE_URL||"https://localhost:3000";
+  const publicUrl=process.env.NEXT_PUBLIC_BASE_URL||"http://localhost:3000";
   let sent=0;
   for(const uid of recipientUids){
     const jobId="conversation-message_"+conversationId+"_"+messageId+"_"+uid;
