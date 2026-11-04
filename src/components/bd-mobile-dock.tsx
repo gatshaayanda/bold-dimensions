@@ -11,5 +11,5 @@ const items=[
 ];
 export default function BdMobileDock(){
  const pathname=usePathname();
- return <nav className="bdMobileDock" aria-label="Main navigation">{items.map(item=>{const Icon=item.icon;const active=item.href==="/"?pathname==="/":pathname===item.href||pathname.startsWith(item.href+"/");return <Link href={item.href} key={item.href} className={active?"active":""} aria-current={active?"page":undefined}><Icon size={18} strokeWidth={active?2.5:1.8}/><small>{item.label}</small></Link>})}</nav>;
+ return <nav className="bdMobileDock" aria-label="Main navigation">{items.map(item=>{const Icon=item.icon;const active=item.href==="/"?pathname==="/":item.href==="/account"?(pathname.startsWith("/account")||pathname.startsWith("/orders/")):pathname===item.href||pathname.startsWith(item.href+"/");return <Link href={item.href} key={item.href} className={active?"active":""} aria-current={active?"page":undefined}><Icon size={18} strokeWidth={active?2.5:1.8}/><small>{item.label}</small></Link>})}</nav>;
 }
