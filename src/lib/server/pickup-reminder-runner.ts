@@ -241,7 +241,7 @@ async function sendTestNotification(uid:string,deviceToken:string):Promise<Notif
   ]);
   const displayName=(userRecord.displayName||"").trim();
   const firstName=displayName.split(/\s+/)[0]||"there";
-  const isKitchenAdmin=adminSnapshot.exists&&["owner","staff"].includes(String(adminSnapshot.data()?.role||"").toLowerCase());
+  const isStaff=adminSnapshot.exists&&["owner","staff"].includes(String(adminSnapshot.data()?.role||"").toLowerCase());
   const title=isStaff?"Bold Dimensions operations alerts are on":"Bold Dimensions notifications are on";
   const body=isStaff
     ? "This device is ready for new service request and customer message alerts."
