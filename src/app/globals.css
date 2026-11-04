@@ -2328,3 +2328,109 @@ input, select, textarea, button {
  .jtsAccountAppBar{flex-wrap:wrap}
  .jtsAccountCompactHero{margin-bottom:10px}
 }
+
+
+/* Customer-facing JTS booking tracker */
+.jtsTrackPage{min-height:100vh;padding:20px 18px 46px;background:radial-gradient(ellipse at 82% 0%,rgba(194,158,75,.12),transparent 34%),#090a0b;color:#f4f1e9}
+.jtsTrackWrap{width:min(100%,790px);margin:0 auto}
+.jtsTrackHeader{display:flex;align-items:center;justify-content:space-between;padding:4px 0 18px;border-bottom:1px solid rgba(212,175,55,.2)}
+.jtsTrackBrand{display:flex;align-items:center;gap:10px;color:#f5f2e9;text-decoration:none;font-size:10px;font-weight:800;letter-spacing:.13em}
+.jtsTrackBrandMark{display:grid;place-items:center;width:34px;height:34px;border:1px solid #a98a45;border-radius:50%;font:italic 21px Georgia,serif;color:#d9bd77}
+.jtsTrackBrand small{color:#c7ac6b}
+.jtsTrackAccount{padding:9px 13px;border:1px solid #51452b;border-radius:999px;color:#e5d5a8;text-decoration:none;font-size:12px}
+.jtsTrackIntro{padding:36px 0 23px}
+.jtsTrackIntro h1{font:500 clamp(36px,7vw,60px)/.98 Georgia,serif;letter-spacing:-.045em;margin:11px 0}
+.jtsTrackIntro h1 em{color:#d7bd7b;font-weight:400}
+.jtsTrackIntro p{color:#b9b4aa;font-size:14px;margin:0}
+.jtsTrackHero,.jtsTrackProgress,.jtsTrackService,.jtsTrackConnect,.jtsTrackError,.jtsTrackLoading{border:1px solid rgba(212,175,55,.22);border-radius:18px;background:linear-gradient(145deg,#191815,#101112 72%);padding:21px;margin:12px 0}
+.jtsTrackHero{box-shadow:0 18px 48px rgba(0,0,0,.25)}
+.jtsTrackHeroTop,.jtsTrackSectionHead{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.jtsEyebrow{font-size:9px;letter-spacing:.16em;font-weight:800;color:#bca36a}
+.jtsTrackBadge{padding:7px 10px;border-radius:999px;background:rgba(212,175,55,.12);border:1px solid rgba(212,175,55,.38);color:#e6d39c;font-size:10px;font-weight:700}
+.jtsTrackBadge.isCancelled{border-color:#87504a;background:rgba(120,48,40,.2);color:#e7aaa1}
+.jtsTrackReference{font:500 clamp(30px,6vw,46px)/1 Georgia,serif;letter-spacing:.03em;margin:14px 0 19px;color:#fff}
+.jtsTrackSummary{display:flex;align-items:center;gap:13px;padding-top:15px;border-top:1px solid rgba(255,255,255,.1)}
+.jtsTrackDate{width:58px;height:62px;display:grid;place-content:center;text-align:center;border:1px solid rgba(212,175,55,.4);border-radius:11px;background:rgba(212,175,55,.08)}
+.jtsTrackDate strong{font:500 25px/1 Georgia,serif;color:#f2e7c6}
+.jtsTrackDate span{font-size:9px;letter-spacing:.13em;color:#d8b85a;margin-top:4px}
+.jtsTrackDateCopy{display:grid;gap:5px;min-width:0}
+.jtsTrackDateCopy strong{font-size:13px}
+.jtsTrackDateCopy span{font-size:11px;color:#a9a49a}
+.jtsTrackTotal{margin-left:auto;text-align:right;display:grid;gap:5px}
+.jtsTrackTotal small{font-size:8px;letter-spacing:.12em;color:#a9a49a}
+.jtsTrackTotal strong{font:500 23px Georgia,serif;color:#e0c783}
+.jtsTrackProgress{background:#101112}
+.jtsTrackSectionHead{margin-bottom:16px}
+.jtsTrackSectionHead h2{font:500 23px Georgia,serif;margin:5px 0 0}
+.jtsTrackSectionHead>span{font-size:10px;color:#c9b77f}
+.jtsTrackSteps{display:grid;gap:0}
+.jtsTrackSteps>div{display:grid;grid-template-columns:32px minmax(0,1fr) auto;align-items:center;gap:11px;min-height:62px;position:relative}
+.jtsTrackSteps>div:not(:last-child):before{content:"";position:absolute;left:15px;top:43px;bottom:-18px;width:1px;background:#3b3933}
+.jtsTrackStepMark{z-index:1;display:grid;place-items:center;width:31px;height:31px;border:1px solid #4a4943;border-radius:50%;background:#141516;color:#9e9b91;font-size:11px}
+.jtsTrackSteps .isDone .jtsTrackStepMark{background:#b89b55;border-color:#b89b55;color:#101010}
+.jtsTrackSteps .isCurrent .jtsTrackStepMark{border:2px solid #e0c783;color:#f0d99b;box-shadow:0 0 0 4px rgba(212,175,55,.1)}
+.jtsTrackSteps>div>div{display:grid;gap:4px}
+.jtsTrackSteps>div>div strong{font-size:12px;color:#d0cec7}
+.jtsTrackSteps>div>div small{font-size:10px;color:#89877f}
+.jtsTrackSteps .isCurrent>div strong{color:#f3e4bd}
+.jtsTrackStepState{font-size:8px;letter-spacing:.1em;color:#77766f}
+.jtsTrackSteps .isCurrent .jtsTrackStepState{color:#d9bd77}
+.jtsTrackTruth{margin:15px 0 0;padding:12px 13px;border-left:2px solid #c6a65a;background:rgba(212,175,55,.07);font-size:11px;line-height:1.55;color:#d1c7ac}
+.jtsTrackServiceRow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0;border-top:1px solid rgba(255,255,255,.08)}
+.jtsTrackServiceRow>div{display:grid;gap:5px}
+.jtsTrackServiceRow>div strong{font-size:12px}
+.jtsTrackServiceRow small{font-size:10px;color:#a9a49a}
+.jtsTrackServiceRow>strong{font-size:12px;color:#e1cb91;white-space:nowrap}
+.jtsTrackServiceTotal{display:flex;justify-content:space-between;padding-top:13px;border-top:1px solid rgba(212,175,55,.25);font-size:12px}
+.jtsTrackServiceTotal strong{font:500 20px Georgia,serif;color:#e1cb91}
+.jtsTrackActions{display:flex;gap:10px;margin:16px 0}
+.jtsTrackPrimary,.jtsTrackSecondary{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:12px 17px;border-radius:999px;text-decoration:none;font-size:11px;font-weight:800;cursor:pointer}
+.jtsTrackPrimary{background:linear-gradient(135deg,#e4cf91,#b18d43);color:#14120d;border:1px solid #d8bd79}
+.jtsTrackSecondary{background:#151617;color:#e8dfc9;border:1px solid #554a30}
+.jtsTrackConnect{display:flex;align-items:center;justify-content:space-between;gap:15px;background:#111213}
+.jtsTrackConnect strong{font-size:12px}
+.jtsTrackConnect p,.jtsTrackError p{font-size:11px;line-height:1.55;color:#aaa69d;margin:6px 0 0}
+.jtsTrackNotice{padding:12px 14px;border:1px solid #5a4b2c;border-radius:12px;background:#18160f;color:#e0d1a9;font-size:11px;line-height:1.5}
+.jtsTrackCancelled{padding:16px;border:1px solid #704b45;border-radius:12px;background:#1b1212}
+.jtsTrackCancelled strong{color:#f0c0b8;font-size:13px}
+.jtsTrackCancelled p{color:#c3aaa5;font-size:11px}
+.jtsTrackError{margin-top:45px;padding:28px}
+.jtsTrackError h1{font:500 34px Georgia,serif;margin:12px 0}
+.jtsTrackError .jtsTrackPrimary{margin-top:18px}
+.jtsTrackLoading{margin-top:45px;text-align:center;padding:50px 20px}
+.jtsTrackLoading strong{display:block;margin-top:15px;font:500 22px Georgia,serif}
+.jtsTrackLoading p{font-size:11px;color:#aaa69d}
+.jtsTrackPulse{display:inline-block;width:13px;height:13px;border-radius:50%;background:#d7bd7b;box-shadow:0 0 0 7px rgba(212,175,55,.12)}
+.jtsTrackFooter{display:flex;justify-content:space-between;gap:12px;padding:20px 2px;color:#8d887d;font-size:8px;letter-spacing:.1em}
+.jtsTrackFooter a{color:#d8bd77;text-decoration:none;letter-spacing:0;font-size:10px}
+.jtsAccountWeather{display:flex;justify-content:space-between;align-items:center;gap:15px;margin:0 0 12px;padding:13px 16px;border:1px solid rgba(212,175,55,.2);border-radius:14px;background:linear-gradient(110deg,#171713,#101112)}
+.jtsAccountWeather>div:first-child{display:grid;gap:4px}
+.jtsAccountWeather>div:first-child>strong{font:500 17px Georgia,serif;color:#f1e8d1}
+.jtsAccountWeather>div:first-child>small{font-size:10px;color:#a9a397}
+.jtsAccountWeatherReading{text-align:right;display:grid;gap:3px}
+.jtsAccountWeatherReading strong{font:500 27px Georgia,serif;color:#d9bd77}
+.jtsAccountWeatherReading small{font-size:9px;color:#b2a991}
+@media(max-width:560px){
+ .jtsTrackPage{padding:13px 12px 32px}
+ .jtsTrackIntro{padding:27px 0 17px}
+ .jtsTrackHero,.jtsTrackProgress,.jtsTrackService,.jtsTrackConnect{padding:16px;border-radius:15px}
+ .jtsTrackSummary{gap:9px}
+ .jtsTrackDate{width:51px;height:57px}
+ .jtsTrackDateCopy strong{font-size:11px}
+ .jtsTrackDateCopy span{font-size:9px}
+ .jtsTrackTotal strong{font-size:19px}
+ .jtsTrackSteps>div{grid-template-columns:30px minmax(0,1fr) auto;gap:9px}
+ .jtsTrackStepState{font-size:7px}
+ .jtsTrackActions{flex-direction:column}
+ .jtsTrackActions>*{width:100%}
+ .jtsTrackConnect{align-items:stretch;flex-direction:column}
+ .jtsTrackConnect>*{width:100%}
+ .jtsTrackFooter{flex-direction:column}
+}
+@media print{
+ .jtsTrackPage{background:#fff;color:#111;padding:0}
+ .jtsTrackHeader,.jtsTrackActions,.jtsTrackConnect,.jtsTrackFooter{display:none!important}
+ .jtsTrackHero,.jtsTrackProgress,.jtsTrackService{background:#fff;color:#111;border:1px solid #bbb;box-shadow:none;break-inside:avoid}
+ .jtsTrackIntro h1,.jtsTrackReference,.jtsTrackSectionHead h2,.jtsTrackServiceRow>div strong,.jtsTrackServiceTotal strong{color:#111}
+ .jtsTrackIntro p,.jtsTrackSteps>div>div small,.jtsTrackSteps>div>div strong,.jtsTrackDateCopy span,.jtsTrackServiceRow small{color:#444}
+}
