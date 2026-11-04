@@ -85,3 +85,10 @@
  .bdSectionHead h2{font-size:1.55rem}
  .bdHow{padding-top:17px}
 }
+
+.bdMobileDock a{display:grid;justify-items:center;align-content:center;gap:3px;min-height:38px;padding:3px;color:#9db1ce;text-decoration:none}
+.bdMobileDock a svg{color:currentColor}
+.bdMobileDock a small{font-size:.58rem;font-weight:750}
+.bdMobileDock a.active{color:var(--bd-cyan)}
+.bdMobileDock a.active:after{content:"";width:22px;height:2px;margin-top:2px;background:var(--bd-cyan)}
+@media(max-width:760px){.bdApp,.bdUtility{padding-bottom:calc(54px + env(safe-area-inset-bottom))}}
