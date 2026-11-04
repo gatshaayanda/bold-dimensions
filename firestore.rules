@@ -199,7 +199,7 @@ service cloud.firestore {
     }
 
     match /notificationTokens/{uid}/tokens/{tokenId} {
-      allow read: if isOwner(uid) || isAdmin();
+      allow read: if isOwner(uid);
       allow create, update: if isOwner(uid)
         && request.resource.data.keys().hasOnly(['token', 'admin', 'updatedAt'])
         && request.resource.data.token is string
