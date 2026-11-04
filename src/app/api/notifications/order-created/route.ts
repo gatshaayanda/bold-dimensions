@@ -30,7 +30,7 @@ export async function POST(request:Request){
     const result=await sendNewOrderNotifications(orderId,uid);
     return NextResponse.json(result);
   }catch(error){
-    console.error("BOEMO new-order notification failed:",error);
-    return NextResponse.json({sent:0,error:error instanceof Error?error.message:"BOEMO could not notify the kitchen."},{status:400});
+    console.error("Bold Dimensions new-order notification failed:",error);
+    return NextResponse.json({sent:0,error:error instanceof Error?error.message:"Bold Dimensions could not notify the operations."},{status:400});
   }
 }
