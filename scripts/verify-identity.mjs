@@ -29,6 +29,8 @@ if (!cacheVersion || !worker.includes('const CACHE_VERSION="' + cacheVersion + '
 for (const [label, condition] of [
   ["Bold Dimensions brand name", brand.includes('name: "Bold Dimensions"')],
   ["official logo path", brand.includes('logo: "/brand/bold-dimensions-logo.jpg"')],
+  ["Bold Dimensions app icon path", brand.includes('iconSvg: "/bold-dimensions-icon.svg"')],
+  ["Bold Dimensions app icon artwork", read("public/bold-dimensions-icon.svg").includes("Bold Dimensions")],
   ["standalone manifest", manifest.includes('display: "standalone"')],
   ["192px and 512px icons", manifest.includes("brand.icon192") && manifest.includes("brand.icon512")],
   ["server-first embedded-browser gate", layout.includes("const requestHeaders=await headers()") && layout.includes("initialContext")],
