@@ -3,6 +3,7 @@ import Link from "next/link";
 import { onAuthStateChanged, signInAnonymously } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { auth } from "@/lib/firebase/client";
+import BdMobileDock from "@/components/bd-mobile-dock";
 import { requestStatusSteps, SERVICE_AREAS, subscribeToServiceRequest, type ServiceRequest } from "@/lib/bold-dimensions";
 function dateText(value:string){const date=new Date(value);return Number.isFinite(date.getTime())?new Intl.DateTimeFormat("en-GB",{timeZone:"Africa/Gaborone",dateStyle:"medium",timeStyle:"short"}).format(date):value}
 function readLocal(id:string):ServiceRequest|null{try{const raw=window.localStorage.getItem("bd-service-request-"+id);return raw?JSON.parse(raw) as ServiceRequest:null}catch{return null}}
@@ -25,5 +26,5 @@ export default function RequestTrackingPage({params}:{params:Promise<{id:string}
    <section className="bdTrackActions"><div><strong>Need to add information?</strong><p>Contact the team and quote your request reference.</p></div><a className="bdPrimary" href={"https://wa.me/26773207038?text="+encodeURIComponent("Hello Bold Dimensions, I’m following up on request #"+request.id.slice(0,8).toUpperCase()+".")}>Contact on WhatsApp ↗</a></section>
   </>}
   <footer className="bdUtilityFooter"><Link href="/">← Bold Dimensions</Link><Link href="/order">New request ↗</Link></footer>
- </main>;
+ <BdMobileDock/></main>;
 }
