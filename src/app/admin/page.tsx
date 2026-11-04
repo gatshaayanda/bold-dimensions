@@ -16,7 +16,7 @@ function Dashboard(){
  const [loading,setLoading]=useState(true);
  const [error,setError]=useState("");
  const [notice,setNotice]=useState("");
- const [filter,setFilter]=useState<"Open"|"All"|"Completed">("Open");
+ const [filter,setFilter]=useState<"Open"|"All"|"Closed">("Open");
  const [expanded,setExpanded]=useState<string>("");
  const [revealed,setRevealed]=useState<Record<string,boolean>>({});
  const [drafts,setDrafts]=useState<Record<string,{quoteAmount:string;quoteNote:string;internalNote:string;scheduledFor:string}>>({});
@@ -24,7 +24,7 @@ function Dashboard(){
  useEffect(()=>subscribeToServiceRequests(items=>{setRequests(items);setLoading(false);setError("")},()=>{setError("The service request queue could not be loaded. Check the new Firebase project rules and connection.");setLoading(false)}),[]);
  const openCount=useMemo(()=>requests.filter(item=>!["Completed","Cancelled"].includes(item.status)).length,[requests]);
  const newCount=useMemo(()=>requests.filter(item=>item.status==="New").length,[requests]);
- const filtered=useMemo(()=>requests.filter(item=>filter==="All"?true:filter==="Completed"?["Completed","Cancelled"].includes(item.status):!["Completed","Cancelled"].includes(item.status)),[requests,filter]);
+ const filtered=useMemo(()=>requests.filter(item=>filter==="All"?true:filter==="Closed"?["Completed","Cancelled"].includes(item.status):!["Completed","Cancelled"].includes(item.status)),[requests,filter]);
  function draftFor(item:ServiceRequest){return drafts[item.id]??{quoteAmount:item.quoteAmount===undefined?"":String(item.quoteAmount),quoteNote:item.quoteNote||"",internalNote:item.internalNote||"",scheduledFor:localDateTime(item.scheduledFor)}}
  async function changeStatus(item:ServiceRequest,status:ServiceRequestStatus){const draft=draftFor(item);if(status==="Scheduled"&&!draft.scheduledFor){setExpanded(item.id);setError("Add the agreed service date and time in the work panel before marking this request Scheduled.");return}setSaving(item.id);setNotice("");setError("");try{await updateServiceRequest(item.id,{status,...(status==="Scheduled"?{scheduledFor:new Date(draft.scheduledFor).toISOString()}:{})});setNotice("Request status updated.")}catch{setError("Status could not be updated. Check admin permissions and try again.")}finally{setSaving("")}}
  async function saveNotes(item:ServiceRequest){const draft=draftFor(item);setSaving(item.id);setError("");setNotice("");try{const amount=draft.quoteAmount.trim()===""?undefined:Number(draft.quoteAmount);if(amount!==undefined&&(!Number.isFinite(amount)||amount<0))throw new Error("Enter a valid quote amount.");await updateServiceRequest(item.id,{quoteAmount:amount,quoteNote:draft.quoteNote.trim(),internalNote:draft.internalNote.trim(),scheduledFor:draft.scheduledFor?new Date(draft.scheduledFor).toISOString():undefined});setNotice("Quote and work notes saved.")}catch(cause){setError(cause instanceof Error?cause.message:"Changes could not be saved. Check admin permissions.")}finally{setSaving("")}}
@@ -32,7 +32,7 @@ function Dashboard(){
   <section className="bdAdminWelcome"><div><span className="bdEyebrow">OPERATIONS OVERVIEW</span><h1>Service<br/><em>desk.</em></h1><p>Review incoming work, agree the next step and keep each customer request moving.</p></div><Link className="bdAdminPublicLink" href="/">View customer app ↗</Link></section>
   <section className="bdAdminStats"><article><small>OPEN REQUESTS</small><strong>{openCount}</strong><span>Needs follow-up</span></article><article><small>NEW REQUESTS</small><strong>{newCount}</strong><span>Awaiting first review</span></article><article><small>COMPLETED</small><strong>{requests.filter(item=>item.status==="Completed").length}</strong><span>Marked complete</span></article><article><small>TOTAL RECORDS</small><strong>{requests.length}</strong><span>All submitted requests</span></article></section>
   <NotificationSettings/>
-  <section className="bdAdminSection"><div className="bdAdminSectionHead"><div><span className="bdEyebrow">CUSTOMER WORK</span><h2>Service requests</h2></div><div className="bdAdminFilters">{(["Open","All","Completed"] as const).map(value=><button key={value} type="button" className={filter===value?"active":""} onClick={()=>setFilter(value)}>{value}</button>)}</div></div>
+  <section className="bdAdminSection"><div className="bdAdminSectionHead"><div><span className="bdEyebrow">CUSTOMER WORK</span><h2>Service requests</h2></div><div className="bdAdminFilters">{(["Open","All","Closed"] as const).map(value=><button key={value} type="button" className={filter===value?"active":""} onClick={()=>setFilter(value)}>{value}</button>)}</div></div>
    {notice&&<p className="bdAdminNotice" role="status">{notice}</p>}{error&&<p className="bdFormError" role="alert">{error}</p>}
    {loading?<p className="bdAdminEmpty">Loading service requests…</p>:filtered.length===0?<div className="bdAdminEmpty"><strong>{filter==="Open"?"No open requests.":"No requests in this view."}</strong><p>New customer submissions will appear here when Firebase access is configured.</p></div>:<div className="bdAdminQueue">{filtered.map(item=>{
     const area=SERVICE_AREAS.find(value=>value.id===item.areaId),show=revealed[item.id]===true,draft=draftFor(item);
