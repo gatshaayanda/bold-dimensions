@@ -1,3 +1,3 @@
 import OrderForm from "./order-form";
-export const metadata={title:"Book an Appointment",description:"Request an appointment with John The Stylist Bw in G West, Gaborone."};
+export const metadata={title:"Request a Service",description:"Send Bold Dimensions a service or installation request."};
 export default function OrderPage(){return <OrderForm/>}
