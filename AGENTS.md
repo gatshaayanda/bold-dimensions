@@ -1,948 +1,144 @@
-# JOHN THE STYLIST BW — Agent Operating Contract
+# BOLD DIMENSIONS — PROJECT OPERATING CONTRACT
 
-## Public brand and search identity
-- The only customer-facing business/app name is **John The Stylist Bw**. Do not display “JTS Styles” as a brand, business name, app name or install label; that name is associated with an unrelated shoe-selling business.
-- Keep accurate salon/search terms such as hairstylist, barber, haircuts, colour, G West, Gaborone and Botswana in SEO metadata where relevant. Do not preserve unrelated shoe-retail keywords or misleading structured data.
-- Technical identifiers, route names, filenames and historical internal references may retain `jts` where renaming them could break saved links, installed apps, service workers, integrations or customer records. Prefer customer-visible rebranding over risky infrastructure renames.
+## 1. Source of truth and workflow
+- Product owner/final reviewer: user. Technical navigator/implementer: assistant.
+- Sources of truth: latest user brief, this repository's actual code, this file, approved Iteration 13 governance/visual references.
+- Work in this repository in place. It was cloned from John The Stylist BW because its customer/account/admin and PWA foundations were useful; do not carry salon business data or copy unrelated JTS functionality into this product.
+- Inspect only the files and flows relevant to the task. Preserve working systems. Unexpected result = stop, inspect actual state, repair the smallest failing layer, verify.
+- Build and verify working software, not plans. Do not claim tests, visual QA, pushes or deployment that did not happen.
+- Do not deploy to Vercel unless the user delegates it.
 
-## Product
-John The Stylist Bw is a real customer-facing appointment PWA for a hairstylist/barber business in G West, Gaborone. It is a real customer-facing demo operation for John The Stylist Bw while the business prepares its paid live launch. It is not generic SaaS.
+## 2. Product identity and verified scope
+Customer-facing identity: **Bold Dimensions**. App positioning: **Service & Equipment Hub**.
 
-Business:
-- John The Stylist Bw
-- G West shops, upstairs at Star Tattoos parlor and boutique, inside the salon with the purple door labelled “miss Emma”
-- Hours: 08:00–18:00
-- Phone/WhatsApp: +267 78 053 564
-- Appointment requests must be made at least one day in advance.
-- A 50% deposit is required to secure an appointment.
-- Deposit method: Orange Money 75720306
-- Account name: John SHUMBA
+The current business scope is three service areas:
+1. Agricultural machinery support.
+2. Air conditioning.
+3. Solar water heating.
 
-## Roles
-- Product owner / final reviewer: user
-- Technical navigator + implementation: ChatGPT through repository tooling
-- GitHub is the source of truth
+The app is a service-request and customer follow-up tool. It is not currently a confirmed ecommerce catalogue, machinery dealership, parts inventory, online payment platform or appointment calendar.
 
-## Workflow
-START → INSPECT → BUILD → VERIFY → CHECKPOINT → CONTINUE/RECOVER.
-Golden rule: **Unexpected result = STOP → inspect reality → then act.**
+Do not claim authorised Massey Ferguson dealer status, equipment stock, guaranteed coverage, technician availability, response times, published prices, warranties or service guarantees unless the owner verifies them.
 
-Before changing code:
-1. Read this AGENTS.md.
-2. Inspect actual repository/Git state and the relevant live/deployed state when applicable.
-3. Compare the requested change against current implementation and current official guidance.
-4. Make the smallest controlled change that solves the actual requirement.
-5. Preserve working functionality unless the user explicitly asks to replace it.
+Use only the supplied logo at `public/brand/bold-dimensions-logo.jpg`. Its visible identity uses navy/blue, cyan, purple and orange. Keep the original asset intact. `public/jts.jpg` and `public/jts-logo.svg` are compatibility paths for inherited components and must contain the Bold Dimensions logo, not JTS branding.
 
-After meaningful implementation:
-- verify the actual result;
-- run typecheck, lint and build;
-- inspect the final diff;
-- commit a meaningful checkpoint;
-- push the intended branch;
-- report commit, changed areas and verification honestly.
+Known public contact details from business research:
+- +267 73 207 038
+- +267 396 1158
+- sales@bolddimensions.co.bw
 
-## Customer-first product principle
-The first customer task is not account creation. It is:
-**discover a service → understand the price/expectation → choose a date/time → provide name + WhatsApp/phone → understand the 50% deposit → submit an appointment request → contact John / await confirmation.**
+Do not assume the domain is the production app URL. `NEXT_PUBLIC_BASE_URL` must be set to the actual approved host when known; local default is `http://localhost:3000`.
 
-Do not require Google, email/password or profile setup before an appointment request.
+## 3. Customer journey
+The primary journey is:
+**Choose service area → choose request type → describe equipment/system and location → provide name and contact → submit request → track status and follow up.**
 
-The booking UI must clearly distinguish:
-- appointment request submitted;
-- deposit required;
-- appointment confirmed.
+Customer requests do not require account creation. Use Firebase Anonymous Auth under the hood to create a private customer identity. Google linking may be offered as an optional way to preserve the same request history across devices; it must not block the first request.
 
-Submitting a request does NOT mean the appointment is confirmed. Confirmation depends on John confirming the requested slot and receiving the required deposit.
+The request form should collect:
+- service area and request type;
+- equipment/system and make/model when known;
+- site/town/location;
+- a useful description of the issue or work required;
+- standard/urgent priority (do not imply emergency dispatch);
+- customer name and phone/WhatsApp;
+- optional email and preferred contact method.
 
-## First-flow UX rules
-The customer experience should be mobile-first and deliberately low-friction:
-- show the primary booking action early;
-- keep the initial choice set small and understandable;
-- use progressive disclosure for secondary information;
-- show prices before asking for personal information;
-- use labels above fields rather than relying on placeholders;
-- group related fields;
-- keep important payment/deposit information visible near the commitment point;
-- preserve entered information when correcting errors;
-- use specific, local error messages;
-- never force account creation merely to request an appointment;
-- do not hide the primary booking CTA below secondary navigation on mobile;
-- keep touch targets comfortable and keyboard-friendly.
+Do not collect payment before the business has assessed and quoted the work. Do not invent a price, appointment time or service availability. A submitted request is not a confirmed visit or booking.
 
-Research basis:
-- Nielsen Norman Group progressive disclosure and cognitive-load/form guidance.
-- Baymard mobile checkout research: reduce unnecessary account creation, make required information visible, keep order/price context available and make errors recoverable.
-- NN/g error guidance: place actionable errors near their source and prevent errors where possible.
+Customer request history is private and scoped to the signed-in Firebase UID. Tracking must not expose another customer's request. A local copy may help recover the reference on the same device, but it must never be presented as live backend status.
 
-## Current supplied services/prices
-The owner-supplied bookable catalogue is the 17-service list in `src/lib/jts/public-services.ts`. It is the source of truth for customer-facing service names and prices. Keep the homepage finder, booking selector and admin catalogue aligned with this list:
-- Haircuts: Kids Cut P100; Fade P100; Fade + Tint P200; Ladies Cut Only P120; Ladies Cut + Tint P200; Ladies Cut + Enecto Tint P200.
-- Bleach services: Blonde P250; Pure White + Cut P300; Grey P350.
-- S Curls & Curl Styles: Cut + S Curl P200; Cut + S Curl + Tint P280; Cut + Finger Coils P300; Cut + Ice Curls P250.
-- Bobs & Pixie Cuts: Bob/Pixie Cut (Without Tint) P350; Bob/Pixie Cut (With Tint) P400; Pixie Cut with Colors P450; Pixie Cut with Queen Cazard Hair Relaxer P450.
+## 4. Service request data model
+The current client model is in `src/lib/bold-dimensions.ts`. Primary Firestore collection: `serviceRequests`.
 
-All prices are BWP. Do not invent additional catalogue prices. For unlisted styles, provide an enquiry route and make clear that John must confirm the price before the customer commits.
+Fields:
+- `customerId`, `customerName`, `phone`, optional `email`;
+- `areaId`, `serviceType`, optional `equipment`, `makeModel`;
+- `location`, `description`, `urgency`, `preferredContact`;
+- `status`, `createdAt`, `updatedAt`;
+- optional admin-managed `quoteAmount`, `quoteNote`, `internalNote`.
 
-## Public category media presentation — current approved QA slice
-- Present the 17 owner-supplied services as four customer-understandable categories: Haircuts, Bleach Services, S Curls & Curl Styles, and Bobs & Pixie Cuts.
-- The public homepage uses one shared representative photo or video per category rather than requiring 17 separate images. For the first rollout, an authorized owner can attach the category's representative media to any one service in that category using the existing Services & prices editor; the public category card selects the first available media in that category. The remaining services do not need duplicate media.
-- Keep all individual service names, exact prices and direct booking links visible within their category. Keep the full price list modal available. Do not add filters, search fields, counters or decorative accent colours.
-- Category media is genuine owner-uploaded work only. A missing category image uses a restrained branded fallback; never use generated or stock imagery as if it were John's work.
-- Videos remain customer-controlled with visible playback controls and play inline; do not autoplay with sound. Crop photos consistently without hiding the hairstyle.
-- Category descriptions and secondary captions may be shortened, but never truncate service names, prices, booking instructions or other decision-critical information.
-- This public-page-first release does not redesign the booking form or alter calendar, availability, customer details, deposit, account, Style Studio, admin authorization, PWA installation or service-worker behavior. Those are separate protected workflows and must remain intact.
-- QA this public category presentation first with no media, then with one representative photo per category, then with a video in at least one category. Confirm media displays on the public page after the owner saves it in admin, category links and all 17 service links remain correct, and mobile layouts remain readable.
+Status progression:
+`New → Reviewing → Quote prepared → Awaiting customer → Scheduled → In progress → Completed`, with `Cancelled` available.
+Only authorized staff can change status, publish a quote or add internal notes. Do not expose `internalNote` in customer views. A quote is not a payment receipt or a confirmed visit.
 
-## Service presentation — protected customer experience
-- The supplied 17-service catalogue in `src/lib/jts/public-services.ts` is the customer-facing source of truth for names, prices, service selection and booking.
-- The homepage may retain the three editorial featured cards (THE CUT, THE COLOUR and THE CHANGE) as the concise first presentation. Preserve their approved content, descriptions, prices, order, layout and owner-uploaded media.
-- The “View full price list” modal must show all 17 services in the four supplied categories. Every service row is a real booking link; selecting one navigates to `/order?service=<service-id>` and preselects that exact service.
-- The booking form must always offer all 17 supplied services, whether opened from a homepage card, the full price list, or directly. A stale or partial Firestore publicServices document must never silently remove bookable services from the booking selector.
-- The selected service must remain selected while the customer chooses date/time and enters their details; the booking summary and 50% deposit calculation must reflect that exact service and price.
-- Keep the homepage first view concise using progressive disclosure, but never make the full catalogue a dead-end reference list.
-- Do not add search fields, category filters, result counters or a colour-coded catalogue UI. Group the full list under the supplied categories only.
-- Preserve owner-uploaded service image/video support on the featured cards. Do not replace real salon imagery with generated placeholders or decorative glyphs when media is supplied.
-- Keep all text high-contrast and readable on the black, white/silver and restrained gold JTS palette. No decorative plum, purple, lime, neon-blue, pink or orange text treatments. Use text and borders—not colour alone—to communicate selection and status.
-- Keep the booking date/time/customer-details flow intact. Do not weaken availability checks, deposit rules, guest booking or request-vs-confirmation language.
-- This is one coherent task: choose a service → see its price and deposit → choose date/time → provide contact details → submit an appointment request.
+The customer and admin screens now use `serviceRequests`. Firestore rules must be updated to match this model only after the customer, tracking, admin and auth workflows have been reviewed. Until then, Firebase requests may be denied by the inherited rules; do not weaken rules ad hoc or deploy a permissive ruleset.
 
-## Deposit/payment
-The customer is instructed to pay the 50% deposit through Orange Money:
-- 75720306
-- John SHUMBA
+## 5. Admin and authorization
+- Admin route is `/admin`.
+- Access is through Firebase Authentication and the signed-in user's `admins/{uid}` document with role `owner` or `staff`.
+- No hard-coded email allowlists, inherited JTS UIDs, synthetic one-word admin account or public admin access.
+- The role record must be provisioned deliberately in the dedicated Bold Dimensions Firebase project.
+- Admin can review service requests, reveal private customer details only when needed, update status, prepare a quote and maintain private work notes.
+- Sensitive customer details are masked until an authorized operator reveals them.
+- Keep admin sections compact but separated enough to scan. Do not cram all operational details into one dense card.
+- Do not create fake analytics, inventory, staff assignment, financial reconciliation, customer chat or appointment availability features unless their workflows and data are implemented end to end.
 
-The application must not claim that payment was received merely because the customer submitted the form. Payment confirmation remains a business/admin responsibility until a verified payment workflow is implemented.
-
-If a deposit is shown for a price range, show the range or make clear the displayed amount is based on the selected supplied price. Do not fabricate an exact final price for an unpriced service.
-
-## Location/trust information
-Keep the supplied location wording intact unless the owner changes it:
-“G West shops, Star Tattoos parlor and boutique upstairs, inside the salon with a purple door labelled ‘miss Emma’.”
-
-The app should expose:
-- business name;
-- service categories;
-- hours;
-- phone/WhatsApp;
-- location instructions;
-- deposit requirement;
-- Orange Money number/account name;
-- clear request-vs-confirmation language.
-
-Do not invent testimonials, guarantees, availability, reviews, cancellation policy, refund policy, exact slot availability, or payment receipts.
-
-## Firebase
+## 6. Firebase and integrations
 Dedicated Firebase project:
-- projectId: stylist-36204
-- authDomain: stylist-36204.firebaseapp.com
-- storageBucket: stylist-36204.firebasestorage.app
-- messagingSenderId: 622468889009
-- appId: 1:622468889009:web:0579e49d766c6e81a1a590
-- measurementId: G-5LDNFHCC53
+- projectId: `the-wall-ab746`
+- authDomain: `the-wall-ab746.firebaseapp.com`
+- storageBucket: `the-wall-ab746.firebasestorage.app`
+- messagingSenderId: `591554003595`
+- appId: `1:591554003595:web:e0bcf57ec06ab196638a8e`
+- measurementId: `G-RHX7RR8CWF`
 
-Firebase browser configuration belongs in NEXT_PUBLIC_FIREBASE_* environment variables. Public Firebase client configuration is not a server secret.
+Browser config belongs in `NEXT_PUBLIC_FIREBASE_*` variables and is public client configuration. Do not commit Firebase Admin service-account JSON or private keys. Server-only `FIREBASE_ADMIN_KEY` must be configured separately if required.
 
-Never commit Firebase Admin service-account JSON, private keys, or other server credentials. If server-side Admin credentials are needed, they must be provided/configured separately in Vercel/Firebase/GitHub secrets.
+`.firebaserc` points to `the-wall-ab746`. Never deploy rules to another Firebase project.
 
-The production base URL is intended to be:
-https://john-the-stylist-bw.vercel.app
+Use UploadThing for required app media uploads. Do not introduce Firebase Storage uploads or loosen Storage rules by assumption. UploadThing endpoints must verify the Firebase UID and admin role for staff-only uploads.
 
-## Authentication
-Anonymous Firebase Auth may be used under the hood so a guest booking has a private customer UID. This is an implementation detail, not a customer sign-in requirement.
+## 7. PWA installation and offline — protected
+Preserve the inherited PWA installation mechanism and event lifecycle. Only change identity, logo, copy, colours and required project configuration unless the owner explicitly approves a functional change.
 
-Google account connection can later become an optional upgrade for:
-- booking history;
-- saved details;
-- repeat booking;
-- private customer communication.
+Protected behavior:
+- branded, dismissible, non-blocking install entry;
+- capture and retain the real `beforeinstallprompt` event;
+- invoke native prompt only from the user's explicit click;
+- clear consumed prompt and handle `appinstalled`;
+- no fake native prompt or dead control;
+- truthful iOS/iPadOS Share → Add to Home Screen guidance;
+- embedded-browser handoff to the normal browser, preserving the original URL;
+- keep service-worker registration at `/sw-jts.js` unless a verified migration is approved;
+- preserve offline/reconnect messaging and waiting-worker update lifecycle;
+- do not cache private customer/admin data or API responses.
 
-Never make Google connection a prerequisite for the first booking.
+The worker's Firebase Messaging config must match `the-wall-ab746`. The cache namespace must match `brand.serviceWorkerCache` in `src/config/brand.ts`. Increment the cache version for shell changes. Legacy `jts` filenames and event names may remain as technical compatibility identifiers; customer-visible text must say Bold Dimensions.
 
-## Booking data architecture
-The current repository was cloned from a proven BOEMO operating foundation. During the transition, preserve its Firestore security boundary and guest-auth mechanism while refactoring the domain from food orders into appointment requests.
+PWA icons are generated by `scripts/generate-pwa-icons.mjs` from the supplied Bold Dimensions logo. Verify PNG format and 192x192 / 512x512 dimensions after generation.
 
-Do not weaken Firestore rules to make the new UI work.
+## 8. Chatbot and existing foundation
+Preserve inherited chatbot behavior, features, entry points and integrations. Change branding and Bold Dimensions-specific content only unless the user explicitly authorizes a functional change. Do not remove or replace it during identity cleanup.
 
-The target domain model should eventually represent:
-- appointments/booking requests;
-- services and owner-controlled prices;
-- customer profile;
-- deposit/payment status;
-- appointment status;
-- private customer conversations;
-- admin availability/operating settings.
+Preserve working Firebase Auth foundations, customer-scoped access, UploadThing authorization, analytics privacy boundaries, service-worker behavior and embedded-browser handoff unless a change is required for the new request model and is reviewed.
 
-Until that refactor is complete, compatibility code must be treated as transitional and clearly documented.
+## 9. Visual standard
+- Iteration 13 is the governing visual reference. Inspect the actual image `docs/assets/washride-home-reference.jpeg` in `gatshaayanda/iteration13` and the relevant `VISUAL-DIRECTION-STANDARD.md` before claiming visual QA.
+- Apply its compactness, typography, hierarchy, clarity, utility and polish across homepage, service discovery, request form, customer account, tracking and admin. Homepage quality alone is not acceptance.
+- Mobile-first is primary; desktop must remain responsive.
+- Avoid generic oversized cards, excessive whitespace, long marketing copy, dense clusters and oversized headings.
+- Use clear section separation, compact rows, concise labels, readable forms, touch-friendly controls and visible focus/error states.
+- The supplied logo palette is the brand source. Do not retain salon black/gold/plum styles or add unrelated decorative colours.
+- Do not claim visual completion without inspecting actual rendered screenshots at mobile and desktop widths.
 
-## Appointment states
-Preferred business state model:
-Requested → Deposit pending → Confirmed → In service → Completed
-with Cancelled available.
-
-Do not expose a state as confirmed unless the owner workflow has actually confirmed it.
-
-## Admin
-The admin surface is for John/authorized staff to:
-- review appointment requests;
-- confirm or reject requested slots;
-- record deposit/payment status;
-- manage services/prices;
-- manage customer communication;
-- manage business hours/location notes.
-
-Do not build a generic CRM/ERP/accounting product.
-
-Admin access must remain role-controlled by Firebase security rules. Never hard-code an admin UID.
-
-## Customer communication
-The existing private customer conversation architecture may be retained and adapted:
-- customer messages are private to the customer and authorized staff;
-- optional image/PDF support is useful for hairstyle references, screenshots and receipts;
-- notification failure must never discard an already-saved message;
-- do not weaken Storage/Firestore rules to make the UI work.
-
-## PWA/offline
-The customer app is an installable PWA and should behave like a real app across supported browsers.
-
-Installability:
-- manifest has a stable id and scope, standalone display, 192px + 512px PNG icons, shortcuts and install metadata;
-- production must be served over HTTPS;
-- Chromium browsers may expose the in-app install prompt through beforeinstallprompt;
-- iOS/iPadOS Safari does not expose beforeinstallprompt, so provide truthful Share → Add to Home Screen guidance;
-- service-worker shell changes require the cache version to be bumped;
-- app updates must support a waiting worker and an explicit refresh action rather than silently disrupting a customer.
-
-Offline:
-- Firebase Firestore uses persistent local cache/multi-tab persistence;
-- previously established guest sessions remain available offline through Firebase Auth persistence;
-- appointment writes are cached locally by Firestore and synchronize when connectivity returns;
-- do not await an offline Firestore write indefinitely in the customer UI;
-- save a private local booking copy so the tracking page can reopen the request on the same device;
-- service worker caches the public app shell, manifest, icons and static Next assets;
-- navigation uses network-first with /offline fallback;
-- API calls and private admin/customer data are not blindly cached;
-- a first-time visitor who has never established the guest Firebase session must reconnect once before a private backend booking can be created;
-- payment cannot be claimed offline;
-- live appointment status requires synchronized backend data.
-
-Push notifications:
-- /sw-jts.js is the Firebase Messaging + PWA service worker;
-- it uses the dedicated stylist-36204 Firebase configuration;
-- background notification clicks return to JTS customer/admin routes;
-- notification failure must never invalidate a saved booking or message;
-- the old BOEMO service worker is removed.
-
-Do not reintroduce BOEMO food/kitchen/pickup language into customer-facing PWA, offline or notification surfaces.
-
-## Media/design
-Canonical visual reference: the owner-supplied `public/jts.jpg` logo. Its palette is **black, metallic gold, white and silver**. The logo contains white/silver script, gold hairline accents and gold “STYLES” lettering on black.
-
-- Keep `public/jts.jpg` as the canonical logo. Do not redraw, recolour, crop destructively or replace it with a text monogram.
-- Style every route—homepage, booking, booking history/detail, admin, install panel, embedded-browser gate and offline recovery—as one JTS product using the same logo-led palette.
-- Use black/near-black foundations, readable white, silver/neutral secondary surfaces and restrained metallic-gold accents. Remove inherited plum/purple, lime-green, neon-blue, pink and orange styling where it is decorative rather than semantic.
-- Maintain readable contrast, visible focus, error/status distinction, responsive spacing and touch-friendly actions. Keep the booking CTA primary; installation stays secondary and non-blocking.
-- Keep genuine supplied salon imagery only. Do not invent client results or use unrelated stock photography.
-- Use `brand.logo` and `brand.iconSvg` for canonical brand references. Do not assume a JPEG is a valid PNG. Verify icon file signatures, dimensions and rendered appearance before calling PWA icons correct.
-- Brand metadata/theme color, manifest, browser handoff, install panel, offline UI, favicon/share assets and notification imagery must agree with the canonical logo.
-
-## Customer account workspace — Iteration 13 compact redesign (2026-11-02)
-- My Account is a task-first customer dashboard, not a long-form marketing page. Prioritize the next appointment/request, truthful status, next required customer action, private messages/payment proof and book-again route.
-- Reduce reading and scrolling with concise headings, compact rows/cards, grouped information and progressive disclosure. Do not repeat the JTS journey introduction, duplicate booking CTAs or restate appointment truth in multiple prominent panels.
-- Preserve guest sessions, optional Google linking, customer-scoped Firestore bookings, live subscriptions, booking references/detail links, private conversations, deposit-proof upload/recovery, unread state, booking history, weather/date links, style feed/inspiration and Style Studio.
-- Payment screenshot submission never marks a deposit as received. Only authorized staff manually verify the Orange Money account and update payment state. Appointment requests remain unconfirmed until John confirms the slot and deposit.
-- Weather is supporting planning context, never a proxy for availability. Keep it secondary and concise; retain attribution and forecast uncertainty language.
-- Optional entertainment and inspiration stay below operational account tasks.
-- Use the canonical black, metallic-gold, white and silver JTS palette. No generic dashboard theme, decorative colour status coding, fake reviews or fabricated customer metrics.
-- Account analytics must not expose one customer's bookings, names, phone numbers, messages, payment screenshots or identity to other customers or public visitors.
-- Any account visual refactor must be regression-checked against guest and Google-linked sessions, booking recovery, live updates, private thread ownership, attachment upload and account links. Do not change Firebase rules/schema/auth or PWA install/offline behavior as part of visual work.
-
-## Accessibility and form quality
-- visible labels;
-- keyboard-compatible controls;
-- meaningful focus states;
-- text plus visual error indicators;
-- no placeholder-only labels;
-- clear date/time constraints;
-- no color-only status communication;
-- accessible button names;
-- mobile-first layouts;
-- preserve input during validation errors.
-
-## Security/data integrity
-- Never expose customer profiles publicly.
-- Customer reads must remain scoped to the authenticated customer UID.
-- Never treat client-submitted price/payment fields as authoritative financial proof.
-- Never make an appointment confirmed merely because a customer submitted a form.
-- Never weaken Firestore/Storage rules to hide application errors.
-- Never commit private credentials.
-
-## Verification
+## 10. Verification and delivery
 Before a meaningful checkpoint:
-- npx tsc --noEmit
-- npm run lint
-- npm run build
-
-Also verify the actual customer flow:
-1. landing page;
-2. service selection;
-3. date constrained to at least tomorrow;
-4. time constrained to 08:00–18:00;
-5. name + WhatsApp/phone;
-6. optional desired-style note;
-7. 50% deposit calculation/display;
-8. appointment request submission;
-9. confirmation wording;
-10. contact/next-step action;
-11. account/order history remains private.
-
-## Recovery
-If an unexpected result appears:
-**STOP → inspect reality → compare against the last known-good checkpoint → repair the smallest necessary layer → verify again.**
-
-Do not rebuild the foundation merely because the product domain is changing. Reuse proven authentication, Firestore, PWA, customer communication and deployment patterns while replacing the business semantics carefully.
-
-
-### Install UX checkpoint
-- The customer-facing install action is a normal JTS header control, not a fixed floating button that can cover content or compete with booking actions.
-- Chromium installation uses one retained `beforeinstallprompt` event and calls `prompt()` directly from the explicit Install app button user gesture; the consumed event is cleared and `appinstalled` removes the control.
-- iPhone/iPad Safari does not receive a fake native prompt; the Install app control opens concise Share → Add to Home Screen guidance.
-- Unsupported browsers do not receive a dead install control.
-
-
-### Historical install recovery checkpoint (superseded by Golden PWA journey below)
-- At that checkpoint, `public/sw-jts.js` cache version was `jts-shell-v4` and its navigation handler must keep the response callback async because it awaits cache writes.
-- The install control remains visible on mobile browsers even before `beforeinstallprompt` arrives; when no native prompt is available it gives browser-specific truthful installation guidance instead of disappearing.
-- iOS installation guidance applies to iOS browsers generally: Share → Add to Home Screen; Chromium-based Android browsers use the native retained prompt when `beforeinstallprompt` is available.
-- Do not hide the mobile install control merely because the browser has not yet delivered `beforeinstallprompt`.
-
-
-## Clone identity rule
-When this repository is cloned from another application, inherited application identity is unsafe until explicitly verified. Before feature work, identify the parent, establish the JTS identity, verify browser/PWA metadata and canonical icons, remove inherited branded assets, and bump the JTS service-worker cache namespace. The identity verification script must pass before a checkpoint. Compatibility architecture inherited from BOEMO may remain where it is intentionally used; that is not permission to retain BOEMO customer-facing branding, assets, metadata, cache names or generated documents.
-
-
-## GOLDEN SYSTEM — WhatsApp → Normal Browser → PWA Install (current contract)
-
-This section supersedes conflicting older install UX notes above. Do not remove or duplicate the root controller or add a second install-event listener without first inspecting this implementation.
-
-### Required journey
-1. **Embedded browser = escape stage.** Match The Plug’s architecture: `src/app/layout.tsx` reads `headers()` and detects WhatsApp/social in-app browsers server-side (User-Agent plus `x-requested-with`) and passes the initial context to `src/app/jts-browser-gate.tsx`. Render the branded gate in the first HTML response; do not wait for a client `useEffect` before showing it. The gate is mounted once globally, so it applies identically to homepage, service deep links, `/order`, and other booking/account routes. It preserves the current destination path and query (and the full URL as the fallback), and presents one branded primary “OPEN IN CHROME” / “OPEN IN BROWSER” action. Android Chrome intent URLs are attempted where supported; other platforms use a new-tab handoff with explicit in-app-menu/copy-link recovery because an embedded host may refuse external-browser launches.
-2. **Normal browser = continue the task.** After handoff, a normal browser must show the originally requested JTS route; booking remains usable without installation. The gate and install panel are separate UI/state. The gate covers the embedded journey; do not show competing install prompts or add auto-opening install modals.
-3. **One root controller, early capture.** The `beforeInteractive` capture script in `src/app/layout.tsx` retains `beforeinstallprompt` before hydration can miss it and dispatches `jts-install-available`; `src/app/pwa-register.tsx` owns the retained-event install function, service-worker registration, `appinstalled`, and the `jts-install-consumed` / `jts-install-complete` contract. This is one root-level system, not permission to add more listeners. Do not add page-specific listeners for the native browser event.
-4. **Native prompt first.** `src/app/jts-install-button.tsx` calls the retained prompt controller directly from the explicit button click. Do not insert another confirmation or instruction modal before invoking an available native prompt. If the controller reports unavailable or throws, show the fallback panel.
-5. **No silent failure.** The install action remains available on the public home route while not installed, including desktop when no native event is available. Android fallback explains Chrome's Install app/Add to Home screen menu; iPhone/iPad explains Safari Share → Add to Home Screen; desktop explains Chrome/Edge installation where offered. Never claim that a native prompt opened unless the browser actually exposed it.
-6. **Installed state.** Standalone/display-mode detection suppresses the install control and embedded gate; `appinstalled` clears the retained event and closes installation help. Do not block private/account routes with installation promotion.
-7. **Installability diagnosis.** If `beforeinstallprompt` is absent, inspect HTTPS, manifest response and metadata, declared 192/512 PNG icons and URLs, service-worker registration/scope, controller timing, browser support and installability diagnostics. JavaScript cannot force an OS/browser prompt.
-8. **Service worker/cache.** Actual current cache namespace is `jts-shell-v8` in `src/config/brand.ts` and `public/sw-jts.js`. Bump both consistently whenever shell assets or install-critical identity/metadata changes. Preserve network-first navigation and do not cache private account/admin responses.
-9. **Verification checklist.** Verify direct browser entry and embedded entry independently; gate detection and primary action; path/query/hash preservation; fallback/copy recovery; no redirect loop; native prompt direct from click when the event exists; useful platform fallback when absent; standalone/appinstalled suppression; manifest output and icons; SW scope/controller/cache; identity check, typecheck, lint and production build. For Vercel, only declare QA-ready after the exact intended commit's deployment reaches READY. Do not claim device-level WhatsApp/Safari/Chrome behavior was tested unless actually tested on those platforms.
-
-### Current implementation paths
-- Root mount: `src/app/layout.tsx`
-- Embedded-browser gate: `src/app/jts-browser-gate.tsx`
-- Single PWA/install controller: `src/app/pwa-register.tsx`
-- Public install action/fallback: `src/app/jts-install-button.tsx`
-- Install/gate styling: `src/app/pwa.css`
-- Manifest: `src/app/manifest.ts`
-- Canonical identity/cache namespace: `src/config/brand.ts`
-- Service worker and install shell: `public/sw-jts.js`
-- Identity verification: `npm run verify:identity`
-
-
-## JTS editorial product direction — current customer-facing contract
-
-The public experience should follow The Plug's editorial discipline without copying its retail model. The Plug is a curated storefront and customer relationship loop; JTS is a stylist-led service and appointment relationship. Translate the principles, not the features.
-
-### Brand and positioning
-- Position John The Stylist Bw as a distinctive professional hairstyling/barbering service in G West, Gaborone, Botswana. The known differentiators are John's supplied service list, precision cuts/colour/bleach and statement styles, the purple-door location landmark, clear appointment rules, and direct contact.
-- Do not infer John's nationality, ethnicity, biography, client base, or reputation from his name or from unrelated search results. Public research reviewed for this revamp did not establish a reliable source for his country of origin. Keep the experience locally grounded in the verified business facts without making claims about John's personal background.
-- Use an editorial, mobile-first art direction: warm paper, deep plum, violet and a sharp lime accent; concise copy; confident typography; clear service and booking hierarchy. Do not retain BOEMO's food-brand identity or default black/gold/cyan treatment as the defining JTS brand.
-- Never fabricate portfolio photography, client transformations, reviews, ratings, demand, testimonials, discounts, availability, or prices. Add real portfolio work only when the owner supplies authentic images and has permission to publish them.
-
-### Required homepage journey
-1. A compact Gaborone/G West identity line and clear JTS brand.
-2. Editorial hero with one primary appointment action and one secondary route to services.
-3. Service edit showing only the four supplied priced services: Pixie Cut P350–P400; Cut + Pixie Cut P200; Pure White P300; Cut + Bleach P250.
-4. Unpriced services (fades, bobs, tinting and special-event looks) are enquiry-only until John supplies prices; do not make them look like priced bookable catalogue items.
-5. Explain the actual booking sequence: choose service, request a date/time at least one day ahead within 08:00–18:00, then follow the 50% Orange Money deposit instructions. A request is not a confirmed appointment and is not proof of payment.
-6. Prominent local directions, supplied purple-door landmark, hours, phone/WhatsApp, Orange Money number/account name.
-7. Optional install prompt appears in a contextual “Keep JTS close” section after service, booking and visit information. It must not occupy the primary header or compete with booking. Installation is never required to browse, request an appointment, or view booking history.
-8. Mobile booking action may remain sticky because it supports the primary task; install must remain secondary and non-blocking.
-
-### Customer relationship loop
-- Map The Plug's ongoing relationship model to JTS with private appointment history, clear status changes, useful reminders/updates where configured, and a low-friction repeat booking path.
-- Do not add retail-style points, lotteries, deals, membership promises, or notification pressure to a stylist business without an explicit owner-approved policy and reliable supporting data.
-- Keep guest-first booking. Google/account linking and installation are optional conveniences, never prerequisites.
-- Use real appointment records as the source of truth. Never present a requested slot as available/confirmed until John's workflow confirms it.
-
-### Legacy BOEMO boundary
-- JTS still has transitional BOEMO-shaped Firestore types and admin/menu code. These are implementation debt, not customer-facing product language. Do not surface food/menu/BOEMO wording or food-seeded catalogue items on JTS public pages. A domain-model/admin refactor must inspect Firestore rules and existing records first; do not perform a blind collection rename or weaken security rules.
-- The public homepage must not read the legacy food menu just to render salon services. Salon service prices above are supplied, explicit content; the admin's legacy menu is not an authoritative salon catalogue.
-
-### Research basis
-- Nielsen Norman Group, “Few Guesses, More Success: 4 Principles to Reduce Cognitive Load in Forms” (2025): logical structure, transparent expectations, plain language and timely support.
-- Nielsen Norman Group, “Progressive Disclosure” (2006): foreground frequent primary tasks and defer secondary choices.
-- Kaluza, Voigt & Paetz, “Empirical studies on the impact of booking status on customers’ choice behavior in online appointment systems” (2024): availability displays can signal quality or scarcity; never fake booking activity or show false availability.
-- Apply research as a design guide, not as proof that a specific layout will increase JTS conversions. Validate the live journey with real users and real appointment operations.
-
-
-## Official JTS logo asset contract (2026-10-11)
-- Canonical source: `public/jts.jpg`, supplied by the owner. Do not redraw, regenerate, crop destructively, recolour, or replace it with a text monogram.
-- Self-contained scalable icon: `public/jts-logo.svg`, which embeds the canonical JPEG. Use `brand.logo` and `brand.iconSvg` rather than hard-coding alternate logo paths in metadata.
-- Visible brand placements: homepage header and footer; contextual Keep JTS Close section; WhatsApp/social embedded-browser handoff gate; install button; offline recovery; Open Graph/Twitter preview; notification icon/badge where supported; manifest/favicon. Keep booking as the primary action and install as optional.
-- `public/icon-192.png` and `public/icon-512.png` are retained as PNG compatibility fallbacks until proper PNG derivatives from the official source are generated and visually verified. Never copy JPEG bytes into a .png file or claim PNG derivatives exist when they do not.
-- If replacing the PNGs later, generate true 192×192 and 512×512 PNG files from `public/jts.jpg`, inspect them visually, update manifest and shortcuts, then run `npm run verify:identity`, `npx tsc --noEmit`, `npm run lint`, and `npm run build`.
-- Any change to install-critical assets must bump `serviceWorkerCache` in `src/config/brand.ts` and `CACHE_VERSION` in `public/sw-jts.js` together. Current value: `jts-shell-v10`.
-- Verify the deployed favicon/share image and the install flow separately. Do not claim Android/iOS icon or WhatsApp handoff QA without testing on those actual platforms.
-
-
-## Handoff parity checkpoint — 2026-10-11
-- Treat The Plug's server-first embedded-browser handoff as the architectural reference. JTS content and visual styling remain JTS-specific; browser detection, initial server-rendered gate, URL-preserving escape action, keyboard/scroll lock and fallback pattern should stay structurally aligned.
-- Do not ship a client-effect-only gate: WhatsApp customers must see “Open JTS in your browser” and one “OPEN IN CHROME” (Android) / “OPEN IN BROWSER” (other embedded browsers) action in the first HTML response, before the homepage/booking page can be mistaken for the intended destination.
-- Detection includes WhatsApp, Instagram, Facebook, Messenger, LinkedIn, Line, Twitter, TikTok, Snapchat, Android WebView and known app package IDs via `x-requested-with`. Do not gate Chrome/Safari merely because the referrer originated in WhatsApp.
-- The root layout applies the same gate on every route. Android attempts Chrome intent with the current path/query and an exact full-URL fallback; iOS/other platforms open the current URL in a new tab and explain the host-app menu/copy-link recovery if blocked.
-- Keep booking as the primary customer task and install as optional after handoff. Never add a blocking install modal to normal-browser entry.
-- Handoff implementation changes require cache namespace bump in both `src/config/brand.ts` and `public/sw-jts.js`, identity verification, typecheck, lint, build, and deployed-commit READY confirmation before asking the owner to QA.
-
-### Deployment retry checkpoint — 2026-10-11
-- The embedded-browser client detection fix is already on `main` at `fdb4219285fa44f78f4ff0c0c1a2a6197ba0a44c`; it preserves a server-detected embedded-browser context when the client User-Agent differs.
-- The last confirmed production deployment was older commit `d8cb477a536ef321cc75630b038a830831c9de36`; do not ask the owner to QA the live WhatsApp journey until a deployment containing the fix is confirmed `READY`.
-- If a documentation-only chore commit is used to retrigger Vercel after a rate-limit failure, do not mistake the commit itself for deployment success. Verify the exact new `main` SHA and its production deployment state first.
-
-
-## Product-use rule — no self-defeating install or detour copy (2026-10-11)
-- The product exists to be used. Customer-facing copy must invite customers into the app and make the next in-app action clear; do not add apologetic lines such as “you can book without installing anything”, “no install needed”, or language that talks customers out of using/installing the app.
-- Do not send customers to WhatsApp, a phone call, another website, or an external browser as the default path when the app can complete the task itself. External contact is a useful fallback for genuine exceptions, not the main product journey.
-- PWA installation should be offered as a direct, working app action with honest platform-specific handling. Do not falsely claim installation is technically mandatory, but do not foreground caveats about not needing the app.
-- Embedded-browser handoff is the explicit exception: use the branded gate to get a WhatsApp/social in-app visit into the normal browser when detected, preserve the requested route, and avoid rendering the full app underneath or flashing it before the gate.
-- Before changing customer copy, check whether it encourages completion inside the product or unnecessarily redirects the customer away from it. This principle applies to future projects and must be carried into their AGENTS.md when creating or updating them.
-
-
-## Browser install parity with The Plug — 2026-10-11
-- In a normal browser, JTS must offer a persistent, branded “Install John The Stylist Bw” entry point, matching The Plug's working pattern: call the native browser install prompt directly from a user click when available; otherwise show a concise, platform-specific install guide.
-- The install panel is secondary and dismissible; it must never block browsing or booking, and it must not replace the server-first embedded-browser handoff gate.
-- Hide the persistent install entry when the app is already running in standalone/installed mode. Keep the contextual “Keep JTS close” section and its button in the homepage.
-- Preserve the captured `beforeinstallprompt` event and the existing `window.jtsInstallApp` action. Never show a dead install button.
-- Verify the normal-browser install CTA and the embedded-browser handoff as separate flows. Do not claim actual device installation without a real Android/iOS browser test.
-
-
-### Native install prompt reliability — 2026-10-11
-- The normal-browser install CTA invokes the retained `beforeinstallprompt` event synchronously from the user's click; await the returned prompt promise and then await `userChoice`.
-- Treat `beforeinstallprompt` as one-shot. Clear it after invocation and never restore a stale/consumed event after an error. If the browser did not expose the event, JavaScript cannot force the native install UI; keep the existing platform fallback for that case.
-- The current service-worker cache namespace is `jts-shell-v10` in both `src/config/brand.ts` and `public/sw-jts.js`.
-
-
-### Chore checkpoint — 2026-10-11 install deployment retry
-- The current install-capture implementation and matching service-worker shell cache are present on `main`; the cache version in both `src/config/brand.ts` and `public/sw-jts.js` is `jts-shell-v11`.
-- A deployment marked READY for the earlier commit `87f616b80c01242da467e4555cb8763a51f2b81a` does not prove the later install-controller/cache commits are deployed. Confirm the deployment's exact Git SHA before device QA.
-- Do not create extra commits to tidy documentation or code after this checkpoint. Bundle any remaining changes into one intentional chore commit to conserve Vercel Hobby deployments.
-- Device-level native install and WhatsApp handoff remain unverified until tested on the actual phone/browser.
-
-
-## Customer booking flow hardening — 2026-10-11
-- Keep the first appointment request guest-first; reuse an existing Firebase Auth session and create anonymous auth only when there is no current session.
-- Validate a plausible phone/WhatsApp number before submission without rejecting common international formats.
-- The post-submit WhatsApp handoff should carry the customer's entered name, requested service/date/time, reference, optional style note, supplied price range and 50% deposit instructions. It must state that the appointment remains a request until John confirms it.
-- Do not migrate the legacy `orders` collection or rewrite the admin schema as part of customer-flow hardening. Admin replacement is a separate phase after the booking lifecycle is verified.
-
-
-## Top-down styling and operations roadmap — 2026-10-16
-
-This is the active work plan. It supersedes earlier conflicting decorative colour guidance above and older install/cache checkpoint values. Preserve working behavior first; keep visual styling and operational refactors as separate, reviewable slices.
-
-### Audit baseline — inspected on `main`
-
-- Canonical brand image: `public/jts.jpg`; visual palette is black, metallic gold, white and silver.
-- Public homepage: `src/app/page.tsx`; currently has four supplied priced services, an enquiry path for unpriced styles, booking guidance, location/visit details, and an optional install section. Preserve those paths and their supplied prices.
-- Customer booking: `src/app/order/order-form.tsx`; guest-first form, service selection, requested date/time, name/phone, optional style note, deposit information, local booking copy and explicit request-vs-confirmation language. It currently accepts a typed time within the configured 08:00–18:00 window; that is a **requested time, not live verified availability**.
-- Customer history/detail: `src/app/account/page.tsx`, `src/app/orders/[id]/page.tsx`; history is associated with the current guest session/device, with Google linking and local/offline tracking behavior in the existing flow. Do not remove these behaviors during styling.
-- Admin: `src/app/admin/admin-gate.tsx` and `src/app/admin/page.tsx`; role-gated Firebase access exists, but the screen still identifies itself as BOEMO Kitchen and operates on food orders, food menu, kitchen location and food-sale reconciliation. This is the highest-priority domain mismatch.
-- Data/security: `src/lib/firebase/data.ts` and `firestore.rules` still use legacy `orders`, `menu`, `businessSettings`, pickup/delivery fields and customer UID ownership. Rules constrain customer-created records and reserve admin writes for owner/staff. Do not blindly rename collections, overwrite live records or loosen rules.
-- PWA/handoff: `src/app/layout.tsx`, `src/app/jts-browser-gate.tsx`, `src/app/pwa-register.tsx`, `src/app/jts-install-button.tsx`, `src/app/pwa.css`, `src/app/manifest.ts`, `src/config/brand.ts`, and `public/sw-jts.js`. Preserve the one root install controller, server-first embedded-browser gate and current user journeys. Native prompt behavior and real-device handoff must be reported as unverified unless tested on the device/browser.
-
-### Tripple S patterns inspected and approved for adaptation
-
-Use the Tripple S implementation as a **workflow reference, not a code/schema/branding clone**:
-
-- **Customer flow:** service discovery and published price/duration first; guest-first request; real server-generated availability; server revalidation when submitted; clear request receipt/reference; separate staff confirmation and payment state; optional post-request account linking for cross-device history. The Spa uses `GET /api/availability`, `POST /api/bookings`, and a transaction-backed `slotReservations` model. JTS does not yet have an equivalent verified live calendar, so do not pretend its free-form requested time is an available/held slot.
-- **Admin flow:** a searchable/filterable request queue with new/confirmed/payment-pending counts; distinct appointment requests versus general enquiries; direct status/payment updates with honest save/error feedback; owner-managed service/category catalogue; owner-managed operating hours/announcements; related calendar/client/follow-up tools only where JTS has an approved operational need.
-- **Access/security:** Tripple S checks individual Firebase identities against `admins/{uid}` owner/staff roles, uses validated server routes and the Admin SDK for booking writes, and denies direct client writes to booking requests/slot reservations in Firestore rules. Adopt those boundaries gradually for JTS after inspecting the configured Firebase project, live data and current access rules. Do not copy the Spa's access word, credentials, project IDs, clinical/wellness features, customer data or schema.
-- **Account onboarding:** retain guest-first booking; invite account linking after the request to improve recoverable appointment history. Handle existing-account collisions explicitly and never silently merge customer identities.
-- **Truth and usability:** distinguish request received, under review, confirmed, deposit pending/received and completed; no success message unless persistence is confirmed; recoverable field errors; concise mobile-first layouts; reduced-motion support; no fabricated availability or customer outcomes.
-
-### Delivery roadmap
-
-**P0 — Complete the logo-led visual consistency pass**
-1. Apply black/gold/white/silver styling to the homepage, service cards, booking form/summary, confirmation, account/history/detail, admin shell, install panel, embedded-browser gate, offline/update UI and form controls.
-2. Preserve current page structure, routes, text/data behavior, booking flow, guest sessions, WhatsApp links, auth/rules, and install/handoff logic during this styling-only slice.
-3. Verify responsive behavior and contrast at mobile and desktop widths. Ensure the canonical logo remains unchanged and the manifest/theme colours match it.
-4. Bump the service-worker shell cache namespace in `src/config/brand.ts` and `public/sw-jts.js` together when shell styling changes.
-
-**P0 — Make Admin represent John the Stylist**
-1. Replace BOEMO/Kitchen/food-order wording with JTS appointment and customer language.
-2. Map the useful existing admin foundation to JTS tasks: appointment request queue, requested date/time and service, customer contact, clear lifecycle status, deposit record, private customer communication, service/pricing management and operating information.
-3. Do not simply relabel food CRUD or financial reconciliation and call it done. Inspect legacy records and security rules, then plan the smallest safe domain migration with backward compatibility where necessary.
-4. Keep admin separate from customers, owner/staff role-gated, and never introduce self-service admin registration or hard-coded UIDs.
-
-**P1 — Make the appointment lifecycle dependable**
-1. Keep guest-first discovery and submission; published prices must precede personal details.
-2. Clearly label the selected date/time as a request until a verified calendar exists. Maintain the minimum one-day notice and 08:00–18:00 business constraints unless John explicitly changes them.
-3. Design a validated server-side booking write and availability/slot-reservation layer only after confirming the real operating calendar and data source. Recheck conflicts on submission; never fabricate open slots or call a request confirmed.
-4. Separate appointment status from deposit/payment status. The 50% Orange Money instructions remain guidance, not proof of payment; only an authorized, evidence-backed admin action may record receipt.
-5. Verify status changes, request ownership, duplicate/conflicting requests, error recovery and customer-visible next steps before adding automation.
-
-**P1 — Improve customer continuity without adding first-booking friction**
-1. Preserve anonymous/guest booking and existing same-device history.
-2. After a successful request, offer optional account linking for recoverable history; preserve the same UID/records when linking and handle account collisions explicitly.
-3. Never require installation, Google, email/password or profile completion before the first request. Never imply device-local history is automatically recoverable across devices.
-4. Keep appointment communication useful and truthful; do not add marketing/reminder automation without owner approval.
-
-**P2 — Harden and measure after the core flow works**
-1. Review direct Firestore writes, status mutation permissions, server validation, admin least privilege, offline/local-copy wording and cache boundaries against actual deployed behavior.
-2. Add only owner-useful, privacy-minimised analytics after booking and status data are trustworthy.
-3. Consider calendar, customer follow-up and richer service management only when they solve a confirmed JTS operating need.
-
-### Required acceptance gates
-
-- Inspect `AGENTS.md`, Git state, current production commit, Firebase project/rules and relevant route before implementation.
-- Styling-only work must not alter business logic or remove working controls/routes.
-- Run `npm run verify:identity`, `npx tsc --noEmit`, `npm run lint`, and `npm run build` when available.
-- Inspect the final diff; confirm the canonical logo, manifest metadata and matching service-worker cache version.
-- Verify homepage → service selection → booking request → receipt/reference → history/detail; separately verify admin access and each authorized state/payment change.
-- Check the exact Vercel deployment SHA and READY state before describing a change as deployed. Device-level Chrome/Safari/WhatsApp install behavior remains NOT RUN unless physically tested.
-- Record every gate as PASS / FAIL / NOT RUN / BLOCKED. Do not call a source audit, build, or READY deployment a complete customer-flow QA.
-
-
-## NON-NEGOTIABLE PWA INSTALLATION STANDARD — DO NOT REGRESS
-
-The product-owner-approved Africhiko installation standard is mandatory for this repository. Read [docs/PWA-INSTALLATION-STANDARD.md](./docs/PWA-INSTALLATION-STANDARD.md) before any PWA/install work. It is the permanent installation-behavior contract for JTS and applies to every developer, AI coding agent, automated tool, dependency update and future feature implementation.
-
-- Treat the current approved installation implementation as protected infrastructure. Do not redesign, rewrite, replace, simplify, refactor or remove its behavior unless the product owner explicitly authorizes that specific change.
-- Preserve the retained `beforeinstallprompt` event and direct native prompt invocation from the user's branded install click; keep the JTS-specific embedded-browser handoff and existing root install controller intact.
-- Preserve the compact, branded, dismissible install experience and accurate iPhone/iPad Safari Share → Add to Home Screen pathway. Do not introduce duplicate prompts, fake native prompts, dead buttons, generic fallback screens that contradict the standard, or JavaScript alerts.
-- For routine branding work, change only genuine JTS identity/assets/metadata; do not modify protected install runtime, event handling, lifecycle, manifest behavior, service-worker registration/cache behavior or platform handling as a side effect.
-- Before any authorized install-mechanics change, explain the specific need and obtain explicit product-owner authorization. Then make the smallest isolated change, compare against the approved baseline, run identity/type/lint/build checks, inspect manifest/assets/cache behavior, and report device QA honestly.
-- Report source commit, checks, deployment state and physical-device QA separately. A commit or successful build does not prove the Vercel deployment or native prompt was tested.
-
-## Account utility dashboard — current approved behavior
-- The account page is a practical utility first: Google/account connection at the top, in-app booking updates immediately after it, next appointment, compact booking history, then inspiration.
-- Google connection is optional and must never be required to request an appointment.
-- If Firebase Auth already has an anonymous guest, use `linkWithPopup` to connect Google to that exact identity; do not silently switch accounts or split that guest's booking history. A signed-out customer may use `signInWithPopup` to establish a Google account for future bookings.
-- Handle Firebase Auth error codes with specific, actionable customer guidance. Log only the error code for diagnostics; never log tokens, credentials, email addresses, or profile data. A credential conflict must not automatically merge or discard booking records.
-- The account activity panel may show only customer-scoped booking status updates supported by the current data layer. Do not label this panel as push delivery or claim push notifications are enabled unless actual delivery is verified.
-- Booking history defaults to the three most recent entries, with an explicit control to reveal the full list. Keep reference IDs, dates, statuses and booking detail links intact.
-- Style Studio is optional enrichment, not the account's primary task. Keep it after account access, updates, next booking, booking history and other practical actions; do not let it compete with booking or account controls.
-- Preserve appointment truth: a request is not confirmed until John confirms the slot and deposit. Preserve customer privacy and existing Firestore rules.
-- Do not change the protected PWA install flow as part of account utility work.
-
-
-
-## NON-NEGOTIABLE — service catalogue media CRUD and customer visibility
-
-The service catalogue is a single connected content workflow, not text-only price records plus a disconnected portfolio.
-
-- In Admin → **Services & prices**, each service record must support full CRUD of its service fields **and multiple attached photos/videos**. An authorized owner/staff member must be able to upload, preview, remove, edit and save service-specific media in the same service editor. Do not require them to discover a separate “style feed” tab just to add media to Pixie cut, Pure white or another catalogue service.
-- Use the existing authenticated UploadThing `adminStyleMedia` route for media binaries. Keep server-side Firebase ID-token/admin authorization; do not weaken Firestore rules or expose upload credentials. Respect the configured size/type limits and show upload errors and progress honestly.
-- Store service media metadata alongside the corresponding service in `businessSettings/publicServices.services[]` using a backward-compatible optional `media` array (`url`, `type: image|video`, optional `alt`). Existing services without media remain valid and must not disappear.
-- Public home service cards must visibly render the service's own media (including playable video), with a fallback design only when the service has no media. The public `/feed` must render owner photos **and videos**, not silently treat video posts as images.
-- The customer `/account` page must also provide a responsive, usable view of public service examples and John’s published style posts, with working links to discuss/request the selected look. It must only read public published owner media and public catalogue data; never expose another customer’s private profile, drafts or unpublished content.
-- Editing service details or media must update the public catalogue, booking service choices and account inspiration from the same source of truth. Deleting a service removes it from the public catalogue and booking choices. Removing one media item must not delete unrelated media or alter the service price/identity.
-- Preserve the existing separate owner style feed CRUD and customer-submitted look/review moderation; they complement service media and must not be used as a substitute for it.
-- Keep the experience mobile-first, keyboard accessible and overflow-safe. Give upload controls visible labels, previews, per-item remove actions, empty states, save/error feedback and no hidden media-management requirement.
-- Do not seed or fabricate customer photos, before/after results, reviews or stylist portfolio assets. Only media deliberately uploaded by authorized staff should appear as John’s work.
-- Before completion, verify legacy service records normalize without media; add/edit/delete a service and its media; render photos and videos on homepage, full feed and customer account; confirm a customer cannot see drafts/unpublished media; confirm service selection in booking remains correct; run identity verification, TypeScript, lint and production build; inspect the final diff and exact Vercel commit/deployment state. Report physical-device QA separately.
-
-
-## Contextual customer accounts, forecast cues and engagement signals
-
-The account should feel like a personal JTS style studio, not a generic dashboard. Add useful context without replacing or interrupting booking, customer identity, appointment history, reviews, service CRUD, PWA installation, or notifications.
-
-### Customer account experience
-- Use a restrained, time-aware greeting and a first name only when Firebase Auth actually supplies a non-anonymous display name. Never infer a name from email, invent a customer history, or overuse their name.
-- Give one useful next step based on real state: existing upcoming request, existing booking history, or no bookings yet. Keep booking primary but allow customers to browse inspiration or continue as guests.
-- Use Gaborone weather and a short daily forecast as a planning cue. The forecast may say conditions look clearer, but must never imply that a date/time is available, reserve a slot, or promise weather. Always state that customers must request a date at least one day ahead and John separately confirms the slot and deposit.
-- The weather widget must have loading, failure/retry, timestamp/timezone, units, provider attribution and responsive behavior. If weather is unavailable, booking and account features remain usable.
-- Adapt the contextual guide pattern from Africhiko: a small dismissible/closable scripted helper with useful links and page-aware responses. It must clearly say it is scripted, not a live person/AI, and cannot send messages or change booking status. All shortcuts must lead to a real page/action. Do not create a second chatbot or fake AI service.
-- Keep the JTS editorial identity: black, metallic gold, white and silver. The guide must not cover booking controls or the protected installation UI. No auto-open modal or forced account creation.
-
-### Admin experience
-- Address authorized staff warmly as “Boss” by default, with time-aware morning/afternoon/evening wording. A verified non-anonymous display name may be used where appropriate.
-- Prioritize real Firestore-backed work: number of new appointment requests needing review and direct shortcuts to the appointment queue, unavailable dates, services/prices and style-feed publishing.
-- Do not invent urgency, booking availability, popularity or customer counts. Keep the request-vs-confirmation and deposit rules intact.
-
-### Weather API and licensing
-- The current demo implementation uses Open-Meteo's standard no-key forecast endpoint for Gaborone coordinates (-24.6282, 25.9231), timezone Africa/Gaborone, current temperature/apparent temperature/humidity/wind/weather code and a seven-day daily forecast.
-- Cache server responses for 30 minutes; never let forecast failures block booking.
-- Attribute the provider as “Weather data by Open-Meteo (CC BY 4.0)” and link users to the provider where appropriate. Official API documentation: https://open-meteo.com/en/docs and https://open-meteo.com/.
-- IMPORTANT LICENSING CHECKPOINT: Open-Meteo's standard no-key API is offered for non-commercial use. JTS is a real salon business and may be commercially operated; before using this no-key endpoint for commercial/live business use, confirm the licence is appropriate or switch the route to the licensed customer API with a server-only API key. Never imply the free non-commercial endpoint is cleared for commercial use.
-- Do not store precise customer location or ask for location permission just to show Gaborone salon weather. This is the salon-area forecast, not a customer/device or appointment-site forecast.
-
-### Engagement analytics and research-informed design
-- Reuse the existing Vercel Analytics integration. Track only coarse, non-identifying events such as account view (session category only), Google account connection method, weather booking CTA click, guide opened/shortcut selected, admin priority shortcut, and successfully updated appointment status.
-- Never send names, emails, phone numbers, auth UIDs, appointment IDs, free-text notes, media URLs, or any private customer data to analytics. Tracking must never block account, auth, booking or admin operations. Do not add an analytics vendor.
-- Research basis: Self-Determination Theory supports autonomy, competence and relatedness; use choice and helpful information rather than pressure or guilt. The digital behaviour-change research review warns against optimizing app engagement for its own sake. Action-planning research supports timely, relevant cues paired with a concrete next step, but does not guarantee that any one UI feature increases bookings.
-- References: Ryan & Deci, Self-Determination Theory (https://pubmed.ncbi.nlm.nih.gov/11392867/); Designing for Sustained Motivation: A Review of Self-Determination Theory in Behaviour Change Technologies (https://academic.oup.com/iwc/article/38/3/447/7760010); Gollwitzer & Sheeran, implementation intentions overview (https://www.socmot.uni-konstanz.de/publications/implementation-intentions-health-behavior-constructs-theory-measurement-and-research).
-
-### Protected behavior and verification
-- Preserve the existing PWA installation flow, embedded-browser gate, service-worker/cache behavior, Firebase Auth/session/linking, Firestore ownership/rules, appointment status semantics, deposit wording, service CRUD and customer media moderation. Do not refactor these as part of account engagement work.
-- Test weather route success, provider failure and retry; forecast dates use Gaborone local time and exclude today from future-day suggestions; CTA does not imply availability.
-- Test anonymous, connected Google customer, no-bookings, existing-history, upcoming-request and authorized admin states. Confirm only real names/data appear, guide links work, analytics properties contain no PII, and narrow mobile widths do not overflow.
-- Run npx tsc --noEmit, npm run lint, npm run verify:identity and npm run build. Report deployment readiness separately from code checks and report physical-device QA only when performed.
-
-## Operations admin usability and authorization consistency
-- Keep the one-word **Enter** sign-in available through the existing server-side `ADMIN_PASSWORD` environment variable; never hard-code or expose its value.
-- Approved Google admin sessions must have a matching `admins/{uid}` owner/staff record before the dashboard mounts, so the client gate and Firestore rules agree on authorization.
-- Service edits use a compact, keyboard-dismissable modal. Service-specific photo/video uploads stay in that editor, support multiple files with per-file progress/errors, and only publish after saving the service record.
-- Confirm destructive service, portfolio-post and customer-look deletions. Provide visible, dismissible status feedback; errors must explain the next useful step.
-- Keep the public catalogue, booking choices and customer account inspiration reading the same `businessSettings/publicServices.services[]` source of truth. Do not change protected PWA install/handoff behavior.
-
-## App-like JTS public homepage — approved visual direction
-- The homepage lead visual reads the first available authorized image/video attached to the public service catalogue. If none exists, it uses a restrained JTS typographic fallback; never fabricate portfolio work.
-- Keep one dominant booking action, followed by shortcuts for My appointments, Services & prices, Style Studio and salon location.
-- On mobile, keep the quick dock limited to Home, Book, Account and Studio. Keep admin discreet in the footer only.
-- Preserve all booking, account, service-media, owner style-feed, install, offline and admin behavior. Homepage visual work must not alter appointment truth, authentication, Firestore permissions or customer data visibility.
-- When changing the homepage shell, increment the service-worker cache namespace in `src/config/brand.ts` and `public/sw-jts.js` together.
-
-
-## JTS compact customer app and category media — current approved implementation
-- The customer homepage is a focused app dashboard, not a long-form landing page. Keep it to the JTS hero/identity, one dominant booking action, four destinations (appointments, services, Style Studio, location), a compact install prompt and discreet footer/admin access.
-- Full service catalogue, Style Studio and other explanatory content live on focused destination screens. Do not embed all service descriptions, booking instructions, portfolio feed and game in one long homepage.
-- The hero must use the first available authorized category cover or service media. Its text fallback must remain high-contrast and legible on small screens; normal text must meet WCAG AA contrast (4.5:1), large text 3:1.
-- Admin → Services & prices has a dedicated four-category cover uploader. One photo or video per category is sufficient; individual service galleries remain optional. Category cover metadata is stored in `businessSettings/publicServices.categoryMedia`.
-- Public and admin catalogue views must use the same canonical 17 supplied services, merging saved edits by stable service ID. Legacy records outside the four approved categories must not replace or hide canonical services.
-- Public categories are compact tiles. Service names and prices appear after the customer opens a category; never truncate service names or hide prices in the detail view.
-- Preserve all booking, account, auth, media upload, PWA install, offline, admin and appointment-truth behavior. Increment `src/config/brand.ts` and `public/sw-jts.js` cache namespaces together for shell changes.
-- UX basis: use progressive disclosure for the long catalogue and secondary information; keep the first screen focused on the primary task. See NN/G progressive disclosure and mobile focus guidance, Apple HIG layout guidance, and WCAG 2.2 AA contrast.
-
-
-
-## Booking service picker — approved compact flow
-- The booking page presents the selected service in one compact summary row; the 17-service catalogue opens in an accessible, scrollable modal grouped under the four canonical service categories.
-- Every canonical service name and exact price remains visible and selectable in the modal. Selecting a service closes the modal and updates the booking summary and 50% deposit calculation.
-- Preserve direct `/order?service=<id>` preselection, date/time constraints, unavailable-date checks, guest booking, customer details, offline handling, Firestore submission, Orange Money guidance and request-vs-confirmation wording.
-- The modal must remain keyboard dismissible, mobile-friendly and readable. Do not add filters, search, counters or colour-coded categories.
-
-## Release QA gate — booking and operations admin
-- The current release is awaiting product-owner QA of the complete customer booking journey and the authorized operations admin.
-- Customer QA must cover service selection/preselection, date and time constraints, required customer details, optional hairstyle details, request submission, booking reference, deposit guidance and request-versus-confirmation wording on Android Chrome and iPhone Safari/PWA where available.
-- Admin QA must cover authorized access, appointment queue ordering, status transitions, direct WhatsApp contact, booking notes/deposit details, service and availability controls, and visible success/error feedback.
-- Treat device/browser checks as NOT RUN until physically tested. Do not claim a release is fully QA-approved based on source inspection or a successful build alone.
-- Do not enable or configure customer/staff notifications until the product owner has QA'd and explicitly approved both booking and admin.
-
-
-## Compact booking + operations experience — active release requirements
-- Booking and admin are mobile-first app surfaces, not long marketing pages. Prefer concise headings, compact summaries, clear section progression and progressive disclosure. Keep all decision-critical details, required fields, prices, deposit terms, status meaning and accessible labels.
-- Every control that looks interactive must perform its advertised action. In particular, admin priority actions (Review requests, Services & prices) must switch to the correct panel and bring that panel into view; tab changes must not leave the operator at an unrelated scroll position.
-- Keep the booking journey to the essential sequence: service → date/time → contact details → optional hairstyle brief/media → submit. Country-code guidance belongs close to the phone field. Hairstyle notes and media are optional and must never block submission.
-- Customers may optionally attach a hairstyle reference photo or video to a booking. Use the existing UploadThing infrastructure, authenticated guest/customer identity and strict server-side route authorization. Show real upload progress, file name, completion/error feedback and a retry path; never simulate percentage progress. Keep supported file types and size limits explicit.
-- Authorized staff must be able to respond to a customer's booking with text and optional photo/video through the private in-app conversation system. Customers must be able to see the response in their private booking/account experience. Use the existing conversations security boundary; never expose a customer's media or messages publicly and never weaken Firestore rules. Show real percentage progress for media uploads and clear success/error feedback.
-- Preserve the canonical black, white/silver and restrained gold visual system, guest-first booking, booking-request-not-confirmation language, date/time constraints, deposit handling, protected PWA installation and service-worker behaviour.
-- QA the customer and admin experiences on a narrow mobile viewport. Verify both admin priority shortcuts navigate to the correct visible panel, optional media can be skipped, image/video uploads complete with real progress, staff replies reach only the correct customer, and the existing booking lifecycle remains intact.
-
-
-## Private appointment messaging — implementation contract
-- Each eligible booking uses one deterministic private thread ID, `booking-<bookingId>`, linked to its booking and customer UID. Staff open the thread from that booking's admin queue card; customers see their threads in My Account.
-- Conversation and message reads remain restricted to the owning customer UID or an authorized `admins/{uid}` owner/staff record. Customer thread creation is owner-only; authorized staff may open a thread for the customer attached to a booking.
-- Messages are immutable records. Text is limited to 2,000 characters; optional attachments are authenticated UploadThing photo/video uploads with 4 MB image and 8 MB video limits. Attachment metadata is validated in Firestore rules. Never put customer messages or media in public style feed/catalogue documents.
-- Unread flags and read timestamps are updated through the existing conversation document. Never change appointment status as a side effect of sending a message.
-- Admin and customer clients must use the same conversation ID and same booking customer UID. If a booking has no customerId, do not guess, migrate or expose another customer's thread; show a clear unavailable state.
-- Verify staff-only access, owner-only customer reads, message send/receive in both directions, image/video attachment access, unread/read updates, and rejection of cross-customer reads/writes before release. Physical device QA remains separate from source/build verification.
-
-## Appointment UX and deposit-proof workflow — current product direction
-- The booking route must be a compact, progressive appointment journey, not a long page with every stage expanded. Keep one active stage expanded at a time (service → preferred date/time → customer details); completed stages remain visible as concise editable summaries. Do not hide the selected service, price, chosen date/time, required fields, deposit amount, or request/confirmation truth.
-- Do not place the Orange Money account details in a large promotional/deposit card at the top of the booking form. Explain the 50% deposit at the commitment/follow-up point, after the customer has selected a service and can see the exact amount.
-- After an online appointment request is created, create/reuse its private conversation using the same booking ID and authenticated customer UID. Offer an image screenshot upload in that booking conversation immediately after submission. The same thread must remain available from My Account so the customer can return later and upload proof.
-- A deposit screenshot is customer-supplied evidence only. It is not payment verification. Only John/authorized staff may verify that funds actually arrived in the Orange Money account and then confirm the appointment. Never auto-confirm based on an uploaded image or customer-entered claim.
-- Customer deposit proof and messages must stay in the existing booking-linked private conversation. Do not create a public upload, public feed post, or unscoped storage path. Preserve the existing Firebase UID ownership and Firestore/UploadThing authorization boundaries.
-- Operations must surface unread customer messages/attachments against the matching appointment, with a clear review action. Existing unreadForAdmin is an in-app inbox signal; do not describe it as an OS push notification. Push notifications/reminders require a verified server-side delivery path and permission/preferences; never claim delivery because a token exists or a document changed.
-- Customer reminders must distinguish: request submitted, deposit still due, screenshot submitted awaiting manual review, deposit verified, appointment confirmed, and appointment reminders. Do not nag after verification/cancellation. Use calm, actionable copy and allow customers to reopen the relevant booking.
-- Keep the Orange Money destination exact: 75720306 · John SHUMBA. Never claim a transfer succeeded or was received from a screenshot alone.
-- Use the JTS logo/identity once in each route header. Do not repeat the full business name and location line in adjacent header elements. On inner routes, use one compact back-to-home identity link and one concise page/task label; do not duplicate a second full-size brand masthead.
-- Visual direction for inner routes follows Iteration 13 docs/VISUAL-DIRECTION-STANDARD.md: compact task-first layout, deliberate spacing, concise headers, progressive disclosure, clear primary action, readable mobile controls and no oversized repeated hero panels. Keep JTS-specific imagery, typography and brand palette.
-- Do not call the booking redesign complete until all three stages are progressively disclosed, summary/edit paths work, the calendar and time picker preserve existing constraints, and the form still submits correctly online/offline. Do not call payment-proof workflow complete until customer upload, private account return path, admin unread/review path, attachment access, manual payment verification and confirmation state are tested end to end.
-
-### Evidence basis for the current booking and payment UX
-- Nielsen Norman Group, “Few Guesses, More Success: 4 Principles to Reduce Cognitive Load in Forms” (2025): structure related information, disclose only what is relevant to the current task, make requirements and progress clear, and provide timely support. https://www.nngroup.com/articles/4-principles-reduce-cognitive-load/
-- Baymard Institute, “Checkout Optimization: Minimize Form Fields” (2024): the number of fields users must consider is a stronger usability concern than the number of steps; hide uncommon optional inputs and preserve guest checkout. https://baymard.com/research-articles/checkout-flow-average-form-fields
-- Baymard Institute, “Checkout UX 2025: 10 Pitfalls and Best Practices” (updated 2025): mark required and optional fields clearly, explain why phone details are needed, and use adaptive error messages. https://baymard.com/research-articles/current-state-of-checkout-ux
-- Apply these findings as practical UX guidance, not a promise of measured conversion lift. Track actual completion, abandonment, proof-submission and admin-review outcomes before claiming impact.
-
-### Current implementation checkpoint — 2026-11-02
-- Booking route now progressively discloses service, preferred date/time and customer details; only the active stage body is shown, while the stage headings retain concise summaries and edit controls. The selected service, prices, date constraints, preferred-time rules, guest-first flow, validation and submit logic remain in the existing form.
-- Online booking creates a booking-linked private conversation. The confirmation view offers an image-only deposit-proof submission; the same booking conversation is available in My Account for later upload. A proof message is explicitly labelled `DEPOSIT PROOF SUBMITTED` so Operations can identify it.
-- Operations subscribes to the private conversation inbox and surfaces unread deposit-proof messages on the matching appointment. This is an in-app live signal, not a confirmed operating-system push notification. Do not claim push delivery until a server-side FCM send path is implemented and tested.
-- My Account shows an actionable deposit reminder for the next unconfirmed appointment. Proof submission is recorded independently as `depositProofSubmittedAt`, so a later staff reply does not make the customer appear to have never submitted proof. The reminder stops when the appointment status is `Confirmed`; John must check the actual Orange Money account before changing that status.
-- Payment screenshot uploads use the existing private conversation attachment path and UploadThing customer image route. Screenshot upload does not itself change appointment status or verify funds.
-- The booking detail route header now uses the John The Stylist Bw identity rather than the inherited BOEMO `B` mark / `JTS Styles` label.
-- The homepage brand lockup displays the full business name once; the second line is a concise service descriptor, not a repeated business name. Keep each route header to one brand identity and one task/location label at most.
-- Last code checkpoint pushed to `main`: `38d1cd2e87a753f0973eb5d27d3888239728f719` (deposit reminder styling). Vercel had an earlier build error on `f0dca7279cedb6e03fc8c0468fa87d99be1a03f8` caused by the new admin conversation lookup referencing the missing `Conversation.bookingId` type; that type has since been added. Verify a fresh build/deployment before asking the owner to QA. No end-to-end payment or device notification test is claimed.
-
-
-### Deposit-proof recovery hardening — 2026-11-02
-- A booking confirmation must not silently omit the screenshot-upload path when initial private conversation creation fails. Keep a visible, retryable recovery action on the confirmation screen; never mark the booking or deposit confirmed because of this retry.
-- My Account must self-heal missing booking-linked private threads for the authenticated owner, using the deterministic `booking-<bookingId>` ID and the same customer UID. Existing threads are reused; ownership mismatches must remain errors and must never be overwritten.
-- Offline requests remain pending until they sync. Do not attempt to create a cloud conversation for a booking before its order exists in Firestore; once the order appears in the customer's account, recovery can create/reuse the thread.
-- Release gate remains: verify screenshot upload, private customer return path, admin unread/review against the correct appointment, attachment access and manual Orange Money verification. A successful source edit or build is not end-to-end QA.
-
-
-## Analytics measurement contract — 2026-11-02
-
-The detailed measurement specification is [docs/ANALYTICS-MEASUREMENT-PLAN.md](./docs/ANALYTICS-MEASUREMENT-PLAN.md). Read it before adding analytics, counters, public social proof or admin reporting.
-
-- Vercel Analytics measures coarse website behaviour; authorized booking/admin records are the source of truth for requests, customers, appointment outcomes and money.
-- Never infer bookings, unique customers, deposits or revenue from page views.
-- Public visitors may see only privacy-safe aggregate facts. Customers may see only their own UID-scoped records. Admin/staff reporting requires the existing authorization boundary.
-- Never send names, emails, phone numbers, Firebase UIDs, appointment IDs/references, messages, free text, media URLs, exact dates/times or payment data to analytics.
-- Analytics is best-effort and must never block booking, auth, uploads, messaging or admin actions. Do not add another analytics vendor or a client-writable public Firestore event collection.
-- A request sequence number/community count must not be shown until a trusted, atomic, idempotent server-side allocator and owner-scoped read path have been implemented and tested. Never calculate it in browser code or fabricate social proof.
-- Keep request, confirmed appointment, completed appointment, deposit proof, verified deposit, completed service value and actual collected money distinct. Never label requested/confirmed service price as revenue.
-- The booking collection and status vocabulary still contain legacy food-order compatibility. Audit and map real records before calculating appointment KPIs; unknown legacy values must not silently count as completed/confirmed.
-- Build the admin action queue and trustworthy period summaries before customer/public social-proof surfaces. Reconcile every metric against source records and test public/customer/staff access separately.
-- Do not weaken Firestore/Storage rules or alter PWA/offline behavior to implement analytics.
-
-
-## Visual experience direction — decision-first, image-led product (2026-11-03)
-
-The JTS experience must help customers choose a look and help John recognise the work. It is not a generic appointment form with decorative salon photos.
-
-### Shared product principle
-- Use genuine, owner/customer-authorized JTS imagery to help people recognise a style, service, customer result or appointment. Images must carry decision-making information; do not add stock/generated hair photos as if they are John's work.
-- Keep each screen visually calm. One primary task per screen, concise labels, clear hierarchy, progressive disclosure and obvious next actions. Avoid dashboards made of equal-weight panels, repeated calls to action, excessive badges, decorative colour, and long explanatory copy.
-- Use imagery selectively: image-led where a person is choosing or recognising a look; compact text-led controls where a person is completing an operational task. Every image needs a clear purpose and useful alt text when informative.
-- Preserve privacy by default. Customer names, phone numbers, private messages, reference photos and payment evidence must remain behind the existing authorized customer/staff boundary. Mask sensitive details in overview previews; reveal only in the relevant authorized task.
-
-### Operations — task-first visual workspace
-- Operations is John's working desk, not an analytics landing page. The first screen must answer: what needs my decision now, what is happening today, and what should I do next?
-- Put the actionable request queue before the salon diary and business-performance reporting. Preview a small number of next requests using real service/category media when available, exact service name, requested date/time, amount and current status. If no authorized media exists, use a restrained neutral fallback; never invent a hairstyle image.
-- A preview action must open the real request in the existing appointment queue. The full queue remains the source of truth for customer identity, WhatsApp/contact, notes, private messages and payment-proof review.
-- Keep the confirmed salon diary separate from new/unconfirmed requests. A request is not an appointment; do not show requests as confirmed diary entries or imply that a requested time is reserved.
-- Present the diary as a chronological, glanceable schedule. Keep the next action visible, reduce scanning and scrolling, and use concise status labels plus text (not colour alone).
-- Group navigation by work priority. Daily work (today, requests, availability) should be easier to find than salon maintenance (customer looks/reviews, services/prices, style feed). Use short labels and comfortable mobile touch targets.
-- Keep business pulse and financial reconciliation secondary to daily work. Preserve the analytics measurement contract, source-record definitions, privacy rules and distinction between requested value, confirmed value, completed service value and recorded collections.
-- Do not add fake customer portraits, fabricated reviews, made-up appointment details, automatic confirmation, unverified payment state or unsupported push-notification claims.
-
-### Delivery sequence — admin first, then customer surfaces
-1. Operations/admin visual flow: request triage, real-media previews, appointment queue clarity, confirmed diary and supporting salon-management navigation.
-2. Customer accounts: personal style history, previous appointment context, private messages/payment-proof status, repeat booking and clear next action. Preserve guest access and optional Google linking.
-3. Booking: image-led look discovery connected to the exact supplied service and price, inspiration/reference upload where supported, progressive booking steps, real availability and explicit request/deposit/confirmation states.
-4. Public viewing: curated real work, service-linked lookbook, customer-approved reviews and clear paths from inspiration to the matching service/booking.
-
-Each phase is a separate implementation and QA checkpoint. Do not start customer-account, booking or public-viewing redesign while the admin phase is being QA'd unless the owner explicitly changes the sequence. Preserve the protected PWA install/offline, Firebase schema/rules/auth, booking and payment invariants unless separately approved.
-
-### UX evidence and validation
-- Apply progressive disclosure and cognitive-load principles: expose only the information needed for the current decision, keep related information together, and make actions and errors explicit.
-- Treat salon imagery as a choice aid, not decoration: connect a displayed look to the actual service/price where possible, and use only authentic authorized media.
-- Competitor patterns from Fresha and Booksy are references for portfolio-to-service discovery, client context and appointment workflows, not templates to copy wholesale.
-- Validate with actual mobile use and observed task completion: time to locate/review a request, ability to distinguish requests from confirmed appointments, success of private replies/payment-proof review, and ability to navigate salon-management areas. Do not claim conversion or productivity improvement without measured evidence.
-
-## Customer account implementation contract — repository review (2026-11-03)
-
-The current `/account` route is an existing customer workspace. Improve it in place; do not replace it with a new CRM, dashboard framework, or account/auth system.
-
-### Preserve the working foundation
-- Keep anonymous Firebase guest sessions and optional Google sign-in/linking. A customer must be able to request an appointment without creating an account.
-- Preserve customer-UID-scoped booking reads and live subscriptions, booking references/detail links, private booking conversations, attachment uploads, unread/read state, and existing Firestore/UploadThing authorization.
-- Google linking should preserve the existing anonymous UID and its bookings. Do not silently merge records when a guest session is lost and a different Google UID signs in; explain recovery rather than guessing ownership.
-- Do not change Firebase schema/rules/auth, UploadThing authorization, booking creation, payment verification, PWA installation or offline caching as part of account presentation work unless separately approved.
-
-### Account information architecture
-1. **Next appointment / next action first.** Show the nearest relevant upcoming appointment request with its real service, requested date/time, reference and truthful status. Clearly identify the next customer action, such as awaiting John's response, deposit due, proof submitted for review, or appointment confirmed.
-2. **Private messages for that appointment.** Keep the booking-linked conversation easy to reopen. Make unread staff replies and attachment state understandable; all messaging and media remain private to the booking's customer and authorized staff.
-3. **Appointment history.** Separate upcoming/requested, confirmed or in-service, completed and cancelled records. Keep cancelled and completed records out of the next-appointment selection. Provide a clear route back to each booking's details/conversation and a straightforward book-again action.
-4. **Customer details and account access.** Add profile editing only after inspecting the actual `CustomerProfile` type, write paths and rules. Use only supported, relevant fields (for example name and phone); do not expose inherited restaurant fields such as delivery location or customer notes as salon profile settings without an explicit data-model decision.
-5. **Preferences.** Notification preferences may be surfaced using existing helpers only after verifying their actual persistence and delivery path. A saved token or preference is not proof that a push notification was delivered.
-
-### Status, date and payment truth
-- Normalize all supported current and legacy appointment statuses in one shared presentation mapping. At minimum handle Requested/New, Reviewing, Accepted/Confirmed, In service (including mapped legacy Preparing/Ready), Completed (including mapped legacy Collected/Delivered), and Cancelled. Unknown values must remain visibly unknown/action-required; never silently count them as confirmed or completed.
-- The next appointment selector must exclude terminal states (Completed and Cancelled) and must not promote a merely requested slot to a confirmed appointment.
-- Display appointment dates/times consistently in the business timezone, `Africa/Gaborone`, regardless of the customer's device timezone. Keep the stored timestamp unchanged; timezone handling is presentation-only unless a separate migration is approved.
-- Show deposit required, proof submitted/awaiting review, and deposit verified only when supported by the actual booking/payment/conversation records. A screenshot or customer claim is evidence submitted, not payment received. Only authorized staff verification updates payment state; John confirms the appointment.
-- Do not show an estimated or requested service value as money collected or revenue.
-
-### Visual and interaction direction
-- Use the Iteration 13 compact, task-first visual standard and the JTS black, metallic-gold, white and silver identity.
-- Make the next appointment the clear focal task; keep account identity compact and secondary. Use deliberate section spacing and readable separation rather than clustering many equal-weight cards.
-- Prefer concise appointment rows, expandable history and progressive disclosure over long explanatory panels. Keep the mobile experience scannable with comfortable touch targets and no horizontal overflow.
-- Do not duplicate booking CTAs, brand mastheads, deposit explanations or status copy across adjacent panels. Keep inspiration/Style Studio and other optional content below appointment, message and account tasks.
-- Mask sensitive contact/payment details in overview surfaces where practical; reveal them only within the relevant authenticated customer task.
-
-### Implementation and release sequence
-1. Audit current account components, shared status types, booking timestamps, profile writes, notification helpers and Firestore/Storage/UploadThing rules before editing.
-2. Fix shared status mapping, next-appointment selection and `Africa/Gaborone` display; add focused tests for current and legacy states.
-3. Refine the account hierarchy and narrow-mobile layout without changing data contracts.
-4. Add supported profile editing and saved details only after confirming the existing type, write path and security rules.
-5. Improve booking-specific inbox/unread/attachment recovery and history/rebook paths using the existing deterministic booking thread.
-6. Expose notification preferences only if the underlying delivery path is verified; otherwise describe the feature as unavailable rather than promising reminders.
-7. Verify guest and Google-linked sessions, UID continuity, customer-only reads, live updates, every status mapping, timezone display, deposit-proof recovery, private attachment access and mobile interactions. Run typecheck, lint and production build; inspect the diff before committing.
-
-The account phase is a refinement of the existing foundation, not a rewrite. Never claim end-to-end, device or payment QA from source inspection or a successful build alone.
-
-## Customer account experience — research-informed implementation checkpoint (2026-11-03)
-
-### User need and communication model
-- My JTS is the customer's ongoing private workspace with John, not a generic account-record viewer. Its primary jobs are: understand the next request/appointment, know the next action, communicate with John/staff on the same booking, submit/revisit payment evidence, and return to previous styles/bookings.
-- Customer conversations must use the existing booking-linked private thread and the exact same conversation ID/booking ID/customer UID used by Operations. Staff replies and customer messages must update the existing unread/read state and remain visible only to the owning customer and authorized staff.
-- The account must never imply that a WhatsApp click or an in-app message is a completed support action. The private in-app thread is the source of truth for appointment-specific communication; WhatsApp is an optional external contact route.
-- Use live data to create a sense of continuity: latest actual message preview/time, real unread state, actual appointment status, real customer booking history. Do not invent activity, notifications, response times, availability, popularity or customer imagery.
-
-### Research principles applied
-- Baymard Institute, Accounts & Self-Service UX research: account/self-service is a particularly personal post-transaction experience; users need clear paths to order tracking, history and account tasks. Research overview: https://baymard.com/research/self-service
-- Baymard Institute, Accounts & Self-Service UX Best Practices (2025 update): dashboards should provide direct paths to important account features and accurate status after an action; avoid leaving users uncertain whether a request was received. https://baymard.com/research-articles/current-state-accounts-selfservice
-- Baymard Institute, Order Tracking UX: keep relevant tracking information and navigation within the service rather than sending users on unnecessary detours. https://baymard.com/research-articles/integrate-tracking-info
-- Nielsen Norman Group, 10 Usability Heuristics: recognition rather than recall; show status and next actions so customers do not have to remember details from other screens. https://www.nngroup.com/articles/ten-usability-heuristics/
-- GOV.UK Digital Service Standard (updated 22 April 2026): design around user needs, measure outcomes, and keep users informed about progress where possible. https://www.gov.uk/government/publications/government-functional-standard-govs-005-digital/government-functional-standard-govs-005-digital-html
-- These findings guide the design; they are not evidence of measured conversion lift or a substitute for testing with JTS customers.
-
-### Approved account interaction and visual rules
-- Use a concise branded My JTS entry, not a large generic dashboard masthead.
-- The next item is labelled **Next request** until an authorized staff status makes it confirmed; show **Next appointment** only for confirmed/in-service records. Completed and cancelled records are never selected as the next upcoming item.
-- Display current and legacy status values consistently: New/Requested, Reviewing, Accepted/Confirmed, In service (including mapped legacy Preparing/Ready/Delivering), Completed (including mapped legacy Collected/Delivered), Cancelled. Preserve unknown values rather than guessing.
-- Display appointment and conversation timestamps in Africa/Gaborone without modifying stored timestamps.
-- Show a compact truthful progress sequence and the exact booking reference. A status step is not proof of deposit receipt; payment verification remains staff-controlled.
-- The private inbox is organized around the actual appointment/service and real latest message, with unread replies visible and a direct expand-to-reply interaction. Keep attachment upload, proof submission, message sending, read updates and staff inbox linkage intact.
-- Style history retains access to booking details and private conversation; completed, cancelled and active states remain distinct. Do not add fabricated style photos. Use only media already attached to the actual authorized service/booking if a future media-led account feature is implemented.
-- Keep account access/Google linking optional and guest-first. Do not change authentication, UID ownership, profile schema, notification preferences, Firestore rules, UploadThing authorization, PWA/offline behaviour, booking writes or payment verification in this presentation checkpoint.
-- Keep the black, metallic-gold, white and silver identity, responsive spacing, accessible labels and touch targets. No fake unread counts or synthetic activity.
-
-### Analytics relevance to the customer
-- Customer-facing account analytics should be personal utility, not business surveillance or a chart dashboard: their own current status, next step, own history and private message state are operational account data, not Vercel analytics.
-- Do not show customer-facing visitor counts, public popularity metrics, revenue, other customers' activity, staff performance or cross-customer comparisons.
-- Do not add a customer-facing request number until the trusted atomic allocator and identity-continuity requirements in docs/ANALYTICS-MEASUREMENT-PLAN.md are implemented and tested.
-- Keep privacy-safe coarse events such as jts_account_viewed and jts_google_account_connected; never send booking IDs/references, names, phone/email, message content, timestamps, media URLs, payment amounts or evidence to analytics.
-- Public measurement currently includes Vercel page/performance analytics and the coarse jts_service_viewed category event. It does not yet establish complete public lookbook/feed engagement or a verified public conversion funnel. Do not describe page views as customer interest, bookings or revenue. Any further public events must be coarse, consent/privacy-reviewed where applicable, best-effort and PII-free.
-
-### Release gate
-- Verify guest and Google-linked account access, guest-to-Google UID continuity, current and legacy status labels, terminal-state exclusion, Gaborone timezone, same booking thread on customer and admin sides, new reply/unread state, send/reply, image/video upload, deposit proof, read updates, private attachment access and narrow-mobile layout.
-- Run identity verification, TypeScript, lint and production build; inspect diff and deployment SHA. Physical device and real customer/admin end-to-end QA remain separate and must not be claimed from source/build success alone.
-
-
-## Iteration 13 visual-reference application — My JTS account (2026-11-03)
-- Canonical reference inspected: `iteration13/docs/assets/washride-home-reference.jpeg` and `docs/VISUAL-DIRECTION-STANDARD.md`.
-- Transfer the reference's mobile-app composition (immediate identity, purposeful focal area, dominant primary action, compact supporting destination cards, coherent icon/surface system and polished contrast) into the salon's own visual language. Do not copy WashRide branding, car imagery, blue palette or literal layout.
-- My JTS uses black, metallic gold, warm white and silver. The account identity stays compact; the real next request/confirmed appointment is the focal task; private inbox and style history are secondary shortcuts; full message/history content remains available in its existing authorized sections.
-- Preserve guest/Google identity, UID-scoped Firebase reads, same booking-linked private conversation IDs, unread/read state, private media/payment proof, status truth, Gaborone timezone, booking routes, analytics events, and all existing actions. This visual pass must not alter schema, rules, booking/payment writes, UploadThing authorization, PWA/install or offline behavior.
-- Keep the account compact at phone widths, with clear section separation and accessible focus/touch targets. Verify no horizontal overflow and test the actual customer/admin conversation together; build success alone is not device or end-to-end QA.
-
-## Visible work, loading and operational transparency — 2026-11-03
-
-This section establishes a cross-cutting UX and reliability standard for the existing JTS application. It applies to customer-facing routes, booking, My Account, private conversations, public discovery, Operations/admin, media workflows and offline recovery. It is a refinement of the existing product, not permission to replace working architecture.
-
-### Product principle
-- Make genuine application work understandable. Do not manufacture effort, add artificial delays, fake progress, invent activity or make the application slower to increase perceived value.
-- Explain operations in ordinary customer/business language: checking availability, retrieving bookings, saving a request, uploading an attachment, sending a private reply or synchronising an offline change.
-- Keep the interface calm, concise, mobile-first and consistent with the JTS black, metallic-gold, white and silver identity. One clear task at a time; no decorative progress theatre or unnecessary dashboards.
-
-### Loading and asynchronous states
-- Important asynchronous sections must distinguish initial loading, successfully loaded content, a genuinely empty result, refresh/revalidation where relevant, and failure.
-- Prefer content-shaped skeletons for known content layouts and restrained activity indicators for operations with indeterminate duration. Never display a fabricated percentage for Firestore reads, authentication, message delivery or other operations without measurable progress.
-- Replace vague whole-page loading copy with specific, contextual descriptions where useful (for example, checking appointment availability, retrieving private messages, loading appointment history or refreshing today's requests).
-- Avoid blank screens and avoid showing an empty-state message before the initial subscription/read has resolved.
-- Keep independent data sources independently understandable. A failure to load reviews must not imply that bookings failed; a slow inbox must not hide already-loaded appointment information.
-- Do not keep showing an endless spinner after a terminal error. Surface the affected section's failure and a relevant retry/recovery action.
-- Respect reduced-motion preferences; loading animation must be subtle and never essential to understanding state.
-
-### Booking, saving and offline synchronisation truth
-- Distinguish clearly between local draft/input state, locally saved/offline-pending data, backend-synchronised data, an appointment request received by JTS, a staff-confirmed appointment and a verified deposit.
-- A local Firestore persistence acknowledgement is not proof that John or staff has received the request. Offline confirmation language must say that the request is saved on this device and waiting to synchronise.
-- Where the existing persistence APIs permit reliable observation, reflect the actual pending-write/synchronisation state and update the customer when the backend acknowledges it. Do not infer delivery merely because the device comes back online.
-- If a write fails, preserve recoverable customer input/local reference where safe, explain what failed and provide a safe retry. Prevent accidental duplicate booking creation when retrying; inspect existing idempotency/record identity before changing writes.
-- Keep the current request-vs-confirmation, one-day advance booking, availability and 50% deposit rules. A submitted request is not a confirmed appointment; a payment screenshot is not verified payment.
-- Do not alter Firestore schema, security rules, authentication, booking IDs, guest identity continuity or offline persistence merely to improve the presentation. Any required data-contract change needs a separate explicit review and migration/compatibility plan.
-
-### Private communications and attachments
-- Conversation UI must have distinct initial-loading, loaded-with-messages, genuinely-empty, refresh/error and retry states. Never show “No messages yet” while the first subscription is still unresolved.
-- Keep customer and staff views connected to the exact same authorized booking conversation. Preserve customer UID scoping, staff authorization, unread/read state and existing conversation ownership.
-- Sending, upload completion, message persistence and recipient visibility are different events. Use accurate feedback; do not say “sent” until the message write is acknowledged. Do not claim a staff member has read a message unless the existing read-state record confirms it.
-- Attachment upload progress may show a percentage only when the upload provider supplies measurable progress. After upload, distinguish “uploaded/attached” from “message sent” and from any staff verification.
-- Failed sends/uploads/read-state updates need contextual errors and safe retry/recovery. Avoid silently discarding a draft or already-uploaded attachment when a later step fails.
-- Payment proof remains evidence submitted for review, never proof of funds received. Only authorized staff can verify payment.
-
-### Public discovery and customer engagement
-- Public services, category media and style feed should distinguish loading, available content, no published content and temporary failure. Offer retry where a transient retrieval failure can reasonably be retried.
-- Use genuine authorized JTS/customer media only. Do not show stock/generated imagery as salon work, fabricate reviews, popularity or engagement, or expose private customer content.
-- Keep service names, prices, booking links and booking truth visible and consistent with the canonical 17-service catalogue.
-- Public analytics events must remain coarse, privacy-safe, best-effort and PII-free. Never send names, contact details, UIDs, booking references/IDs, exact appointment times, message text, media URLs or payment information to analytics.
-- Do not equate views, clicks or feed engagement with bookings, confirmed appointments, completed services or revenue. Reconcile business metrics against authorized source records.
-
-### Operations/admin feedback
-- Give independently loaded operational areas their own truthful loading, empty and failure states where appropriate; one subscription's failure must not falsely describe the entire Operations workspace as unavailable.
-- Confirm consequential actions with precise outcomes: appointment status saved, service changes saved, media uploaded, post published/drafted, reply sent, or reconciliation entry recorded. Acknowledge only after the corresponding operation succeeds.
-- Disable duplicate-submit controls while an action is genuinely in progress, but always provide visible progress/working feedback and restore controls after success/failure.
-- Provide contextual retry for recoverable reads/writes. Do not use a generic toast as the only explanation for a failed critical action.
-- Preserve the existing role-controlled admin boundary and sensitive-data masking. Never expose customer private information in public surfaces or analytics.
-- Financial feedback must distinguish an admin-entered reconciliation record from independently verified money received. Do not label requested or confirmed service value as revenue.
-
-### Error, recovery and identity consistency
-- All error and recovery surfaces must use the sole customer-facing identity “John The Stylist Bw”; remove inherited BOEMO, NAMANE TYRES or other unrelated customer-visible branding when those surfaces are next safely touched.
-- Errors should identify the affected task, state whether existing data/input remains safe, and offer a useful next step (retry, reconnect, sign in again or contact John) where supported.
-- Keep technical diagnostics out of ordinary customer copy. Authorized diagnostics may be available in a restrained expandable technical detail area; never expose tokens, credentials, private records or sensitive backend payloads.
-- Do not silently swallow failures that leave the user uncertain. Log only minimal non-sensitive diagnostics; never log credentials, tokens, message contents, payment evidence or unnecessary personal data.
-- Error boundaries, offline fallbacks and not-found/recovery screens must be branded, accessible and consistent with the actual recovery capability.
-
-### Analytics and customer value
-- Keep three distinct information boundaries: public discovery analytics (coarse aggregates), a customer's own operational account information, and authorized staff/business reporting.
-- Customer account screens are personal utility, not a cross-customer analytics dashboard. Customers may see only their own records and private conversation state.
-- Public/admin analytics must follow the existing `docs/ANALYTICS-MEASUREMENT-PLAN.md` definitions and privacy restrictions. Add missing public feed/lookbook engagement and booking-funnel events only after checking existing event names to avoid duplication.
-- Use Vercel Analytics/Speed Insights and existing authorized operational records; do not add another analytics vendor or client-writable public event collection without explicit approval.
-- Do not invent counts, response times, delivery receipts, popularity, conversion, revenue or productivity improvements. Distinguish measured facts from illustrative examples.
-
-### PWA and service-worker protection
-- PWA installation, offline caching, Firebase messaging, service-worker scope, cache versioning and update lifecycle are protected infrastructure.
-- This UX standard does not authorize changing `beforeinstallprompt`, install card behavior, iOS guidance, service-worker activation/reload behavior, cache strategy, notification delivery or offline data handling.
-- The current service-worker update behavior must be audited against the explicit waiting-worker/refresh requirement before any change. Resolve the discrepancy in a separate, isolated change with dedicated install/offline/update QA; do not silently change it as part of loading-state work.
-- A successful browser notification permission request or saved token is not proof that a notification was delivered or read.
-
-### Implementation and verification sequence
-1. Inspect the exact component, data source, subscription/write lifecycle, existing state and security boundary before editing. Reuse existing APIs and event names where possible.
-2. Correct inherited visible branding and naming without risky infrastructure renames.
-3. Standardize loading/empty/error/retry states for public feed, booking availability, My Account sections and Operations sections.
-4. Add conversation initial-loading and safe retry states; verify same-thread customer/staff communication and unread/read behavior.
-5. Improve booking write acknowledgement and offline-pending/synchronised/failed messaging only where the actual Firestore persistence lifecycle can be observed reliably.
-6. Standardize real UploadThing progress and distinguish upload, message send and payment review states.
-7. Complete the privacy-safe public engagement/booking funnel measurement only after auditing the existing event contract.
-8. Review PWA waiting-worker/update behavior separately; do not bundle an unapproved lifecycle change.
-
-### Release gates
-- Test initial loading versus genuinely empty results for every affected subscription.
-- Test transient read failure and successful retry; verify independent sections remain usable.
-- Test booking submission online, offline, reconnection, eventual acknowledgement, failed write and retry without duplicate records.
-- Test conversation first load, empty thread, existing messages, new staff/customer reply, unread/read update, failed send and image/video attachment progress/recovery.
-- Test public feed/service loading, empty and unavailable states, including mobile layouts.
-- Test admin action feedback for appointment updates, service saves, media uploads, publishing, private replies and reconciliation.
-- Verify no PII leaks into analytics/logs and no customer can read another customer's records.
-- Verify all customer-facing error/offline surfaces use John The Stylist Bw identity.
-- Preserve guest booking, Google-linked account continuity, appointment/deposit truth, Firebase rules/schema/auth, UploadThing authorization and PWA install/offline behavior unless a separately approved task explicitly changes them.
-- Run identity verification, `npx tsc --noEmit`, lint, production build and inspect the final diff. Then perform preview QA on real mobile layouts and critical customer/admin journeys. A build is not a substitute for device/end-to-end QA; report exactly what was and was not tested.
-
-## Mandatory account workflow correction (2026-11-03)
-- GitHub main is the source of truth. Inspect actual repository files before implementation; do not inspect Vercel or deployment logs unless the owner explicitly asks for deployment status, a link, build investigation or deployment QA.
-- For JTS customer-account work, inspect the current Big Brothers account source at gatshaayanda/big-brothers-car-wash: src/app/account/page.tsx and src/app/big-brothers.css. Adapt its compact header, greeting/action panel, three-item summary, shortcuts, focused secondary panels and fixed four-item mobile bottom navigation; do not copy car-wash branding or concepts.
-- JTS account must be a compact app workspace, not stacked long-form sections. Keep next appointment/request and unread private replies prominent; move full profile/auth details, full history and conversation threads behind focused panels or progressive disclosure.
-- Compact redesign means changing JSX information architecture, not merely adding CSS. Verify imports, class selectors, comment boundaries and responsive rules. Re-fetch changed source and inspect it. Never claim visual QA from a source change or READY deployment; label source review and rendered/device QA separately.
-
-## Repository-first execution and customer-account compactness — mandatory
-- **GitHub is the source of truth for repository inspection and implementation.** When asked to inspect, compare, edit or document this project, use the GitHub repository and its current branch/files first. Do not substitute Vercel deployment inspection, deployment logs, preview URLs or production URLs for reading the actual repository.
-- **Do not access Vercel unless the owner explicitly asks for deployment/build/production status or a deployment action.** A request to inspect the repo, fix source code, compare customer-account implementations, update this file, commit or push is not permission to inspect Vercel. Do not volunteer deployment checks as a substitute for source verification.
-- Inspect the relevant JTS source files and Git history, then inspect the named reference repository/files when the owner points to another project. State exact files and code-level findings. Avoid broad, repetitive inspections once the relevant source is known.
-- For source changes, use GitHub branch/file APIs, verify the resulting file contents and commit/branch SHA. Run repository checks only when an execution environment is actually available; never claim tests, rendered QA or device QA that were not performed.
-- The owner is the final reviewer. Do not report a visual redesign as complete merely because CSS classes or a stylesheet were added. Check that the page markup actually uses those classes, that styles are imported, and that the layout's information architecture is materially changed in source. If rendered browser/device QA is unavailable, say so plainly and distinguish source verification from visual QA.
-
-### Customer account layout reference: Big Brothers Car Wash
-- The customer account in `gatshaayanda/big-brothers-car-wash`, especially `src/app/account/page.tsx` and `src/app/big-brothers.css`, is an approved **interaction and information-architecture reference** for compact customer accounts.
-- Its useful pattern is an app-like account workspace: compact branded app bar; one concise personalised overview with primary action; small summary metrics; a short grid of task shortcuts; recent useful information; and secondary tools/preferences inside progressive-disclosure sections or focused modal panels. Mobile bottom navigation provides persistent access to key tasks.
-- Apply the pattern to JTS using JTS's own black / metallic-gold / white / silver identity and salon tasks. Do not copy Big Brothers red/white styling, car-wash language, loyalty/racing concepts, or irrelevant features.
-- For JTS, the first screen should answer: (1) what is happening with my next appointment/request, (2) what do I need to do next, and (3) where do I message John or book again. Keep account access, full conversation threads and older booking history compact and progressively disclosed rather than rendering every section as a long page.
-- Show only a short inbox preview/unread indicator and a short recent-booking preview by default. Open full private conversations and full booking history on deliberate customer action (for example, expandable disclosure or focused panel). Preserve the same authenticated customer UID, booking-linked conversation IDs, attachments, unread state and authorization boundaries.
-- Avoid repeated hero introductions, repeated booking CTAs, oversized decorative seals, long explanatory paragraphs and large vertical gaps. Prefer compact rows, concise labels, clear section separation and a visible but restrained primary action.
-- Do not remove or weaken guest sessions, optional Google linking, live booking updates, appointment status truth, private message/payment-proof behavior, booking detail links, privacy notices or the booking flow to achieve compactness. Never mark a deposit received from a screenshot alone.
-- Visual acceptance is structural: on a typical phone first view, the app bar, concise account heading and next appointment/request card should be visible without scrolling through account setup, all messages or the full booking archive. Secondary content should open only when requested. Confirm this from the actual markup/styles; do not infer it from class names.
-
-## Mandatory repository-first workflow and customer-account UX reference
-
-- GitHub is the source of truth. For code/UX tasks, inspect the requested repository's current branch and relevant page, components, stylesheets, imports, data/auth logic and tests first.
-- Do not inspect Vercel, deployment URLs, hosting dashboards or analytics during repository inspection or code changes unless the owner explicitly asks for deployment/build status or a deployment-specific diagnosis. A deployment status is not a substitute for reading the repository.
-- Never claim a visual fix is complete merely because code was edited or pushed. Verify stylesheet imports, exact JSX-to-CSS selector matches, responsive selectors, CSS syntax/comments and competing/obsolete styles. Distinguish source verification from rendered browser/device QA. If rendered QA is unavailable, say so plainly.
-- The Big Brothers Car Wash customer account in `gatshaayanda/big-brothers-car-wash` is an approved functional/layout reference. Inspect `src/app/account/page.tsx` and `src/app/globals.css` there before significant JTS account redesign work. Transfer its compact app header, concise greeting, at-a-glance facts, dominant next action, shortcut grid, short scannable history/receipt rows, focused profile/history/contact panels, collapsed secondary preferences and compact mobile navigation. Do not copy its branding, colours or car-wash business logic.
-- JTS account must be a compact mobile-first salon workspace, not a long editorial page or stack of explanatory cards. Prioritize: compact brand/header + booking CTA; brief My JTS identity; one prominent next appointment/request with truthful status/date/action; compact inbox/history shortcuts; concise account connection; short history and inbox summaries that open on demand.
-- Do not expand every booking, conversation, form, privacy explanation or sign-in instruction by default. Put secondary guidance/preferences behind disclosure or focused panels. Avoid duplicated headings/navigation, oversized decorative hero treatments and unnecessary vertical scrolling.
-- Preserve guest identity continuity, Google linking, appointment state semantics, private conversation IDs/permissions, unread state, messages/attachments, booking behavior and security rules. This is a presentation redesign, not permission to alter data/auth contracts.
-- Unexpected result = stop and inspect source reality. Report exact repository, branch, commit and files changed; never invent visual QA.
+- `npx tsc --noEmit`
+- `npm run lint`
+- `npm run build`
+- `npm run verify:identity`
+
+End-to-end QA:
+1. Homepage and service-area links.
+2. Guest request flow, validation and preserved input on errors.
+3. New request persistence in `serviceRequests`.
+4. Customer account privacy and request history.
+5. Request detail ownership, local fallback and live status.
+6. Admin sign-in and role denial for non-admins.
+7. Admin request queue, private-detail reveal, status changes, quote and internal-note persistence.
+8. UploadThing authorization if media upload is enabled.
+9. PWA install prompt, iOS guidance, embedded-browser handoff, offline shell and notification config.
+10. Mobile-first layout and desktop responsiveness across all major screens.
+
+Report code/commit, GitHub push, checks, visual QA, outstanding Firebase configuration and deployment separately. A push is not a deployment. Do not claim tests or device checks that were not run.
