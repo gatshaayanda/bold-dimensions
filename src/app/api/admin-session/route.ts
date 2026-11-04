@@ -17,7 +17,7 @@ function getAdminApp() {
 }
 
 export async function POST(request: Request) {
-  const match = (request.headers.get("authorization") || "").match(/^Bearer\\s+(.+)$/i);
+  const match = (request.headers.get("authorization") || "").match(/^Bearer\s+(.+)$/i);
   if (!match) return NextResponse.json({ error: "Sign in before checking admin access." }, { status: 401, headers: { "Cache-Control": "no-store" } });
   try {
     const app = getAdminApp();
