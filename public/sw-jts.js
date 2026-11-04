@@ -1,15 +1,15 @@
 importScripts("https://www.gstatic.com/firebasejs/11.9.0/firebase-app-compat.js","https://www.gstatic.com/firebasejs/11.9.0/firebase-messaging-compat.js");
 
-firebase.initializeApp({apiKey:"AIzaSyD5_rgSQq1-ZlBH6GlkAmX88MvTId8bNog",authDomain:"stylist-36204.firebaseapp.com",projectId:"stylist-36204",storageBucket:"stylist-36204.firebasestorage.app",messagingSenderId:"622468889009",appId:"1:622468889009:web:0579e49d766c6e81a1a590",measurementId:"G-5LDNFHCC53"});
+firebase.initializeApp({apiKey:"AIzaSyCCpiTA4h_SuFQ02LKxtnUPL8aeUM22aMM",authDomain:"the-wall-ab746.firebaseapp.com",projectId:"the-wall-ab746",storageBucket:"the-wall-ab746.firebasestorage.app",messagingSenderId:"591554003595",appId:"1:591554003595:web:e0bcf57ec06ab196638a8e",measurementId:"G-RHX7RR8CWF"});
 
-const CACHE_VERSION="jts-shell-v22";
-const SHELL=["/offline","/manifest.webmanifest","/icon-192.png","/icon-512.png","/jts.jpg","/jts-logo.svg"];
+const CACHE_VERSION="bold-dimensions-shell-v1";
+const SHELL=["/offline","/manifest.webmanifest","/icon-192.png","/icon-512.png","/brand/bold-dimensions-logo.jpg","/brand/bold-dimensions-logo.jpg"];
 
 firebase.messaging().onBackgroundMessage((payload)=>{
- const title=payload.notification?.title||payload.data?.title||"John The Stylist Bw";
- const body=payload.notification?.body||payload.data?.body||"You have an appointment update.";
+ const title=payload.notification?.title||payload.data?.title||"Bold Dimensions";
+ const body=payload.notification?.body||payload.data?.body||"You have a service request update.";
  const link=payload.fcmOptions?.link||payload.data?.link||"/account";
- self.registration.showNotification(title,{body,icon:"/jts.jpg",badge:"/jts-logo.svg",tag:payload.data?.appointmentId?"jts-appointment-"+payload.data.appointmentId:"jts-notification",data:{link}});
+ self.registration.showNotification(title,{body,icon:"/brand/bold-dimensions-logo.jpg",badge:"/brand/bold-dimensions-logo.jpg",tag:payload.data?.appointmentId?"bd-service-request-"+payload.data.appointmentId:"bd-notification",data:{link}});
 });
 
 self.addEventListener("notificationclick",(event)=>{
@@ -35,7 +35,7 @@ async function precache(){
 self.addEventListener("install",event=>event.waitUntil(precache().then(()=>self.skipWaiting())));
 self.addEventListener("activate",event=>event.waitUntil((async()=>{
  const keys=await caches.keys();
- await Promise.all(keys.filter(key=>key.startsWith("jts-shell-")&&key!==CACHE_VERSION).map(key=>caches.delete(key)));
+ await Promise.all(keys.filter(key=>(key.startsWith("jts-shell-")||key.startsWith("bold-dimensions-shell-"))&&key!==CACHE_VERSION).map(key=>caches.delete(key)));
  await self.clients.claim();
 })()));
 self.addEventListener("message",event=>{if(event.data?.type==="SKIP_WAITING")self.skipWaiting()});

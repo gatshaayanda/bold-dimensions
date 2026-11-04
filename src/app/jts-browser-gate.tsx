@@ -70,10 +70,10 @@ export default function JtsBrowserGate({initialContext,initialAndroid,initialIos
  }
  return <div className="jtsBrowserGate" role="dialog" aria-modal="true" aria-labelledby="jtsBrowserGateTitle">
   <section className="jtsBrowserGateCard">
-   <div className="jtsBrowserGateBrand"><img src="/jts.jpg" alt="JTS Styles logo"/><div><b>JTS STYLES</b><small>JOHN THE STYLIST BW</small></div></div>
+   <div className="jtsBrowserGateBrand"><img src="/brand/bold-dimensions-logo.jpg" alt="Bold Dimensions logo"/><div><b>BOLD DIMENSIONS</b><small>SERVICE & EQUIPMENT HUB</small></div></div>
    <span className="jtsBrowserGateEyebrow">ONE QUICK STEP</span>
-   <h1 id="jtsBrowserGateTitle">Open JTS in your browser.</h1>
-   <p>You opened this page inside {names[context]}. Continue in your normal browser to keep using this page and request your appointment. We’ll keep the page you wanted to open.</p>
+   <h1 id="jtsBrowserGateTitle">Open Bold Dimensions in your browser.</h1>
+   <p>You opened this page inside {names[context]}. Continue in your normal browser to keep using this page and request service support. We’ll keep the page you wanted to open.</p>
    <a ref={primaryRef} className="jtsBrowserGatePrimary" href={currentUrl||""} target={isAndroid?"_self":"_blank"} rel="noopener noreferrer" onClick={openBrowser}>{isAndroid?"OPEN IN CHROME":"OPEN IN BROWSER"} <span aria-hidden="true">↗</span></a>
    <p className="jtsBrowserGateHint">{isIos?"If this does not open Safari, use the menu in this app and choose Open in Browser.":"If Chrome does not open, use the ⋮ menu and choose Open in browser."}</p>
    <button type="button" className="jtsBrowserGateFallbackToggle" onClick={()=>setShowFallback(value=>!value)} aria-expanded={showFallback} aria-controls="jtsBrowserGateFallback">{showFallback?"Hide help":"Browser did not open?"}</button>

@@ -3,13 +3,13 @@ import path from "node:path";
 import sharp from "sharp";
 
 const root = process.cwd();
-const source = path.join(root, "public/jts-logo.svg");
+const source = path.join(root, "public/brand/bold-dimensions-logo.jpg");
 const pngSignature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
 const sourceBytes = await fs.readFile(source);
 const sourceMetadata = await sharp(sourceBytes).metadata();
 
-if (sourceMetadata.format !== "svg" || !sourceMetadata.width || !sourceMetadata.height) {
-  throw new Error("PWA icon source public/jts-logo.svg is not a readable SVG image.");
+if (sourceMetadata.format !== "jpeg" || !sourceMetadata.width || !sourceMetadata.height) {
+  throw new Error("PWA icon source public/jts-logo.svg is not a readable JPEG image.");
 }
 
 for (const size of [192, 512]) {
@@ -17,7 +17,7 @@ for (const size of [192, 512]) {
   const temporary = target + ".generated";
 
   await sharp(sourceBytes)
-    .resize(size, size, { fit: "contain", background: "#f4efe7" })
+    .resize(size, size, { fit: "contain", background: "#07152D" })
     .png({ compressionLevel: 9 })
     .toFile(temporary);
   await fs.rename(temporary, target);

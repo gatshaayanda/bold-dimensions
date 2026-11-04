@@ -10,7 +10,7 @@ import "./globals.css";
 import "./pwa.css";
 import "./jts-account.css";
 
-const siteUrl=process.env.NEXT_PUBLIC_BASE_URL||"https://john-the-stylist-bw.vercel.app";
+const siteUrl=process.env.NEXT_PUBLIC_BASE_URL||"http://localhost:3000";
 type HandoffContext="whatsapp"|"instagram"|"facebook"|"messenger"|"linkedin"|"embedded"|"browser";
 const EMBEDDED_BROWSER_PATTERN=/WhatsApp|Instagram|FBAN|FBAV|Messenger|Line\/|Twitter|TikTok|Snapchat|LinkedInApp/i;
 const REQUESTED_WITH_PATTERN=/^(com\.whatsapp|com\.instagram\.android|com\.facebook\.katana|com\.facebook\.lite|com\.facebook\.orca)$/i;
@@ -24,7 +24,7 @@ function detectContext(userAgent:string):HandoffContext {
  if(/line\/|twitter|tiktok|snapchat|; wv\)|\bwv\b|\bwebview\b/.test(value))return "embedded";
  return "browser";
 }
-export const metadata:Metadata={metadataBase:new URL(siteUrl),title:{default:brand.name,template:"%s | "+brand.name},description:brand.description,applicationName:brand.name,keywords:["John The Stylist Bw","hairstylist","barber shop","Gaborone","G West","Botswana"],alternates:{canonical:"/"},openGraph:{type:"website",url:siteUrl,siteName:"John The Stylist Bw",title:"John The Stylist Bw",description:"Book your next hairstyle with John The Stylist Bw.",images:[{url:brand.logo,alt:"John The Stylist Bw"}]},twitter:{card:"summary",title:"John The Stylist Bw",description:"Book your next hairstyle with John The Stylist Bw.",images:[brand.logo]},icons:{icon:[{url:brand.iconSvg,type:"image/svg+xml"},{url:brand.icon192,sizes:"192x192",type:"image/png"}],apple:brand.icon192},appleWebApp:{capable:true,title:"John The Stylist Bw",statusBarStyle:"black-translucent"}};
+export const metadata:Metadata={metadataBase:new URL(siteUrl),title:{default:brand.name,template:"%s | "+brand.name},description:brand.description,applicationName:brand.name,keywords:["Bold Dimensions","agricultural machinery","air conditioning","solar water heating","Botswana"],alternates:{canonical:"/"},openGraph:{type:"website",url:siteUrl,siteName:"Bold Dimensions",title:"Bold Dimensions",description:"Request equipment and technical support from Bold Dimensions.",images:[{url:brand.logo,alt:"Bold Dimensions"}]},twitter:{card:"summary",title:"Bold Dimensions",description:"Request equipment and technical support from Bold Dimensions.",images:[brand.logo]},icons:{icon:[{url:brand.iconSvg,type:"image/svg+xml"},{url:brand.icon192,sizes:"192x192",type:"image/png"}],apple:brand.icon192},appleWebApp:{capable:true,title:"Bold Dimensions",statusBarStyle:"black-translucent"}};
 export const viewport:Viewport={themeColor:brand.themeColor,colorScheme:"light",viewportFit:"cover"};
 
 export default async function RootLayout({children}:{children:React.ReactNode}){
@@ -41,8 +41,8 @@ export default async function RootLayout({children}:{children:React.ReactNode}){
  const initialAndroid=/Android/i.test(userAgent);
  const initialIos=/iPhone|iPad|iPod/i.test(userAgent)||(/Macintosh/i.test(userAgent)&&/Mobile/i.test(userAgent));
  return <html lang="en"><head><link rel="manifest" href={brand.manifest} /></head><body style={embedded?{overflow:"hidden"}:undefined}>
-  <Script id="jts-embedded-browser-guard" strategy="beforeInteractive">{`(function(){var ua=navigator.userAgent||"";var lower=ua.toLowerCase();var embedded=/WhatsApp|Instagram|FBAN|FBAV|Messenger|Twitter|TikTok|Snapchat|LinkedInApp/i.test(ua)||lower.indexOf("line/")!==-1||(/Android/i.test(ua)&&lower.indexOf("; wv)")!==-1);var standalone=window.matchMedia("(display-mode: standalone)").matches||("standalone" in navigator&&Boolean(navigator.standalone));if(embedded&&!standalone)document.documentElement.classList.add("jts-embedded-pending");})();`}</Script>
-  <Script id="jts-install-event-capture" strategy="beforeInteractive">{`(function(){var w=window;w.addEventListener("beforeinstallprompt",function(event){var standalone=w.matchMedia("(display-mode: standalone)").matches||("standalone" in navigator&&Boolean(navigator.standalone));if(standalone||w.__jtsPwaListenerReady===true)return;event.preventDefault();w.__jtsEarlyInstallPrompt=event;});})();`}</Script>
+  <Script id="bd-embedded-browser-guard" strategy="beforeInteractive">{`(function(){var ua=navigator.userAgent||"";var lower=ua.toLowerCase();var embedded=/WhatsApp|Instagram|FBAN|FBAV|Messenger|Twitter|TikTok|Snapchat|LinkedInApp/i.test(ua)||lower.indexOf("line/")!==-1||(/Android/i.test(ua)&&lower.indexOf("; wv)")!==-1);var standalone=window.matchMedia("(display-mode: standalone)").matches||("standalone" in navigator&&Boolean(navigator.standalone));if(embedded&&!standalone)document.documentElement.classList.add("jts-embedded-pending");})();`}</Script>
+  <Script id="bd-install-event-capture" strategy="beforeInteractive">{`(function(){var w=window;w.addEventListener("beforeinstallprompt",function(event){var standalone=w.matchMedia("(display-mode: standalone)").matches||("standalone" in navigator&&Boolean(navigator.standalone));if(standalone||w.__jtsPwaListenerReady===true)return;event.preventDefault();w.__jtsEarlyInstallPrompt=event;});})();`}</Script>
   <JtsBrowserGate initialContext={initialContext} initialAndroid={initialAndroid} initialIos={initialIos}/>
   {!embedded&&<><PwaRegister/>{children}<Analytics/><SpeedInsights/></>}
  </body></html>;

@@ -27,8 +27,8 @@ export default function JtsInstallButton() {
   type="button"
   className="jtsInstallButton"
   onClick={() => window.dispatchEvent(new Event("jts-open-install"))}
-  aria-label="Install John The Stylist Bw"
+  aria-label="Install Bold Dimensions"
  >
-  <img src="/jts-logo.svg" alt="" aria-hidden="true" /> Install John The Stylist Bw <span aria-hidden="true">→</span>
+  <img src="/brand/bold-dimensions-logo.jpg" alt="" aria-hidden="true" /> Install Bold Dimensions <span aria-hidden="true">→</span>
  </button>;
 }

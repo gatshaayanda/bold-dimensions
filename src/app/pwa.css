@@ -89,3 +89,33 @@ html.jts-embedded-pending body > .jtsBrowserGate{visibility:visible!important}
   .jtsPersistentInstall{bottom:calc(76px + env(safe-area-inset-bottom,0px))}
   .pwaUpdate{bottom:calc(136px + env(safe-area-inset-bottom,0px))}
 }
+
+
+/* Bold Dimensions identity layer. The install/browser lifecycle above is intentionally unchanged. */
+:root{--bd-navy:#07152d;--bd-blue:#173b72;--bd-cyan:#8bdcf1;--bd-purple:#65549a;--bd-orange:#e49a6a}
+.offlineBanner,.pwaUpdate,.pwaIosInstall,.pwaInstallHelp{background:#07152d;color:#f5f8ff;border-color:#8bdcf1;box-shadow:0 14px 36px rgba(0,0,0,.42)}
+.offlineBanner span,.pwaIosInstall strong,.pwaInstallHelp strong{color:#8bdcf1}
+.pwaUpdate span,.pwaIosInstall span,.pwaInstallHelp span{color:#c6d2e8}
+.pwaUpdate .button,.pwaIosInstall button,.pwaInstallHelp button{background:#8bdcf1;color:#07152d;border-color:#8bdcf1}
+.jtsInstallButton,.jtsPersistentInstall{border-color:#8bdcf1;background:linear-gradient(115deg,#173b72,#65549a 58%,#e49a6a);color:#fff;box-shadow:0 10px 28px rgba(0,0,0,.32)}
+.jtsInstallButton:hover:not(:disabled),.jtsPersistentInstall:hover{background:linear-gradient(115deg,#214b89,#7563ad 58%,#e9a87d);color:#fff}
+.jtsPersistentInstall span,.jtsInstallButton span{color:#fff}
+.jtsInstallPanel{background:rgba(4,13,29,.78)}
+.jtsInstallPanelCard{background:linear-gradient(155deg,#10294d,#07152d);border-color:#8bdcf1;color:#f5f8ff}
+.jtsInstallPanelTop>span,.jtsInstallPanelKicker,.jtsInstallPanelCard h2 em,.jtsInstallPanelBenefits b,.jtsInstallPanelHelp strong{color:#8bdcf1}
+.jtsInstallPanelTop>button{color:#f5f8ff}
+.jtsInstallPanelCard>p,.jtsInstallPanelBenefits small,.jtsInstallPanelHelp p,.jtsInstallPanelFootnote{color:#c6d2e8!important}
+.jtsInstallPanelBenefits span{border-color:#345078;background:rgba(5,17,39,.65)}
+.jtsInstallPanelPrimary{border-color:#8bdcf1;background:#8bdcf1;color:#07152d}
+.jtsInstallPanelPrimary span{color:#07152d}
+.jtsInstallPanelSecondary{border-color:#49618a;color:#f5f8ff;background:#10294d}
+.jtsBrowserGate{background:rgba(4,13,29,.98)!important;color:#f5f8ff}
+.jtsBrowserGateCard{background:linear-gradient(155deg,#10294d,#07152d)!important;border-color:#8bdcf1!important;color:#f5f8ff!important}
+.jtsBrowserGateBrand b,.jtsBrowserGateEyebrow{color:#8bdcf1!important}
+.jtsBrowserGateBrand small,.jtsBrowserGateHint,.jtsBrowserGateFallback{color:#c6d2e8!important}
+.jtsBrowserGatePrimary{background:linear-gradient(110deg,#173b72,#65549a 65%,#e49a6a)!important;border-color:#8bdcf1!important;color:#fff!important}
+.jtsBrowserGatePrimary span{color:#fff!important}
+.jtsBrowserGateFallbackToggle{color:#8bdcf1!important}
+.jtsBrowserGateFallback{background:#10294d!important;border-color:#345078!important}
+.jtsBrowserGateFallback button{background:#173b72!important;border-color:#8bdcf1!important;color:#fff!important}
+.jtsOfflineLogo,.jtsOfficialLogo,.jtsEditKeepLogo{background:#07152d}
