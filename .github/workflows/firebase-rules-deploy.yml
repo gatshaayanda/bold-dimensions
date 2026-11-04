@@ -1,22 +1,13 @@
-name: Deploy JTS Firebase rules
+name: Deploy Bold Dimensions Firebase rules
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "firestore.rules"
-      - "storage.rules"
-      - "firebase.json"
-      - ".firebaserc"
-      - ".github/workflows/firebase-rules-deploy.yml"
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: jts-firebase-rules-deploy
+  group: bold-dimensions-firebase-rules-deploy
   cancel-in-progress: false
 
 jobs:
@@ -43,10 +34,10 @@ jobs:
           umask 077
           printf '%s' "$FIREBASE_SERVICE_ACCOUNT_JSON" > "$RUNNER_TEMP/firebase-service-account.json"
 
-      - name: Deploy JTS Firestore and Storage rules
+      - name: Deploy Bold Dimensions Firestore and Storage rules
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase-service-account.json
-        run: firebase deploy --only firestore:rules,storage --project stylist-36204 --non-interactive
+        run: firebase deploy --only firestore:rules,storage --project the-wall-ab746 --non-interactive
 
       - name: Remove Firebase service account
         if: always()
