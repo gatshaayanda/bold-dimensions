@@ -3,7 +3,7 @@ import {NextResponse} from "next/server";
 export const runtime="nodejs";
 
 export async function POST(request:Request){
-  const expected=process.env.Bold Dimensions_REMINDER_CRON_SECRET?.trim();
+  const expected=process.env.BOLD_DIMENSIONS_REMINDER_CRON_SECRET?.trim();
   const supplied=request.headers.get("authorization")?.replace(/^Bearer\s+/i,"").trim();
   if(!expected||supplied!==expected)return NextResponse.json({ok:false,error:"Unauthorized."},{status:401});
   try{
