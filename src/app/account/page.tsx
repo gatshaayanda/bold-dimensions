@@ -1,283 +1,44 @@
 "use client";
 import Link from "next/link";
-import { GoogleAuthProvider, linkWithPopup, onAuthStateChanged, signInAnonymously, signInWithPopup, type User } from "firebase/auth";
+import { GoogleAuthProvider, linkWithPopup, onAuthStateChanged, signInAnonymously, type User } from "firebase/auth";
 import { useEffect, useMemo, useState } from "react";
-import { track } from "@vercel/analytics";
 import { auth } from "@/lib/firebase/client";
-import ConversationThread from "@/components/ConversationThread";
-import { getCustomerOrders, subscribeToCustomerOrders, subscribeToCustomerConversations, ensureBookingConversation, type Conversation, type FoodOrder } from "@/lib/firebase/data";
+import { subscribeToCustomerServiceRequests, SERVICE_AREAS, type ServiceRequest } from "@/lib/bold-dimensions";
 
-const INITIAL_BOOKINGS_VISIBLE = 3;
-const TERMINAL_STATUSES = new Set(["Cancelled", "Collected", "Delivered", "Completed"]);
-const CONFIRMED_STATUSES = new Set(["Accepted", "Confirmed", "Preparing", "Ready", "Delivering", "In service"]);
-
-function normalizedStatus(status: string) {
-  if (status === "New" || status === "Requested") return "Request received";
-  if (status === "Accepted" || status === "Confirmed") return "Confirmed";
-  if (["Preparing", "Ready", "Delivering", "In service"].includes(status)) return "In service";
-  if (["Collected", "Delivered", "Completed"].includes(status)) return "Completed";
-  if (status === "Cancelled") return "Cancelled";
-  if (status === "Reviewing") return "Being reviewed";
-  return status || "Status unavailable";
-}
-function label(status: string) { return normalizedStatus(status); }
-function dateText(value: string) {
-  const d = new Date(value);
-  return Number.isFinite(d.getTime()) ? new Intl.DateTimeFormat("en-GB", { timeZone: "Africa/Gaborone", weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZoneName: undefined }).format(d) : value;
-}
-function progressStage(status: string) {
-  if (status === "Cancelled") return -1;
-  if (["Collected", "Delivered", "Completed"].includes(status)) return 4;
-  if (["Preparing", "Ready", "Delivering", "In service"].includes(status)) return 3;
-  if (["Accepted", "Confirmed"].includes(status)) return 2;
-  if (status === "Reviewing") return 1;
-  return 0;
-}
-function firebaseErrorCode(cause: unknown) {
-  return typeof cause === "object" && cause && "code" in cause ? String((cause as { code?: unknown }).code ?? "") : "";
-}
-function googleErrorMessage(code: string) {
-  if (code === "auth/popup-closed-by-user" || code === "auth/cancelled-popup-request") return { error: "", message: "Google connection was cancelled. Your current booking session is unchanged." };
-  if (code === "auth/popup-blocked") return { error: "Your browser blocked the Google sign-in window. Allow pop-ups for John The Stylist Bw, then try again.", message: "" };
-  if (code === "auth/unauthorized-domain") return { error: "Google sign-in is not enabled for this website address yet. Your bookings are unchanged; please try again later.", message: "" };
-  if (code === "auth/operation-not-allowed") return { error: "Google sign-in is not enabled for John The Stylist Bw yet. Your bookings are unchanged; please try again later.", message: "" };
-  if (code === "auth/network-request-failed" || code === "auth/timeout") return { error: "The connection was interrupted. Check your internet connection and try Google again; your booking session is unchanged.", message: "" };
-  if (code === "auth/credential-already-in-use" || code === "auth/account-exists-with-different-credential" || code === "auth/email-already-in-use") return { error: "That Google account already has a separate JTS sign-in. Your current booking history has not been merged automatically. Keep this session available and contact John before switching accounts.", message: "" };
-  if (code === "auth/invalid-credential" || code === "auth/invalid-oauth-client-id") return { error: "Google sign-in could not be verified. Your bookings are unchanged; please try again later.", message: "" };
-  return { error: "We couldn't connect Google right now. Your current booking session is unchanged. Please try again, or contact John if it keeps happening.", message: "" };
-}
-
-function weatherDescription(code:number){if(code===0)return "Clear skies";if([1,2].includes(code))return "Partly cloudy";if(code===3)return "Overcast";if([45,48].includes(code))return "Misty conditions";if([51,53,55,56,57].includes(code))return "Light drizzle";if([61,63,65,66,67,80,81,82].includes(code))return "Rain around";if([71,73,75,77,85,86].includes(code))return "Cold or wintry showers";if([95,96,99].includes(code))return "Thunderstorms possible";return "Gaborone weather";}
-
-function GoogleBrandMark() {
-  return (
-    <svg className="googleSignInMark" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
-      <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
-      <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.72 7.18l7.62 5.91c4.45-4.11 7.14-10.17 7.14-17.56z" />
-      <path fill="#FBBC05" d="M10.53 28.59A14.4 14.4 0 0 1 9.75 24c0-1.59.27-3.13.76-4.59l-7.98-6.19A23.9 23.9 0 0 0 0 24c0 3.87.93 7.52 2.56 10.78l7.97-6.19z" />
-      <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.9-5.89l-7.62-5.91c-2.12 1.42-4.84 2.26-8.28 2.26-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
-    </svg>
-  );
-}
-
-export default function AccountPage() {
-  const [user, setUser] = useState<User | null>(null);
-  const [orders, setOrders] = useState<FoodOrder[]>([]);
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [ready, setReady] = useState(false);
-  const [busy, setBusy] = useState(false);
-  const [showAllBookings, setShowAllBookings] = useState(false);
-  const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
-  const [weather, setWeather] = useState<{temperature:number;code:number;rain:number|null}|null>(null);
-  const [weatherLoading, setWeatherLoading] = useState(true);
-  const [greetingHour, setGreetingHour] = useState(12);
-
-  useEffect(() => {
-    setGreetingHour(new Date().getHours());
-    let active = true;
-    fetch("https://api.open-meteo.com/v1/forecast?latitude=-24.6282&longitude=25.9231&current=temperature_2m,weather_code,precipitation_probability&timezone=Africa%2FGaborone")
-      .then(response => { if (!response.ok) throw new Error("Weather unavailable"); return response.json(); })
-      .then(data => { if (active && data.current) setWeather({temperature:Math.round(data.current.temperature_2m),code:Number(data.current.weather_code),rain:data.current.precipitation_probability == null ? null : Number(data.current.precipitation_probability)}); })
-      .catch(() => { if (active) setWeather(null); })
-      .finally(() => { if (active) setWeatherLoading(false); });
-    return () => { active = false; };
-  }, []);
-
-  useEffect(() => {
-    const stop = onAuthStateChanged(auth, next => {
-      setUser(next);
-      if (next) {
-        setReady(false);
-        void getCustomerOrders(next.uid)
-          .then(setOrders)
-          .catch(() => setError("Your bookings could not be loaded right now."))
-          .finally(() => setReady(true));
-      } else {
-        setOrders([]);
-        setReady(true);
-      }
-    });
-    return stop;
-  }, []);
-
-  const userId = user?.uid;
-
-  useEffect(() => {
-    if (!userId) { setConversations([]); return; }
-    return subscribeToCustomerConversations(userId, setConversations, () => setError("Private appointment messages could not be loaded. Check your connection and try again."));
-  }, [userId]);
-
-  useEffect(() => {
-    if (!ready) return;
-    track("jts_account_viewed", { session_type: !user ? "no_session" : user.isAnonymous ? "guest" : "connected" });
-  }, [ready, user]);
-
-
-  // Recover a booking's private proof thread if the initial post-submit setup was interrupted.
-  useEffect(() => {
-    if (!ready || !userId || !user) return;
-    let cancelled = false;
-    const knownBookingIds = new Set(conversations.map(item => item.bookingId).filter((id): id is string => Boolean(id)));
-    const missing = orders.filter(order => order.customerId === userId && !knownBookingIds.has(order.id));
-    if (missing.length) {
-      void Promise.all(missing.map(order => ensureBookingConversation(order.id, userId, order.customerName || "JTS customer")))
-        .catch(cause => {
-          if (!cancelled) {
-            console.error("[JTS account] private booking thread recovery failed", cause);
-            setError("A private booking upload space could not be restored yet. Check your connection and refresh My Account to retry.");
-          }
-        });
-    }
-    return () => { cancelled = true; };
-  }, [ready, userId, user, orders, conversations]);
-
-  useEffect(() => {
-    if (!userId) return;
-    return subscribeToCustomerOrders(
-      userId,
-      nextOrders => { setOrders(nextOrders); setReady(true); },
-      () => setError("Live booking updates are temporarily unavailable. You can still open each booking to refresh its status.")
-    );
-  }, [userId]);
-
-  async function startGuest() {
-    setError(""); setMessage("");
-    try {
-      const next = (await signInAnonymously(auth)).user;
-      setUser(next);
-      setOrders(await getCustomerOrders(next.uid));
-    } catch (cause) {
-      console.error("[JTS account] guest session failed", { code: firebaseErrorCode(cause) });
-      setError("We couldn't open your private booking session. Check your connection and try again.");
-    }
-  }
-
-  async function connectGoogle() {
-    setBusy(true); setError(""); setMessage("");
-    try {
-      // Launch the popup directly from the click handler; an awaited setup step here can lose the browser user gesture.
-      const current = auth.currentUser;
-      const provider = new GoogleAuthProvider();
-      provider.setCustomParameters({ prompt: "select_account" });
-      if (current?.isAnonymous) {
-        const result = await linkWithPopup(current, provider);
-        setUser(result.user);
-        setMessage("Google is connected to this booking identity. Your existing guest booking history stays with this account.");
-        track("jts_google_account_connected", { method: "guest_link" });
-      } else if (current) {
-        setMessage("Your JTS account is already connected. Keep using this Google sign-in when you return.");
-        track("jts_google_account_connected", { method: "already_connected" });
-      } else {
-        const result = await signInWithPopup(auth, provider);
-        setUser(result.user);
-        setMessage("You&apos;re signed in with Google. New bookings can be saved to this account.");
-        track("jts_google_account_connected", { method: "new_sign_in" });
-      }
-    } catch (cause) {
-      const code = firebaseErrorCode(cause);
-      // Log the Firebase error code only. Never log tokens, credentials, email, or profile data.
-      console.error("[JTS account] Google auth failed", { code: code || "unknown" });
-      const feedback = googleErrorMessage(code);
-      setError(feedback.error);
-      setMessage(feedback.message);
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  const nextOrder = useMemo(
-    () => orders.filter(order => new Date(order.scheduledFor).getTime() >= Date.now() && !TERMINAL_STATUSES.has(order.status)).sort((a, b) => a.scheduledFor.localeCompare(b.scheduledFor))[0],
-    [orders]
-  );
-  const nextOrderIsConfirmed = Boolean(nextOrder && CONFIRMED_STATUSES.has(nextOrder.status));
-  const nextOrderStage = nextOrder ? progressStage(nextOrder.status) : 0;
-  const recentOrders = useMemo(
-    () => [...orders].sort((a, b) => b.scheduledFor.localeCompare(a.scheduledFor)),
-    [orders]
-  );
-  const visibleOrders = showAllBookings ? recentOrders : recentOrders.slice(0, INITIAL_BOOKINGS_VISIBLE);
-
-  return <main className="jtsBookingPage jtsStyleAccount"><div className="jtsContainer jtsBookingWrap">
-    <div className="jtsBookingTop jtsAccountAppBar"><Link href="/" className="jtsAccountWordmark"><span>JOHN THE STYLIST <small>BW</small></span></Link><div className="jtsAccountTopLinks"><Link href="/feed" className="jtsGhost">Style feed ↗</Link><Link href="/order" className="jtsButton jtsButtonGold">Book appointment <span aria-hidden="true">↗</span></Link></div></div>
-
-    <header className="jtsAccountHero jtsAccountUtilityHero jtsAccountLivingHero jtsAccountCompactHero">
-      <div><span className="jtsEyebrow">YOUR PERSONAL SALON SPACE</span><h1>{greetingHour < 12 ? "Dumela, " : greetingHour < 17 ? "Good afternoon, " : "Good evening, "}{(user?.displayName?.trim().split(/\s+/)[0] || orders.find(order => order.customerId === user?.uid)?.customerName?.trim().split(/\s+/)[0] || "there")}<span>.</span></h1><p>Your JTS appointments and conversations, together.</p></div>
-      
-    </header>
-
-
-    {(error || message) && <p className={error ? "jtsFormError" : "jtsStyleStatus"} role="status" aria-live="polite">{error || message}</p>}
-
-    <section className="jtsStyleNext jtsAccountNext jtsAccountFocus" aria-labelledby="account-next-title">
-      <div className="jtsAccountNextHeading"><span className="jtsEyebrow">{nextOrderIsConfirmed ? "YOUR NEXT APPOINTMENT" : "YOUR NEXT REQUEST"}</span>
-        {nextOrder ? <><h2 id="account-next-title">{nextOrder.items.map(item => item.name).join(" · ")}</h2><p>{dateText(nextOrder.scheduledFor)}</p><span className="jtsAccountStatus">{label(nextOrder.status)}</span><small>Ref #{nextOrder.id.slice(0, 8).toUpperCase()}</small></>
-        : <><h2 id="account-next-title">Your next style starts here.</h2><p>Choose a service and request a date that works for you.</p></>}
-      </div>
-      {nextOrder && <div className="jtsAccountProgress" aria-label={"Appointment progress: " + label(nextOrder.status)}>
-        {["Request received", "Being reviewed", "Confirmed", "In service", "Completed"].map((step, index) => <div className={index <= nextOrderStage ? "isReached" : ""} key={step}><i aria-hidden="true"/><span>{step}</span></div>)}
-      </div>}
-      <div className="jtsAccountNextActions"><Link href={nextOrder ? "/orders/" + nextOrder.id : "/order"} className="jtsButton jtsButtonGold">{nextOrder ? "Open this request ↗" : "Request an appointment ↗"}</Link>{nextOrder && <a href="https://wa.me/26778053564" className="jtsGhost">Message John on WhatsApp ↗</a>}</div>
-      <p className="jtsAccountTruth">A request is not confirmed until John confirms the slot and verifies the deposit.</p>
-    </section>
-
-    <section className="jtsAccountWeather" aria-label="Gaborone weather">
-      <div><span className="jtsEyebrow">GABORONE TODAY</span><strong>{weatherLoading ? "Checking the weather…" : weather ? weatherDescription(weather.code) : "Weather update unavailable"}</strong><small>{weather ? "A quick look before you head out" : "Check your local forecast before travelling"}</small></div>
-      <div className="jtsAccountWeatherReading">{weather ? <><strong>{weather.temperature}°</strong>{weather.rain !== null && <small>{weather.rain}% rain chance</small>}</> : <span aria-hidden="true">☀</span>}</div>
-    </section>
-    <div className="jtsAccountQuickFacts" aria-label="Account overview">
-      <a href="#account-inbox-disclosure"><strong>{conversations.filter(item => item.unreadForCustomer).length}</strong><span>New replies</span></a>
-      <a href="#account-history-disclosure"><strong>{orders.length}</strong><span>Bookings</span></a>
-      <a href="#account-access-disclosure"><strong>{user && !user.isAnonymous ? "✓" : user ? "Guest" : "—"}</strong><span>Account</span></a>
-    </div>
-    <nav className="jtsAccountLaunchGrid" aria-label="Your JTS shortcuts">
-      <a href="#account-inbox-disclosure" className="jtsAccountLaunchCard"><span className="jtsAccountLaunchIcon" aria-hidden="true">✉</span><span><strong>Private inbox</strong><small>Talk with John</small></span><b aria-hidden="true">↗</b></a>
-      <a href="#account-history-disclosure" className="jtsAccountLaunchCard"><span className="jtsAccountLaunchIcon" aria-hidden="true">▤</span><span><strong>Style history</strong><small>Your past bookings</small></span><b aria-hidden="true">↗</b></a>
-    </nav>
-
-    <details id="account-access-disclosure" className="jtsAccountDisclosure jtsAccountAccessDisclosure">
-      <summary><span><strong>Account access</strong><small>{user && !user.isAnonymous ? "Google connected" : user ? "Guest session · connect to keep your history" : "Sign in or continue as a guest"}</small></span><b>Manage +</b></summary>
-    <section className="jtsStylePanel jtsAccountUtilityAuth" aria-labelledby="account-connection-title">
-      <div className="jtsAccountUtilityHeading"><span className="jtsEyebrow">ACCOUNT ACCESS</span><span className={user && !user.isAnonymous ? "jtsStyleConnected" : "jtsAccountGuestBadge"}>{user && !user.isAnonymous ? "✓ Google connected" : user ? "Guest session" : "Not connected"}</span></div>
-      <h2 id="account-connection-title">{user && !user.isAnonymous ? "Your history is saved." : "Keep your bookings together."}</h2>
-      {user && !user.isAnonymous
-        ? <p>You&apos;re signed in with Google. Use the same account when you return.</p>
-        : user
-          ? <><p>Connect Google to keep this guest booking identity and its history.</p><button className="googleSignInButton jtsAccountGoogleButton" type="button" onClick={() => void connectGoogle()} disabled={busy}><GoogleBrandMark />{busy ? "Connecting…" : "Continue with Google"}</button></>
-          : <><p>Sign in to access saved bookings, or continue with a guest session on this device.</p><button className="googleSignInButton jtsAccountGoogleButton" type="button" onClick={() => void connectGoogle()} disabled={!ready || busy}><GoogleBrandMark />{busy ? "Connecting…" : "Continue with Google"}</button><div className="jtsAccountAuthFallback"><span>Prefer not to sign in?</span><button type="button" className="jtsStyleTextLink" onClick={() => void startGuest()} disabled={!ready || busy}>Open guest booking history</button></div></>}
-    </section>
-    </details>
-
-    <details id="account-inbox-disclosure" className="jtsAccountDisclosure jtsAccountInboxDisclosure">
-      <summary><span><strong>Private inbox</strong><small>{conversations.length ? `${conversations.length} conversation${conversations.length === 1 ? "" : "s"} · ${conversations.filter(item => item.unreadForCustomer).length} new replies` : "Private messages with John"}</small></span><b>Open +</b></summary>
-    <section className="jtsAccountPrivateInbox jtsAccountSecondarySection" id="account-payment-proof" aria-labelledby="account-private-title">
-      <div className="jtsAccountUtilityHeading"><div><span className="jtsEyebrow">PRIVATE INBOX</span><h2 id="account-private-title">Talk with John</h2><p className="jtsAccountInboxIntro">Replies, appointment questions and payment proof stay in the private conversation linked to your booking.</p></div><span className="jtsAccountLiveDot">Private</span></div>
-      {!user ? <div className="jtsStyleEmpty"><p>Connect your account or open your guest booking history to see private appointment conversations.</p></div>
-      : !ready ? <div className="jtsStyleEmpty">Loading your appointment messages…</div>
-      : conversations.length === 0 ? <div className="jtsStyleEmpty"><p>Your private appointment conversations will appear here.</p></div>
-      : <div className="jtsAccountPrivateList">{conversations.map(conversation => {
-          const relatedOrder = orders.find(order => order.id === conversation.bookingId);
-          return <article className="jtsAccountConversationCard" key={conversation.id}>
-            <div className="jtsAccountConversationHead"><div><span className="jtsEyebrow">{conversation.bookingId ? "APPOINTMENT CONVERSATION" : "PRIVATE MESSAGE"}</span><strong>{relatedOrder ? relatedOrder.items.map(item => item.name).join(" · ") : conversation.title}</strong><small>{conversation.bookingId ? "Ref #" + conversation.bookingId.slice(0, 8).toUpperCase() : "Your private JTS inbox"}</small></div>{conversation.unreadForCustomer ? <span className="jtsAccountUnread">New reply</span> : <span className="jtsAccountReadState">{conversation.status === "resolved" ? "Resolved" : "Private"}</span>}</div>
-            <p className="jtsAccountMessagePreview">{conversation.lastMessagePreview || "Your private conversation is ready. Send John a message about this appointment."}</p>
-            <small className="jtsAccountMessageTime">{dateText(conversation.lastMessageAt)}</small>
-            <details className="jtsAccountConversationExpand"><summary>Open conversation and reply <span aria-hidden="true">＋</span></summary><ConversationThread conversationId={conversation.id} role="customer" userId={user.uid} title="Private conversation with John" purpose={conversation.bookingId ? "deposit-proof" : undefined} /></details>
-          </article>;
-        })}</div>}
-      <p className="jtsAccountNotificationNote">Messages and payment screenshots are private to you and authorized JTS staff. A screenshot is not payment verification; John checks the Orange Money account.</p>
-    </section>
-    </details>
-
-    <details id="account-history-disclosure" className="jtsAccountDisclosure jtsAccountHistoryDisclosure">
-      <summary><span><strong>Style history</strong><small>{orders.length} {orders.length === 1 ? "booking" : "bookings"} saved to your account</small></span><b>View +</b></summary>
-    <section className="jtsStyleHistory jtsAccountSecondarySection" aria-labelledby="account-history-title"><div className="jtsStyleSectionHead"><div><span className="jtsEyebrow">YOUR RECORD</span><h2 id="account-history-title">Your style history</h2><p>{orders.length} {orders.length === 1 ? "booking record" : "booking records"} saved here. Reopen any one to see its details and conversation.</p></div><Link href="/order" className="jtsStyleTextLink">New booking ↗</Link></div>
-      {!user ? <div className="jtsStyleEmpty"><p>Open your private booking session above to load your history.</p></div>
-      : !ready ? <div className="jtsStyleEmpty">Loading your bookings…</div>
-      : orders.length > 0 ? <><div className="jtsStyleBookingList">{visibleOrders.map(order => <article key={order.id} className="jtsBookingRow jtsStyleBookingRow"><div><span className="jtsEyebrow">{label(order.status)}</span><h3>{order.items.map(item => item.name).join(" · ")}</h3><p>{dateText(order.scheduledFor)}</p><small>Reference #{order.id.slice(0, 8).toUpperCase()} · {order.status}</small></div><Link href={"/orders/" + order.id} className="jtsGhost">Details ↗</Link></article>)}</div>{recentOrders.length > INITIAL_BOOKINGS_VISIBLE && <button type="button" className="jtsAccountShowBookings" onClick={() => setShowAllBookings(value => !value)}>{showAllBookings ? "Show recent bookings" : "View all " + recentOrders.length + " bookings"}</button>}</>
-      : <div className="jtsStyleEmpty"><h3>Your first appointment starts here.</h3><p>Choose a service and request a date that works for you.</p><Link href="/order" className="jtsButton jtsButtonGold">Request your first appointment ↗</Link></div>}
-    </section>
-    </details>
-
-    <p className="jtsAccountNote"><strong>Your account is private.</strong> Only you and authorized JTS staff can access your appointment details and conversations.</p>
-  </div></main>;
+function dateText(value:string){const date=new Date(value);return Number.isFinite(date.getTime())?new Intl.DateTimeFormat("en-GB",{timeZone:"Africa/Gaborone",dateStyle:"medium",timeStyle:"short"}).format(date):value}
+export default function AccountPage(){
+ const [user,setUser]=useState<User|null>(null);
+ const [requests,setRequests]=useState<ServiceRequest[]>([]);
+ const [loading,setLoading]=useState(true);
+ const [error,setError]=useState("");
+ const [message,setMessage]=useState("");
+ const [busy,setBusy]=useState(false);
+ useEffect(()=>onAuthStateChanged(auth,async next=>{
+  if(next){setUser(next);return}
+  try{const guest=(await signInAnonymously(auth)).user;setUser(guest)}
+  catch{setError("We couldn’t open your private request history. Check your connection and refresh.");setLoading(false)}
+ }),[]);
+ useEffect(()=>{
+  if(!user)return;
+  setLoading(true);
+  return subscribeToCustomerServiceRequests(user.uid,items=>{setRequests(items);setLoading(false);setError("")},()=>{setError("Your requests could not be loaded. Check your connection and try again.");setLoading(false)});
+ },[user?.uid]);
+ async function connectGoogle(){
+  if(!user)return;
+  setBusy(true);setError("");setMessage("");
+  try{const provider=new GoogleAuthProvider();provider.setCustomParameters({prompt:"select_account"});if(user.isAnonymous){const linked=await linkWithPopup(user,provider);setUser(linked.user);setMessage("Google is now linked to this request history. Use the same account when you return.")}else setMessage("Your Google account is already connected.")}
+  catch(cause){const code=typeof cause==="object"&&cause&&"code" in cause?String((cause as {code?:unknown}).code):"";setError(code==="auth/credential-already-in-use"?"That Google account is already linked to another account. Your current requests have not been moved.":code==="auth/popup-closed-by-user"?"Google connection was cancelled. Your request history is unchanged.":"Google could not be connected. Your current request history is unchanged.")}
+  finally{setBusy(false)}
+ }
+ const active=useMemo(()=>requests.filter(item=>!["Completed","Cancelled"].includes(item.status)),[requests]);
+ return <main className="bdUtility bdAccountPage">
+  <header className="bdUtilityHeader"><Link href="/" className="bdBrand"><img src="/brand/bold-dimensions-logo.jpg" alt=""/><span><strong>BOLD DIMENSIONS</strong><small>MY REQUESTS</small></span></Link><Link href="/order" className="bdHeaderCta">New request ↗</Link></header>
+  <section className="bdAccountIntro"><div><span className="bdEyebrow">CUSTOMER WORKSPACE</span><h1>Your service<br/><em>requests.</em></h1><p>Track updates and return to your service history from this device.</p></div><div className="bdAccountCounts"><strong>{active.length}</strong><span>Active requests</span><i/><strong>{requests.length}</strong><span>Total requests</span></div></section>
+  {(error||message)&&<p className={error?"bdFormError":"bdInlineSuccess"} role="status">{error||message}</p>}
+  <section className="bdRequestHistory"><div className="bdSectionHead"><div><span className="bdEyebrow">YOUR HISTORY</span><h2>Recent requests</h2></div><span>{requests.length} total</span></div>
+   {loading?<p className="bdLoading">Loading your private requests…</p>:requests.length===0?<div className="bdEmpty"><h3>No requests yet.</h3><p>When you send a service request, its status and updates will appear here.</p><Link className="bdPrimary" href="/order">Make your first request ↗</Link></div>:<div className="bdHistoryList">{requests.map(item=>{const area=SERVICE_AREAS.find(value=>value.id===item.areaId);return <article className="bdHistoryRow" key={item.id}><div className="bdHistoryTop"><span>#{item.id.slice(0,8).toUpperCase()}</span><b className={"bdStatus bdStatus-"+item.status.toLowerCase().replace(/[^a-z]+/g,"-")}>{item.status}</b></div><h3>{item.serviceType}</h3><p>{area?.name||"Service request"} · {item.location}</p><div className="bdHistoryMeta"><small>Submitted {dateText(item.createdAt)}</small><Link href={"/orders/"+item.id}>View request ↗</Link></div></article>})}</div>}
+  </section>
+  <section className="bdAccountIdentity"><div><span className="bdEyebrow">KEEP YOUR HISTORY</span><h2>Save access across devices.</h2><p>Your request history is currently linked to this device’s guest session. Connect Google if you want to return on another device.</p></div><button type="button" className="bdSecondary" disabled={busy||!user||!user.isAnonymous} onClick={()=>void connectGoogle()}>{busy?"Connecting…":user?.isAnonymous?"Connect Google ↗":"Google connected"}</button></section>
+  <footer className="bdUtilityFooter"><Link href="/">← Bold Dimensions</Link><Link href="/order">Request another service ↗</Link></footer>
+ </main>;
 }
