@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import AdminGate from "@/app/admin/admin-gate";
 import { subscribeToServiceRequests, updateServiceRequest, SERVICE_AREAS, type ServiceRequest, type ServiceRequestStatus } from "@/lib/bold-dimensions";
 
 const STATUSES:ServiceRequestStatus[]=["New","Reviewing","Quote prepared","Awaiting customer","Scheduled","In progress","Completed","Cancelled"];
@@ -42,4 +43,4 @@ function Dashboard(){
   <section className="bdAdminSection bdAdminServiceScope"><div className="bdAdminSectionHead"><div><span className="bdEyebrow">SERVICE SCOPE</span><h2>What we handle</h2></div><Link href="/services">Public service view ↗</Link></div><div className="bdAdminScopeGrid">{SERVICE_AREAS.map((area,index)=><article key={area.id}><span>0{index+1}</span><strong>{area.name}</strong><small>{area.options.join(" · ")}</small></article>)}</div><p>Keep customer promises within confirmed company capability. Pricing, stock and appointment availability are not published in this workspace until the business supplies those details.</p></section>
  </main>;
 }
-export default function AdminPage(){return <Dashboard/>}
+export default function AdminPage(){return <AdminGate><Dashboard/></AdminGate>}
