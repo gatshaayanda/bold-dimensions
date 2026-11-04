@@ -36,6 +36,7 @@ export default function OrderForm(){
    const user=auth.currentUser??(await signInAnonymously(auth)).user;
    const request={customerId:user.uid,customerName:name.trim(),phone:phone.trim(),...(email.trim()?{email:email.trim()}:{}),areaId,serviceType,equipment:equipment.trim(),makeModel:makeModel.trim(),location:location.trim(),description:description.trim(),urgency,preferredContact};
    const id=await createServiceRequest(request);
+   void user.getIdToken().then(token=>fetch("/api/notifications/service-request-created",{method:"POST",headers:{Authorization:"Bearer "+token,"Content-Type":"application/json"},body:JSON.stringify({serviceRequestId:id})})).catch(error=>console.warn("[Bold Dimensions] Staff notification could not be sent.",error));
    try{window.localStorage.setItem("bd-service-request-"+id,JSON.stringify({id,...request,status:"New",createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()}))}catch{}
    router.push("/orders/"+id);
   }catch(cause){
