@@ -3,6 +3,7 @@ import Link from "next/link";
 import { GoogleAuthProvider, linkWithPopup, onAuthStateChanged, signInAnonymously, type User } from "firebase/auth";
 import { useEffect, useMemo, useState } from "react";
 import { auth } from "@/lib/firebase/client";
+import BdMobileDock from "@/components/bd-mobile-dock";
 import { subscribeToCustomerServiceRequests, SERVICE_AREAS, type ServiceRequest } from "@/lib/bold-dimensions";
 
 function dateText(value:string){const date=new Date(value);return Number.isFinite(date.getTime())?new Intl.DateTimeFormat("en-GB",{timeZone:"Africa/Gaborone",dateStyle:"medium",timeStyle:"short"}).format(date):value}
@@ -40,5 +41,5 @@ export default function AccountPage(){
   </section>
   <section className="bdAccountIdentity"><div><span className="bdEyebrow">KEEP YOUR HISTORY</span><h2>Save access across devices.</h2><p>Your request history is currently linked to this device’s guest session. Connect Google if you want to return on another device.</p></div><button type="button" className="bdSecondary" disabled={busy||!user||!user.isAnonymous} onClick={()=>void connectGoogle()}>{busy?"Connecting…":user?.isAnonymous?"Connect Google ↗":"Google connected"}</button></section>
   <footer className="bdUtilityFooter"><Link href="/">← Bold Dimensions</Link><Link href="/order">Request another service ↗</Link></footer>
- </main>;
+ <BdMobileDock/></main>;
 }
