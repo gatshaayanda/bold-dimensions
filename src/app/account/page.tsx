@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { GoogleAuthProvider, linkWithPopup, onAuthStateChanged, signInAnonymously, type User } from "firebase/auth";
 import { useEffect, useMemo, useState } from "react";
 import { auth } from "@/lib/firebase/client";
@@ -23,7 +24,7 @@ export default function AccountPage(){
   if(!user)return;
   setLoading(true);
   return subscribeToCustomerServiceRequests(user.uid,items=>{setRequests(items);setLoading(false);setError("")},()=>{setError("Your requests could not be loaded. Check your connection and try again.");setLoading(false)});
- },[user?.uid]);
+ },[user]);
  async function connectGoogle(){
   if(!user)return;
   setBusy(true);setError("");setMessage("");
@@ -33,7 +34,7 @@ export default function AccountPage(){
  }
  const active=useMemo(()=>requests.filter(item=>!["Completed","Cancelled"].includes(item.status)),[requests]);
  return <main className="bdUtility bdAccountPage">
-  <header className="bdUtilityHeader"><Link href="/" className="bdBrand"><img src="/brand/bold-dimensions-logo.jpg" alt=""/><span><strong>BOLD DIMENSIONS</strong><small>MY REQUESTS</small></span></Link><Link href="/order" className="bdHeaderCta">New request ↗</Link></header>
+  <header className="bdUtilityHeader"><Link href="/" className="bdBrand"><Image src="/brand/bold-dimensions-logo.jpg" alt="" width={42} height={42}/><span><strong>BOLD DIMENSIONS</strong><small>MY REQUESTS</small></span></Link><Link href="/order" className="bdHeaderCta">New request ↗</Link></header>
   <section className="bdAccountIntro"><div><span className="bdEyebrow">CUSTOMER WORKSPACE</span><h1>Your service<br/><em>requests.</em></h1><p>Track updates and return to your service history from this device.</p></div><div className="bdAccountCounts"><strong>{active.length}</strong><span>Active requests</span><i/><strong>{requests.length}</strong><span>Total requests</span></div></section>
   {(error||message)&&<p className={error?"bdFormError":"bdInlineSuccess"} role="status">{error||message}</p>}
   <section className="bdRequestHistory"><div className="bdSectionHead"><div><span className="bdEyebrow">YOUR HISTORY</span><h2>Recent requests</h2></div><span>{requests.length} total</span></div>
