@@ -40,7 +40,7 @@ for (const [label, condition] of [
   ["Bold Dimensions browser handoff", gate.includes("Bold Dimensions")],
   ["new Firebase project in service worker", worker.includes('projectId:"the-wall-ab746"')],
   ["new cache namespace", cacheVersion?.startsWith("bold-dimensions-shell-")],
-  ["generated icons use supplied logo", read("scripts/generate-pwa-icons.mjs").includes("public/bold-dimensions-icon.svg")]
+  ["generated icons use Bold Dimensions app mark", read("scripts/generate-pwa-icons.mjs").includes("public/bold-dimensions-icon.svg")]
 ]) if (!condition) failures.push("Missing or invalid: " + label);
 
 for (const file of files) {
