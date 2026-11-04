@@ -75,6 +75,11 @@ async function sendToDeviceToken(uid:string,token:string,message:Omit<MulticastM
   return {sent:response.successCount>0,successCount:response.successCount,failureCount:response.failureCount};
 }
 
+async function adminUidsWithTokens():Promise<string[]>{
+  const snapshot=await db.collectionGroup("tokens").where("admin","==",true).get();
+  return [...new Set(snapshot.docs.map(item=>item.ref.parent.parent?.id).filter((uid):uid is string=>Boolean(uid)))];
+}
+
 async function claimDelivery(jobId:string,data:Record<string,unknown>):Promise<boolean>{
   const ref=db.collection("notificationDeliveries").doc(jobId);
   return db.runTransaction(async transaction=>{
@@ -167,16 +172,15 @@ async function runPickupReminders():Promise<{orders:number;reminders:number;sent
   // both legacy datetime-local values and explicit +02:00/Z values, and those textual
   // representations are not safely comparable as Firestore strings. Read the small
   // pickup queue and compare the parsed instants in Gaborone/UTC time instead.
-  const [ordersSnapshot,adminsSnapshot]=await Promise.all([
+  const [ordersSnapshot,adminUids]=await Promise.all([
     db.collection("orders").where("mode","==","pickup").get(),
-    db.collection("admins").get()
+    adminUidsWithTokens()
   ]);
 
   if(ordersSnapshot.empty){
     return {orders:0,reminders:0,sent:0};
   }
 
-  const adminUids=adminsSnapshot.docs.map(doc=>doc.id);
   const adminPrefs=new Map<string,number>();
   await Promise.all(adminUids.map(async uid=>{
     const pref=(await db.collection("notificationPreferences").doc(uid).get()).data();
@@ -236,12 +240,11 @@ async function runPickupReminders():Promise<{orders:number;reminders:number;sent
 
 async function sendTestNotification(uid:string,deviceToken:string):Promise<NotificationResult>{
   const [userRecord,adminSnapshot]=await Promise.all([
-    getAuth().getUser(uid),
-    db.collection("admins").doc(uid).get()
+    getAuth().getUser(uid)
   ]);
   const displayName=(userRecord.displayName||"").trim();
   const firstName=displayName.split(/\s+/)[0]||"there";
-  const isStaff=adminSnapshot.exists&&["owner","staff"].includes(String(adminSnapshot.data()?.role||"").toLowerCase());
+  const isStaff=userRecord.customClaims?.admin===true;
   const title=isStaff?"Bold Dimensions operations alerts are on":"Bold Dimensions notifications are on";
   const body=isStaff
     ? "This device is ready for new service request and customer message alerts."
@@ -265,7 +268,7 @@ async function sendNewOrderNotifications(orderId:string,customerUid:string):Prom
   if(!orderSnapshot.exists)throw new Error("Order not found.");
   const order={id:orderSnapshot.id,...orderSnapshot.data()} as ReminderOrder & {total?:unknown;mode?:unknown};
   if(order.customerId!==customerUid)throw new Error("Order does not belong to this customer.");
-  const adminsSnapshot=await db.collection("admins").get();
+  const adminUids=await adminUidsWithTokens();
   let sent=0,admins=0;
   const items=(Array.isArray(order.items)?order.items:[]).map(item=>item.quantity+"× "+item.name).join(" · ");
   const scheduledTime=parseScheduledFor(order.scheduledFor);
@@ -274,8 +277,8 @@ async function sendNewOrderNotifications(orderId:string,customerUid:string):Prom
   const title="New order · "+customerName;
   const body=items+(typeof order.total==="number"?" · P"+order.total.toFixed(2):"")+" · "+(order.mode==="delivery"?"Delivery":"Pickup")+" "+timeText;
   const publicUrl=process.env.NEXT_PUBLIC_BASE_URL||"http://localhost:3000";
-  for(const adminDoc of adminsSnapshot.docs){
-    const uid=adminDoc.id; const pref=(await db.collection("notificationPreferences").doc(uid).get()).data();
+  for(const uid of adminUids){
+    const pref=(await db.collection("notificationPreferences").doc(uid).get()).data();
     if(!pref?.enabled)continue; admins++;
     const jobId="new-order_"+orderId+"_"+uid; const deliveryData={orderId,recipientUid:uid,type:"new-order",admin:true};
     if(!await claimDelivery(jobId,deliveryData))continue;
@@ -297,16 +300,16 @@ async function sendConversationMessageNotification(conversationId:string,message
   if(message.senderId!==senderUid)throw new Error("Message does not belong to this sender.");
   const senderRole=String(message.senderRole||"");
   const customerId=String(conversation.customerId||"");
-  const adminSnapshot=await db.collection("admins").doc(senderUid).get();
-  const senderIsAdmin=adminSnapshot.exists&&["owner","staff"].includes(String(adminSnapshot.data()?.role||"").toLowerCase());
+  const senderRecord=await getAuth().getUser(senderUid);
+  const senderIsAdmin=senderRecord.customClaims?.admin===true;
   if(senderRole==="customer"&&(customerId!==senderUid||senderIsAdmin))throw new Error("Customer message authorization failed.");
   if(senderRole==="admin"&&!senderIsAdmin)throw new Error("Admin message authorization failed.");
   const recipientUids:string[]=[];
   if(senderRole==="customer"){
-    const admins=await db.collection("admins").get();
-    for(const admin of admins.docs){
-      const pref=(await db.collection("notificationPreferences").doc(admin.id).get()).data();
-      if(pref?.enabled&&["owner","staff"].includes(String(admin.data()?.role||"").toLowerCase()))recipientUids.push(admin.id);
+    const admins=await adminUidsWithTokens();
+    for(const uid of admins){
+      const pref=(await db.collection("notificationPreferences").doc(uid).get()).data();
+      if(pref?.enabled)recipientUids.push(uid);
     }
   }else{
     const customerPrefs=(await db.collection("notificationPreferences").doc(customerId).get()).data();
@@ -337,7 +340,7 @@ async function sendNewServiceRequestNotifications(requestId:string,customerUid:s
   if(!requestSnapshot.exists)throw new Error("Service request not found.");
   const serviceRequest=requestSnapshot.data() as Record<string,unknown>;
   if(serviceRequest.customerId!==customerUid)throw new Error("Service request does not belong to this customer.");
-  const adminsSnapshot=await db.collection("admins").get();
+  const adminUids=await adminUidsWithTokens();
   const customerName=String(serviceRequest.customerName||"A customer").trim();
   const serviceType=String(serviceRequest.serviceType||"Service request");
   const location=String(serviceRequest.location||"Location not supplied");
@@ -345,9 +348,7 @@ async function sendNewServiceRequestNotifications(requestId:string,customerUid:s
   const body=serviceType+" · "+location;
   const publicUrl=process.env.NEXT_PUBLIC_BASE_URL||"http://localhost:3000";
   let sent=0,admins=0;
-  for(const adminDoc of adminsSnapshot.docs){
-    const uid=adminDoc.id;
-    if(!["owner","staff"].includes(String(adminDoc.data()?.role||"").toLowerCase()))continue;
+  for(const uid of adminUids){
     const pref=(await db.collection("notificationPreferences").doc(uid).get()).data();
     if(!pref?.enabled)continue;
     admins++;
