@@ -51,7 +51,7 @@ service cloud.firestore {
         && data.description.size() >= 10
         && data.description.size() <= 1500
         && data.urgency in ['Standard', 'Urgent']
-        && data.preferredContact in ['WhatsApp', 'Phone', 'Email']
+        && data.preferredContact == 'In-app'
         && data.status == 'New'
         && data.createdAt is string
         && data.updatedAt is string
