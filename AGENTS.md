@@ -49,7 +49,7 @@ Do not collect payment before the business has assessed and quoted the work. Do 
 Customer request history is private and scoped to the signed-in Firebase UID. Every request creates a matching private `conversations/{requestId}` record with a `messages` subcollection. Tracking and the admin request record both expose that private thread; message records are visible only to the customer and authorized staff. UploadThing attachment URLs are separately hosted links and must not be described as Firebase-private files. Tracking must not expose another customer's request. A local copy may help recover the reference on the same device, but it must never be presented as live backend status.
 
 ## 4. Service request data model
-The public service data is in `src/lib/bold-dimensions-config.ts`; Firebase request operations are in `src/lib/bold-dimensions.ts`. Primary Firestore collection: `serviceRequests`.
+The public service data is in `src/lib/bold-dimensions-config.ts`; Firebase request operations are in `src/lib/bold-dimensions.ts`. Primary Firestore collection: `serviceRequests`. Public promotional content is seeded from `DEFAULT_PROMOTIONS` in `src/lib/bold-dimensions-promotions.ts` and admin-managed in the `servicePromotions` Firestore collection. The two supplied local assets are `public/images/bold.jpg` (solar and air conditioning, lead) and `public/images/bold1.jpg` (agricultural machinery, secondary).
 
 Fields:
 - `customerId`, `customerName`, `phone`, optional `email`;
@@ -125,7 +125,7 @@ Preserve working Firebase Auth foundations, customer-scoped access, UploadThing 
 - The supplied logo palette is the brand source. Do not retain salon black/gold/plum styles or add unrelated decorative colours.
 - Do not claim visual completion without inspecting actual rendered screenshots at mobile and desktop widths.
 
-## 10. Visible work, loading and operational transparency — 2026-11-05
+## 10. Customer content and service hierarchy — 2026-11-05\n\n- Solar water heating and air conditioning lead the homepage, service discovery and request choices. Agricultural machinery is a secondary offering. Keep this order in all new customer-facing surfaces.\n- Do not expose public telephone, WhatsApp or email contact links. Customers should submit service requests and communicate through their private in-app conversation. Customer phone/email may still be collected for operational follow-up and shown only in authorized admin workflows.\n- Promotional assets are seeded from `DEFAULT_PROMOTIONS` and admin-managed in Firestore `servicePromotions`; the admin can edit copy, replace images through UploadThing, reorder, hide and remove promotions. Firestore rules must allow public read and admin-claim-only writes for this collection.\n- Supplied assets: `public/images/bold.jpg` (lead solar water heating and air conditioning), `public/images/bold1.jpg` (secondary agricultural machinery).\n\n## 11. Visible work, loading and operational transparency — 2026-11-05
 
 The interface must make important work visible. Customers and operators should understand what is loading, what has been saved, what is still pending, what failed and what action is available next. Do not use decorative spinners, vague success messages or silent disabled controls as substitutes for truthful state.
 
