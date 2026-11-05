@@ -19,7 +19,7 @@ export default function OrderForm(){
  const [location,setLocation]=useState("");
  const [description,setDescription]=useState("");
  const [urgency,setUrgency]=useState<"Standard"|"Urgent">("Standard");
- const [preferredContact,setPreferredContact]=useState<"WhatsApp"|"Phone"|"Email">("WhatsApp");
+ const preferredContact="In-app" as const;
  const [busy,setBusy]=useState(false);
  const requestIdRef=useRef<string>("");
  const [error,setError]=useState("");
@@ -31,7 +31,6 @@ export default function OrderForm(){
   event.preventDefault();setError("");
   const digits=phone.replace(/\D/g,"");
   if(!name.trim()||digits.length<7||digits.length>15||!location.trim()||description.trim().length<10||!serviceType){setError("Complete the required details and check your contact number.");return}
-  if(preferredContact==="Email"&&!email.trim()){setError("Add an email address or choose WhatsApp or phone as your preferred contact.");return}
   setBusy(true);
   try{
    const user=auth.currentUser??(await signInAnonymously(auth)).user;
@@ -70,8 +69,8 @@ export default function OrderForm(){
     </section>:<section className="bdFormStep"><div className="bdFormHeading"><span>STEP 03</span><h2>How should we reach you?</h2><p>We’ll use these details to follow up about your request.</p></div>
       <div className="bdFormSummary"><b>{serviceType}</b><span>{area.name} · {location || "Location not entered"}</span><button type="button" onClick={()=>setStep(2)}>Edit details</button></div>
       <label>Your name<input value={name} onChange={event=>setName(event.target.value)} autoComplete="name" maxLength={100} required placeholder="Full name"/></label>
-      <div className="bdFieldGrid"><label>Phone / WhatsApp<input type="tel" value={phone} onChange={event=>setPhone(event.target.value)} autoComplete="tel" maxLength={30} required placeholder="+267 …"/></label><label>Email <span>(optional)</span><input type="email" value={email} onChange={event=>setEmail(event.target.value)} autoComplete="email" maxLength={160} placeholder="you@example.com"/></label></div>
-      <label>Preferred contact method<select value={preferredContact} onChange={event=>setPreferredContact(event.target.value as "WhatsApp"|"Phone"|"Email")}><option>WhatsApp</option><option>Phone</option><option>Email</option></select></label>
+      <div className="bdFieldGrid"><label>Mobile number <span>(for service coordination if needed)</span><input type="tel" value={phone} onChange={event=>setPhone(event.target.value)} autoComplete="tel" maxLength={30} required placeholder="+267 …"/></label><label>Email <span>(optional)</span><input type="email" value={email} onChange={event=>setEmail(event.target.value)} autoComplete="email" maxLength={160} placeholder="you@example.com"/></label></div>
+      <div className="bdInlineNotice">Your updates and follow-up conversation stay in this app. You can track the request and message the team privately from My requests.</div>
       {error&&<p className="bdFormError" role="alert">{error}</p>}
       <div className="bdFormActions"><button type="button" className="bdSecondary" onClick={()=>setStep(2)}>← Back</button><button type="submit" className="bdPrimary" disabled={busy}>{busy?"Sending request…":"Send service request ↗"}</button></div>
       <p className="bdFormFinePrint">By submitting, you’re asking Bold Dimensions to contact you. This does not confirm a service visit, quote or payment.</p>
