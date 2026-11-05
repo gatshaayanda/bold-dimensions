@@ -12,7 +12,7 @@ export default function AdminGate({children}:{children:React.ReactNode}){
    setUser(next);setAuthorized(false);
    if(!next){setChecking(false);return}
    setChecking(true);
-   try{const token=await next.getIdTokenResult(true);const allowed=token.claims.admin===true;setAuthorized(allowed);setError(allowed?"":"This Firebase session does not have the Bold Dimensions admin claim. Sign in with the admin password.");}
+   try{const token=await next.getIdTokenResult();const allowed=token.claims.admin===true;setAuthorized(allowed);setError(allowed?"":"This Firebase session does not have the Bold Dimensions admin claim. Sign in with the admin password.");}
    catch{setAuthorized(false);setError("Admin access could not be verified. Please sign in again.")}
    finally{setChecking(false)}
   });
