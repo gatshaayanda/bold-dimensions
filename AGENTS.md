@@ -11,10 +11,10 @@
 ## 2. Product identity and verified scope
 Customer-facing identity: **Bold Dimensions**. App positioning: **Service & Equipment Hub**.
 
-The current business scope is three service areas:
-1. Agricultural machinery support.
-2. Air conditioning.
-3. Solar water heating.
+The current business scope is three service areas, in customer-facing priority order:
+1. Solar water heating (lead service).
+2. Air conditioning (lead service).
+3. Agricultural machinery and Massey Ferguson spares (secondary service).
 
 The app is a service-request and customer follow-up tool. It is not currently a confirmed ecommerce catalogue, machinery dealership, parts inventory, online payment platform or appointment calendar.
 
@@ -22,10 +22,7 @@ Do not claim authorised Massey Ferguson dealer status, equipment stock, guarante
 
 Use only the supplied logo at `public/brand/bold-dimensions-logo.jpg`. Its visible identity uses navy/blue, cyan, purple and orange. Keep the original asset intact. `public/jts.jpg` is a compatibility path containing the supplied full logo. `public/jts-logo.svg` is a compatibility path for the simplified Bold Dimensions app mark; neither may contain JTS branding.
 
-Known public contact details from business research:
-- +267 73 207 038
-- +267 396 1158
-- sales@bolddimensions.co.bw
+Known public contact details are retained for private business operations only. Do not publish phone, WhatsApp or email links in the customer-facing app. Customers should use in-app service requests and private request conversations.
 
 Do not assume the domain is the production app URL. `NEXT_PUBLIC_BASE_URL` must be set to the actual approved host when known; local default is `http://localhost:3000`.
 
@@ -41,8 +38,8 @@ The request form should collect:
 - site/town/location;
 - a useful description of the issue or work required;
 - standard/urgent priority (do not imply emergency dispatch);
-- customer name and phone/WhatsApp;
-- optional email and preferred contact method.
+- customer name and mobile number for operational coordination;
+- optional email; customer follow-up is through the in-app conversation.
 
 Do not collect payment before the business has assessed and quoted the work. Do not invent a price, appointment time or service availability. A submitted request is not a confirmed visit or booking.
 
