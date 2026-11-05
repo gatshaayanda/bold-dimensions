@@ -183,6 +183,20 @@ service cloud.firestore {
       }
     }
 
+    match /servicePromotions/{promotionId} {
+      allow read: if true;
+      allow create, update: if isAdmin()
+        && request.resource.data.keys().hasOnly(['id', 'title', 'description', 'imageUrl', 'alt', 'order', 'active'])
+        && request.resource.data.id == promotionId
+        && request.resource.data.title is string && request.resource.data.title.size() > 0 && request.resource.data.title.size() <= 120
+        && request.resource.data.description is string && request.resource.data.description.size() <= 500
+        && request.resource.data.imageUrl is string && request.resource.data.imageUrl.size() <= 2048
+        && request.resource.data.alt is string && request.resource.data.alt.size() <= 200
+        && request.resource.data.order is number && request.resource.data.order >= 1 && request.resource.data.order <= 100
+        && request.resource.data.active is bool;
+      allow delete: if isAdmin();
+    }
+
     match /notificationPreferences/{uid} {
       allow read: if isOwner(uid);
       allow create, update: if isOwner(uid)
