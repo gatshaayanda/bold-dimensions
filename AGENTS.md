@@ -125,7 +125,75 @@ Preserve working Firebase Auth foundations, customer-scoped access, UploadThing 
 - The supplied logo palette is the brand source. Do not retain salon black/gold/plum styles or add unrelated decorative colours.
 - Do not claim visual completion without inspecting actual rendered screenshots at mobile and desktop widths.
 
-## 10. Verification and delivery
+## 10. Visible work, loading and operational transparency — 2026-11-05
+
+The interface must make important work visible. Customers and operators should understand what is loading, what has been saved, what is still pending, what failed and what action is available next. Do not use decorative spinners, vague success messages or silent disabled controls as substitutes for truthful state.
+
+### Shared interaction principles
+- Every asynchronous action with a meaningful wait has a local, independent pending state. Disable only the action that is currently being submitted; do not freeze unrelated controls or the whole page.
+- Use compact skeletons when the shape of content is known and a real loading state when it is not. Avoid layout shifts and large blank placeholders.
+- Preserve entered form data when validation or network errors occur. Put actionable errors beside the relevant field or action and explain how to recover.
+- Distinguish loading, saving, saved, queued/offline, synchronizing, synchronized, failed and retry-required states. Never present an optimistic UI update as server-confirmed persistence.
+- Confirm destructive or consequential actions clearly. After success, show the actual result and update the relevant view; do not show success before the underlying operation succeeds.
+- Keep feedback concise, accessible and consistent with Bold Dimensions branding. Provide visible focus, readable status text and touch-friendly retry/close controls.
+
+### Customer service requests and tracking
+- The primary flow is a service request, not an instant booking or confirmed appointment. Communicate each stage truthfully: preparing/submitting, submitted and reference issued, awaiting business review, quote prepared, awaiting customer, scheduled, in progress, completed or cancelled.
+- Show submission progress on the form's primary action and prevent accidental duplicate submissions while the same request is in flight.
+- If the network fails, retain the customer's entered details and explain whether the request was actually saved, locally queued or not submitted. Do not invent a reference number or imply the business has received a request that has not reached Firestore.
+- Firestore offline persistence may queue supported writes locally. A queued write is not a server-confirmed request; the UI must not wait indefinitely for acknowledgement or claim synchronization before it is confirmed. Verify the actual Firebase persistence configuration and write behavior before promising offline submission.
+- Local request recovery is a convenience for the same device only. Label locally recovered information as such and never present it as live backend status. Reconcile it with the server after connectivity returns.
+- Tracking must distinguish cached/stale information from refreshed server state. Show a last-updated or reconnect cue when useful; do not fabricate progress or response-time promises.
+
+### Private customer ↔ admin communication and media
+- Keep conversation threads private to the owning customer and authorized staff. Never expose another customer's messages, contact details or request history through public feeds, analytics or cache behavior.
+- Sending a message has its own progress and outcome state. Distinguish message submission from notification delivery: a notification failure must not discard or misrepresent a message that was saved.
+- Show unread/read state only when supported by persisted conversation metadata. Update unread indicators consistently for the customer and admin without leaking private content.
+- For attachments, show the selected file, type/size validation, upload progress where the UploadThing client exposes it, upload failure and retry guidance. Do not show an attachment as sent until the message record containing its uploaded URL has been saved.
+- Customer uploads must use the existing `customerServiceMedia` UploadThing route and customer Firebase identity. Staff uploads must use `adminBusinessMedia` and verify the Firebase `admin` claim. Do not bypass these checks or switch uploads to Firebase Storage.
+- UploadThing media is separately hosted and accessible to anyone who has the URL; do not describe attachment URLs as Firebase-private files. Keep the conversation/message authorization boundary intact and avoid placing attachment URLs in public analytics or logs.
+- Uploading media requires a working network connection. Offline messaging/attachment behavior must be described according to verified implementation, not assumed from Firestore persistence.
+
+### Public service discovery and recovery
+- Public service-area content should have compact loading placeholders, useful empty states and recoverable errors. Keep the service request CTA usable and do not let a secondary feed or media request block the core service journey.
+- If public content fails to load, retain useful static service information where possible and offer a clear retry. Do not fabricate service availability, equipment stock, prices, testimonials or response-time claims.
+- Media should preserve aspect ratio and avoid layout shifts. Provide a branded fallback when optional media is absent or fails.
+
+### Admin operations and confirmations
+- Give each independent admin action its own pending state: status change, quote save, internal-note save, customer reply, attachment upload and other mutations must not share one page-wide loading flag.
+- Confirm the actual persisted result. If a status/quote/note update fails, retain the previous truthful state, show the error and allow retry; never silently display an unsaved value as committed.
+- Keep admin request lists useful while refreshing. Preserve filters/selection where safe and avoid blanking the whole workspace for a small background refresh.
+- Mask customer contact details by default as already required. Reveal only on deliberate authorized action; do not include revealed values in analytics, telemetry or error messages.
+- Keep sections separated enough to scan on mobile. Operational density must not become visual clustering; prioritize the next action and concise status over decorative dashboards.
+
+### Analytics and privacy
+- Analytics must be aggregate and purpose-limited. Do not send names, phone numbers, email addresses, message bodies, attachment URLs, request descriptions, exact customer locations or other direct identifiers to public analytics.
+- Do not expose customer-level request, conversation or contact data to other customers or public visitors. Public-facing metrics must be based on genuinely public/aggregated information and must not imply business performance that is not measured.
+- Admin-only operational reporting must respect the existing Firebase authorization boundary. Never treat client-side hiding as access control.
+- Do not add fake counters, engagement claims or synthetic business metrics. Document what each metric measures and its source before displaying it.
+
+### Branding, errors and service recovery
+- Loading, empty, success, warning and error states must use the Bold Dimensions identity and established visual system; do not introduce unrelated inherited salon styles.
+- Error messages should state what failed, whether user data was retained, and the next safe action. Avoid exposing stack traces, credentials, tokens, private URLs or internal notes.
+- Retry must repeat only the failed operation and must not create duplicate requests/messages or repeat already completed side effects.
+- Keep offline/reconnect messaging truthful and consistent across customer, tracking and admin surfaces.
+
+### PWA and service-worker protection
+- Preserve the approved install prompt lifecycle, embedded-browser handoff, iOS instructions, notification behavior and waiting-worker update flow. Do not combine ordinary loading/feedback work with a service-worker lifecycle rewrite.
+- Never cache private customer/admin records, conversation messages, UploadThing URLs or authenticated API responses in the service-worker shell cache.
+- Cached route HTML is only an application shell; it is not proof that private data or actions are available offline.
+- Offline UI must distinguish cached shell access from Firestore data availability and from actions that require a live network (including UploadThing uploads, fresh authentication and push delivery).
+- A new waiting service worker must not silently interrupt an active request or conversation. Preserve the explicit update/refresh interaction.
+
+### Implementation and release QA
+- For every affected flow, test the loading, success, empty, validation-error, network-error, retry and offline/reconnect states that are applicable. Check duplicate-submit protection and ensure unrelated controls remain usable.
+- Exercise customer request submission and tracking, customer messaging, admin replies, status/quote/note updates and media upload authorization end to end where credentials and a deployed environment permit.
+- Verify customer and admin privacy boundaries with both authorized and unauthorized identities. A successful UI render is not proof of Firestore or UploadThing authorization.
+- Verify offline shell access separately from Firestore persistence/synchronization. Test with an existing authenticated session and a first-time session; do not assume they behave identically.
+- Check mobile-first layouts and desktop responsiveness. Confirm loading placeholders, error messages and confirmations remain compact, readable and non-clustered.
+- If live Firebase, UploadThing, notification or device testing is unavailable, report the exact limitation and leave the behavior explicitly unverified. Source inspection or a passing build is not end-to-end QA.
+
+## 11. Verification and delivery
 Before a meaningful checkpoint:
 - `npx tsc --noEmit`
 - `npm run lint`
