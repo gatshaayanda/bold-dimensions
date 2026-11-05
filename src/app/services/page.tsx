@@ -3,7 +3,7 @@ import Image from "next/image";
 import { SERVICE_AREAS } from "@/lib/bold-dimensions-config";
 import BdMobileDock from "@/components/bd-mobile-dock";
 
-export const metadata={title:"Services",description:"Agricultural machinery, air conditioning and solar water-heating service enquiries."};
+export const metadata={title:"Services",description:"Solar water heating and air conditioning support, with agricultural machinery enquiries as a secondary service."};
 export default function ServicesPage(){
  return <main className="bdUtility">
   <header className="bdUtilityHeader"><Link href="/" className="bdBrand"><Image src="/brand/bold-dimensions-logo.jpg" alt="" width={42} height={42}/><span><strong>BOLD DIMENSIONS</strong><small>SERVICE HUB</small></span></Link><Link href="/order" className="bdHeaderCta">Request support ↗</Link></header>
