@@ -1,7 +1,7 @@
 export const SERVICE_AREAS = [
- { id:"agricultural-machinery", name:"Agricultural machinery", short:"Machinery", intro:"Support requests for tractors and agricultural equipment.", options:["Tractor servicing","Machinery repair","Diagnostics","Parts enquiry","Other machinery support"] },
- { id:"air-conditioning", name:"Air conditioning", short:"Air conditioning", intro:"Installation, servicing and fault support for air-conditioning systems.", options:["New installation","Routine servicing","Repair / fault finding","System assessment","Other air-conditioning support"] },
- { id:"solar-water-heating", name:"Solar water heating", short:"Solar water heating", intro:"Installation, maintenance and fault support for solar water-heating systems.", options:["New installation","Routine maintenance","Repair / fault finding","System assessment","Other solar water-heating support"] }
+ { id:"solar-water-heating", name:"Solar water heating", short:"Solar", intro:"Solar water-heater installation, cleaning, descaling, maintenance, repairs and spare-parts support.", options:["New installation","Cleaning & descaling","Routine maintenance","Fault finding & repairs","Geyser element replacement","Thermostat & safety valve service","Spare parts enquiry","System assessment","Other solar water-heating support"] },
+ { id:"air-conditioning", name:"Air conditioning", short:"Air conditioning", intro:"Air-conditioning installation, servicing, diagnostics and repair support.", options:["New installation","Routine servicing","Repair / fault finding","System assessment","Other air-conditioning support"] },
+ { id:"agricultural-machinery", name:"Agricultural machinery", short:"Machinery", intro:"Agricultural machinery support and Massey Ferguson spare-parts enquiries.", options:["Tractor servicing","Machinery repair","Diagnostics","Massey Ferguson parts enquiry","Other machinery support"] }
 ] as const;
 export type ServiceAreaId = typeof SERVICE_AREAS[number]["id"];
 export type ServiceRequestStatus = "New"|"Reviewing"|"Quote prepared"|"Awaiting customer"|"Scheduled"|"In progress"|"Completed"|"Cancelled";
