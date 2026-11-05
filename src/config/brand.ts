@@ -1,7 +1,7 @@
 export const brand = {
   name: "Bold Dimensions",
   shortName: "Bold Dimensions",
-  description: "Request agricultural machinery support, air conditioning services and solar water heating solutions from Bold Dimensions.",
+  description: "Solar water heating and air conditioning services, with agricultural machinery support from Bold Dimensions.",
   themeColor: "#173B72",
   backgroundColor: "#07152D",
   logo: "/brand/bold-dimensions-logo.jpg",
