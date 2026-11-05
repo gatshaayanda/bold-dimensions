@@ -13,7 +13,7 @@ function localDateTime(value?:string){if(!value)return "";const date=new Date(va
 
 function Dashboard(){
  const [requests,setRequests]=useState<ServiceRequest[]>([]);
- const [loading,setLoading]=useState(true);
+ const [loading,setLoading]=useState(true);\n const [fromCache,setFromCache]=useState(false);
  const [error,setError]=useState("");
  const [notice,setNotice]=useState("");
  const [filter,setFilter]=useState<"Open"|"All"|"Closed">("Open");
@@ -21,7 +21,7 @@ function Dashboard(){
  const [revealed,setRevealed]=useState<Record<string,boolean>>({});
  const [drafts,setDrafts]=useState<Record<string,{quoteAmount:string;quoteNote:string;internalNote:string;scheduledFor:string}>>({});
  const [saving,setSaving]=useState("");
- useEffect(()=>subscribeToServiceRequests(items=>{setRequests(items);setLoading(false);setError("")},()=>{setError("The service request queue could not be loaded. Check the new Firebase project rules and connection.");setLoading(false)}),[]);
+ useEffect(()=>subscribeToServiceRequests((items,cached)=>{setRequests(items);setFromCache(cached);setLoading(false);if(!cached)setError("")},cause=>{const code=(cause as Error&{code?:string}).code;setError(code==="permission-denied"?"Firebase denied access to the service queue. Check that the published rules target the-wall-ab746 and that this admin session has the admin claim.":code==="unauthenticated"?"The admin Firebase session has expired. Sign out and sign in again.":code==="failed-precondition"?"The service queue needs a Firestore index. Check the Firebase error details and deploy the required index.":code==="unavailable"||code==="deadline-exceeded"?"Firebase is unavailable. Check the connection; cached requests remain visible where available.":"The service request queue could not be loaded. "+cause.message);setLoading(false)}),[]);
  const openCount=useMemo(()=>requests.filter(item=>!["Completed","Cancelled"].includes(item.status)).length,[requests]);
  const newCount=useMemo(()=>requests.filter(item=>item.status==="New").length,[requests]);
  const filtered=useMemo(()=>requests.filter(item=>filter==="All"?true:filter==="Closed"?["Completed","Cancelled"].includes(item.status):!["Completed","Cancelled"].includes(item.status)),[requests,filter]);
@@ -33,8 +33,8 @@ function Dashboard(){
   <section className="bdAdminStats"><article><small>OPEN REQUESTS</small><strong>{openCount}</strong><span>Needs follow-up</span></article><article><small>NEW REQUESTS</small><strong>{newCount}</strong><span>Awaiting first review</span></article><article><small>COMPLETED</small><strong>{requests.filter(item=>item.status==="Completed").length}</strong><span>Marked complete</span></article><article><small>TOTAL RECORDS</small><strong>{requests.length}</strong><span>All submitted requests</span></article></section>
   <NotificationSettings/>
   <section className="bdAdminSection"><div className="bdAdminSectionHead"><div><span className="bdEyebrow">CUSTOMER WORK</span><h2>Service requests</h2></div><div className="bdAdminFilters">{(["Open","All","Closed"] as const).map(value=><button key={value} type="button" className={filter===value?"active":""} onClick={()=>setFilter(value)}>{value}</button>)}</div></div>
-   {notice&&<p className="bdAdminNotice" role="status">{notice}</p>}{error&&<p className="bdFormError" role="alert">{error}</p>}
-   {loading?<p className="bdAdminEmpty">Loading service requests…</p>:filtered.length===0?<div className="bdAdminEmpty"><strong>{filter==="Open"?"No open requests.":"No requests in this view."}</strong><p>New customer submissions will appear here when Firebase access is configured.</p></div>:<div className="bdAdminQueue">{filtered.map(item=>{
+   {notice&&<p className="bdAdminNotice" role="status">{notice}</p>}{fromCache&&<p className="bdAdminNotice" role="status">Showing saved device data. Waiting for a live Firebase refresh; this view may not include the latest requests.</p>}{error&&<p className="bdFormError" role="alert">{error}</p>}
+   {loading?<p className="bdAdminEmpty">Loading service requests…</p>:filtered.length===0?<div className="bdAdminEmpty"><strong>{fromCache?"No saved requests on this device.":filter==="Open"?"No open requests.":"No requests in this view."}</strong><p>{fromCache?"The live queue has not been confirmed yet. Reconnect to Firebase before treating this as an empty queue.":"New customer submissions will appear here when they are confirmed by Firebase."}</p></div>:<div className="bdAdminQueue">{filtered.map(item=>{
     const area=SERVICE_AREAS.find(value=>value.id===item.areaId),show=revealed[item.id]===true,draft=draftFor(item);
     return <article className="bdAdminRequest" key={item.id}>
      <div className="bdAdminRequestHead"><span>#{item.id.slice(0,8).toUpperCase()} · {dateText(item.createdAt)}</span><b className={"bdStatus bdStatus-"+item.status.toLowerCase().replace(/[^a-z]+/g,"-")}>{item.status}</b></div>

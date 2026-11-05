@@ -1,10 +1,10 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { signInAnonymously } from "firebase/auth";
 import { auth } from "@/lib/firebase/client";
-import { createServiceRequest, SERVICE_AREAS, type ServiceAreaId } from "@/lib/bold-dimensions";
+import { createServiceRequest, createServiceRequestId, SERVICE_AREAS, type ServiceAreaId } from "@/lib/bold-dimensions";
 import BdMobileDock from "@/components/bd-mobile-dock";
 
 export default function OrderForm(){
@@ -20,7 +20,7 @@ export default function OrderForm(){
  const [description,setDescription]=useState("");
  const [urgency,setUrgency]=useState<"Standard"|"Urgent">("Standard");
  const [preferredContact,setPreferredContact]=useState<"WhatsApp"|"Phone"|"Email">("WhatsApp");
- const [busy,setBusy]=useState(false);
+ const [busy,setBusy]=useState(false);\n const requestIdRef=useRef<string>("");
  const [error,setError]=useState("");
  const [step,setStep]=useState(1);
  const area=useMemo(()=>SERVICE_AREAS.find(item=>item.id===areaId)!,[areaId]);
@@ -35,13 +35,13 @@ export default function OrderForm(){
   try{
    const user=auth.currentUser??(await signInAnonymously(auth)).user;
    const request={customerId:user.uid,customerName:name.trim(),phone:phone.trim(),...(email.trim()?{email:email.trim()}:{}),areaId,serviceType,equipment:equipment.trim(),makeModel:makeModel.trim(),location:location.trim(),description:description.trim(),urgency,preferredContact};
-   const id=await createServiceRequest(request);
+   if(!requestIdRef.current)requestIdRef.current=createServiceRequestId();\n   const id=await createServiceRequest(request,requestIdRef.current);
    void user.getIdToken().then(token=>fetch("/api/notifications/service-request-created",{method:"POST",headers:{Authorization:"Bearer "+token,"Content-Type":"application/json"},body:JSON.stringify({serviceRequestId:id})})).catch(error=>console.warn("[Bold Dimensions] Staff notification could not be sent.",error));
    try{window.localStorage.setItem("bd-service-request-"+id,JSON.stringify({id,...request,status:"New",createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()}))}catch{}
    router.push("/orders/"+id);
   }catch(cause){
    console.error("[Bold Dimensions] service request submission failed",cause);
-   setError("Your request could not be sent. Check your connection and try again. Your details are still in this form.");
+   const code=(cause as {code?:string})?.code;\n   const detail=code==="permission-denied"?"Firebase rejected this request. The published Firestore rules for the Bold Dimensions project need to be checked.":code==="unavailable"||code==="deadline-exceeded"?"Firebase could not be reached. Reconnect and retry.":cause instanceof Error?cause.message:"The request could not be confirmed.";\n   setError(detail+" Your details are still in this form. Retry safely; this form keeps the same request reference to prevent duplicates.");
   }finally{setBusy(false)}
  }
  return <main className="bdUtility bdRequestPage">
