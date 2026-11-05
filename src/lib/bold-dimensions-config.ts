@@ -5,5 +5,5 @@ export const SERVICE_AREAS = [
 ] as const;
 export type ServiceAreaId = typeof SERVICE_AREAS[number]["id"];
 export type ServiceRequestStatus = "New"|"Reviewing"|"Quote prepared"|"Awaiting customer"|"Scheduled"|"In progress"|"Completed"|"Cancelled";
-export type ServiceRequest = { id:string; customerId:string; customerName:string; phone:string; email?:string; areaId:ServiceAreaId; serviceType:string; equipment?:string; makeModel?:string; location:string; description:string; urgency:"Standard"|"Urgent"; preferredContact:"WhatsApp"|"Phone"|"Email"; status:ServiceRequestStatus; createdAt:string; updatedAt:string; scheduledFor?:string; quoteAmount?:number; quoteNote?:string; internalNote?:string };
+export type ServiceRequest = { id:string; customerId:string; customerName:string; phone:string; email?:string; areaId:ServiceAreaId; serviceType:string; equipment?:string; makeModel?:string; location:string; description:string; urgency:"Standard"|"Urgent"; preferredContact:"In-app"; status:ServiceRequestStatus; createdAt:string; updatedAt:string; scheduledFor?:string; quoteAmount?:number; quoteNote?:string; internalNote?:string };
 export const requestStatusSteps:ServiceRequestStatus[]=["New","Reviewing","Quote prepared","Awaiting customer","Scheduled","In progress","Completed"];
