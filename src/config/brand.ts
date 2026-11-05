@@ -9,5 +9,5 @@ export const brand = {
   icon192: "/icon-192.png",
   icon512: "/icon-512.png",
   manifest: "/manifest.webmanifest",
-  serviceWorkerCache: "bold-dimensions-shell-v3"
+  serviceWorkerCache: "bold-dimensions-shell-v4"
 } as const;
