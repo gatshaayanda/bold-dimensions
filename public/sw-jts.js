@@ -3,7 +3,7 @@ importScripts("https://www.gstatic.com/firebasejs/11.9.0/firebase-app-compat.js"
 firebase.initializeApp({apiKey:"AIzaSyCCpiTA4h_SuFQ02LKxtnUPL8aeUM22aMM",authDomain:"the-wall-ab746.firebaseapp.com",projectId:"the-wall-ab746",storageBucket:"the-wall-ab746.firebasestorage.app",messagingSenderId:"591554003595",appId:"1:591554003595:web:e0bcf57ec06ab196638a8e",measurementId:"G-RHX7RR8CWF"});
 
 const CACHE_VERSION="bold-dimensions-shell-v3";
-const SHELL=["/offline","/manifest.webmanifest","/icon-192.png","/icon-512.png","/brand/bold-dimensions-logo.jpg","/bold-dimensions-icon.svg"];
+const SHELL=["/","/services","/order","/account","/admin","/offline","/manifest.webmanifest","/icon-192.png","/icon-512.png","/brand/bold-dimensions-logo.jpg","/bold-dimensions-icon.svg"];
 
 firebase.messaging().onBackgroundMessage((payload)=>{
  const title=payload.notification?.title||payload.data?.title||"Bold Dimensions";
@@ -25,7 +25,7 @@ async function precache(){
  const cache=await caches.open(CACHE_VERSION);
  for(const path of SHELL){try{const response=await fetch(new Request(path,{cache:"reload"}));if(response.ok)await cache.put(path,response.clone())}catch{}}
  const discovered=new Set();
- for(const path of ["/offline"]){
+ for(const path of SHELL.filter(path=>path==="/"||path==="/services"||path==="/order"||path==="/account"||path==="/admin"||path==="/offline")){
   const response=await cache.match(path);if(!response)continue;
   const html=await response.text();
   for(const match of html.matchAll(/(?:src|href)=["'](\/\_next\/static\/[^"']+)["']/g))discovered.add(match[1]);
@@ -51,9 +51,23 @@ self.addEventListener("fetch",event=>{
   return;
  }
  if(isNavigation){
-  // HTML varies by request context (including the embedded-browser gate) and may
-  // contain route-specific state. Never reuse cached homepage/booking HTML here.
-  // Keep navigation network-first and fall back only to the dedicated offline route.
-  event.respondWith(fetch(request).catch(async()=>await caches.match("/offline")||Response.error()));
+  // App route HTML is a client-rendered shell; private customer/admin records are
+  // loaded separately from Firestore and are never stored in this navigation cache.
+  // Network-first keeps the shell fresh, while the last successful route remains
+  // available when the device loses connectivity.
+  event.respondWith((async()=>{
+   const cache=await caches.open(CACHE_VERSION);
+   try{
+    const response=await fetch(request);
+    if(response.ok&&response.headers.get("content-type")?.includes("text/html")){
+     await cache.put(request,response.clone());
+    }
+    return response;
+   }catch{
+    const cached=await cache.match(request);
+    if(cached)return cached;
+    return await cache.match("/offline")||Response.error();
+   }
+  })());
  }
 });
