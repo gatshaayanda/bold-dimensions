@@ -13,7 +13,8 @@ function localDateTime(value?:string){if(!value)return "";const date=new Date(va
 
 function Dashboard(){
  const [requests,setRequests]=useState<ServiceRequest[]>([]);
- const [loading,setLoading]=useState(true);\n const [fromCache,setFromCache]=useState(false);
+ const [loading,setLoading]=useState(true);
+ const [fromCache,setFromCache]=useState(false);
  const [error,setError]=useState("");
  const [notice,setNotice]=useState("");
  const [filter,setFilter]=useState<"Open"|"All"|"Closed">("Open");

@@ -20,7 +20,8 @@ export default function OrderForm(){
  const [description,setDescription]=useState("");
  const [urgency,setUrgency]=useState<"Standard"|"Urgent">("Standard");
  const [preferredContact,setPreferredContact]=useState<"WhatsApp"|"Phone"|"Email">("WhatsApp");
- const [busy,setBusy]=useState(false);\n const requestIdRef=useRef<string>("");
+ const [busy,setBusy]=useState(false);
+ const requestIdRef=useRef<string>("");
  const [error,setError]=useState("");
  const [step,setStep]=useState(1);
  const area=useMemo(()=>SERVICE_AREAS.find(item=>item.id===areaId)!,[areaId]);
@@ -35,13 +36,16 @@ export default function OrderForm(){
   try{
    const user=auth.currentUser??(await signInAnonymously(auth)).user;
    const request={customerId:user.uid,customerName:name.trim(),phone:phone.trim(),...(email.trim()?{email:email.trim()}:{}),areaId,serviceType,equipment:equipment.trim(),makeModel:makeModel.trim(),location:location.trim(),description:description.trim(),urgency,preferredContact};
-   if(!requestIdRef.current)requestIdRef.current=createServiceRequestId();\n   const id=await createServiceRequest(request,requestIdRef.current);
+   if(!requestIdRef.current)requestIdRef.current=createServiceRequestId();
+   const id=await createServiceRequest(request,requestIdRef.current);
    void user.getIdToken().then(token=>fetch("/api/notifications/service-request-created",{method:"POST",headers:{Authorization:"Bearer "+token,"Content-Type":"application/json"},body:JSON.stringify({serviceRequestId:id})})).catch(error=>console.warn("[Bold Dimensions] Staff notification could not be sent.",error));
    try{window.localStorage.setItem("bd-service-request-"+id,JSON.stringify({id,...request,status:"New",createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()}))}catch{}
    router.push("/orders/"+id);
   }catch(cause){
    console.error("[Bold Dimensions] service request submission failed",cause);
-   const code=(cause as {code?:string})?.code;\n   const detail=code==="permission-denied"?"Firebase rejected this request. The published Firestore rules for the Bold Dimensions project need to be checked.":code==="unavailable"||code==="deadline-exceeded"?"Firebase could not be reached. Reconnect and retry.":cause instanceof Error?cause.message:"The request could not be confirmed.";\n   setError(detail+" Your details are still in this form. Retry safely; this form keeps the same request reference to prevent duplicates.");
+   const code=(cause as {code?:string})?.code;
+   const detail=code==="permission-denied"?"Firebase rejected this request. The published Firestore rules for the Bold Dimensions project need to be checked.":code==="unavailable"||code==="deadline-exceeded"?"Firebase could not be reached. Reconnect and retry.":cause instanceof Error?cause.message:"The request could not be confirmed.";
+   setError(detail+" Your details are still in this form. Retry safely; this form keeps the same request reference to prevent duplicates.");
   }finally{setBusy(false)}
  }
  return <main className="bdUtility bdRequestPage">
@@ -74,5 +78,6 @@ export default function OrderForm(){
     </section>}
    </form>
   </div>
-  <BdMobileDock/>\n </main>;
+  <BdMobileDock/>
+ </main>;
 }
