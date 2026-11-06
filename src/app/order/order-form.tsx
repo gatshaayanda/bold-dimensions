@@ -23,10 +23,12 @@ export default function OrderForm(){
  const [busy,setBusy]=useState(false);
  const requestIdRef=useRef<string>("");
  const [error,setError]=useState("");
+ const [toast,setToast]=useState("");
  const [step,setStep]=useState(1);
+ useEffect(()=>{if(!toast)return;const timer=window.setTimeout(()=>setToast(""),2200);return()=>window.clearTimeout(timer)},[toast]);
  const area=useMemo(()=>SERVICE_AREAS.find(item=>item.id===areaId)!,[areaId]);
  useEffect(()=>{const requested=new URLSearchParams(window.location.search).get("area");if(SERVICE_AREAS.some(item=>item.id===requested)){setAreaId(requested as ServiceAreaId);setServiceType("")}},[]);
- function changeArea(value:string){setAreaId(value as ServiceAreaId);setServiceType("")}
+ function changeArea(value:string){setAreaId(value as ServiceAreaId);setServiceType("");const next=SERVICE_AREAS.find(item=>item.id===value);setToast(next?next.name+" services selected":"Service area changed")}
  async function submit(event:FormEvent<HTMLFormElement>){
   event.preventDefault();setError("");
   const digits=phone.replace(/\D/g,"");
@@ -52,10 +54,11 @@ export default function OrderForm(){
   <div className="bdRequestLayout">
    <aside className="bdRequestAside"><span className="bdEyebrow">TELL US WHAT YOU NEED</span><h1>Start a<br/><em>service request.</em></h1><p>Share a few details about the equipment or installation. The team will review your request and contact you about the next step.</p><div className="bdRequestAsideNote"><b>01</b><span><strong>No online payment</strong><small>There are no prices or payment requests at this stage.</small></span></div><div className="bdRequestAsideNote"><b>02</b><span><strong>Request, not confirmation</strong><small>A submitted request is not a confirmed visit or service booking.</small></span></div></aside>
    <form className="bdRequestForm" onSubmit={submit}>
+    {toast&&<div className="bdActionToast" role="status" aria-live="polite">{toast}</div>}
     <div className="bdFormProgress"><span className={step===1?"active":""}>01 · Service</span><i/><span className={step===2?"active":""}>02 · Details</span><i/><span className={step===3?"active":""}>03 · Contact</span></div>
     {step===1?<section className="bdFormStep"><div className="bdFormHeading"><span>STEP 01</span><h2>Which area needs support?</h2><p>Choose the closest match. You can explain the issue in the next step.</p></div>
       <label>Service area<select value={areaId} onChange={event=>changeArea(event.target.value)}>{SERVICE_AREAS.map(item=><option value={item.id} key={item.id}>{item.name}</option>)}</select></label>
-      <div className="bdOptionList">{area.options.map(option=><button type="button" key={option} className={serviceType===option?"selected":""} onClick={()=>setServiceType(option)}><span>{option}</span><b>{serviceType===option?"✓":"+"}</b></button>)}</div>
+      <div className="bdOptionList">{area.options.map(option=><button type="button" key={option} className={serviceType===option?"selected":""} onClick={()=>{setServiceType(option);setToast(option+" selected")}}><span>{option}</span><b>{serviceType===option?"✓":"+"}</b></button>)}</div>
       <div className="bdFormActions"><span>Choose one service type to continue.</span><button type="button" className="bdPrimary" disabled={!serviceType} onClick={()=>setStep(2)}>Continue →</button></div>
     </section>:step===2?<section className="bdFormStep"><div className="bdFormHeading"><span>STEP 02</span><h2>Tell us about the job.</h2><p>Specific details help the team understand what to assess.</p></div>
       <div className="bdFormSummary"><b>{area.name}</b><span>{serviceType}</span><button type="button" onClick={()=>setStep(1)}>Change</button></div>
