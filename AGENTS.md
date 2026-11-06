@@ -122,7 +122,18 @@ Preserve working Firebase Auth foundations, customer-scoped access, UploadThing 
 - The supplied logo palette is the brand source. Do not retain salon black/gold/plum styles or add unrelated decorative colours.
 - Do not claim visual completion without inspecting actual rendered screenshots at mobile and desktop widths.
 
-## 10. Customer content and service hierarchy — 2026-11-05\n\n- Solar water heating and air conditioning lead the homepage, service discovery and request choices. Agricultural machinery is a secondary offering. Keep this order in all new customer-facing surfaces.\n- Do not expose public telephone, WhatsApp or email contact links. Customers should submit service requests and communicate through their private in-app conversation. Customer phone/email may still be collected for operational follow-up and shown only in authorized admin workflows.\n- Promotional assets are seeded from `DEFAULT_PROMOTIONS` and admin-managed in Firestore `servicePromotions`; the admin can edit copy, replace images through UploadThing, reorder, hide and restore promotions. Firestore rules must allow public read and admin-claim-only writes for this collection.\n- Supplied assets: `public/images/bold.jpg` (lead solar water heating and air conditioning), `public/images/bold1.jpg` (secondary agricultural machinery).\n\n## 11. Visible work, loading and operational transparency — 2026-11-05
+## 10. Customer content and service hierarchy — 2026-11-06
+
+- Solar water heating and air conditioning are the lead business offerings and must lead the homepage, promotional hierarchy, service discovery, request choices, metadata and customer copy. Agricultural machinery and Massey Ferguson parts enquiries are secondary and remain third in the service-area order.
+- Do not expose public telephone, WhatsApp or email links. Customers should submit service requests and continue through their private in-app conversation. Customer phone/email may still be collected for operational coordination and shown only in authorized admin workflows.
+- The supplied `public/images/bold.jpg` promotes solar water-heater maintenance and air-conditioning services. Its embedded contact strip must be masked in customer-facing and admin preview presentations.
+- The supplied `public/images/bold1.jpg` promotes Solar Edwards solar spare parts; it is not agricultural machinery. Use it only for solar-spares content. Its embedded contact strip must also be masked in rendered presentations. Do not imply a dealer, distributor or authorised-partner relationship.
+- No supplied agricultural machinery promotional image is currently in this repo. Keep agricultural machinery as a text-led secondary service area until a correctly matching asset is supplied.
+- Promotional content is seeded from `DEFAULT_PROMOTIONS` and admin-managed in Firestore `servicePromotions`. The admin can edit copy, replace images through UploadThing, reorder, hide and restore promotions. Firestore rules must allow public read and admin-claim-only writes for this collection.
+- A safe migration converts the earlier incorrect `agricultural-machinery` promotion that used `bold1.jpg` into the Solar Edwards solar-spares promotion while preserving its order and visibility.
+- The public request journey remains: choose service area → choose request type → describe equipment/system and location → provide contact details → submit → track and follow up in-app.
+
+## 11. Visible work, loading and operational transparency — 2026-11-05
 
 The interface must make important work visible. Customers and operators should understand what is loading, what has been saved, what is still pending, what failed and what action is available next. Do not use decorative spinners, vague success messages or silent disabled controls as substitutes for truthful state.
 
