@@ -221,3 +221,10 @@ End-to-end QA:
 10. Mobile-first layout and desktop responsiveness across all major screens.
 
 Report code/commit, GitHub push, checks, visual QA, outstanding Firebase configuration and deployment separately. A push is not a deployment. Do not claim tests or device checks that were not run.
+
+
+## 12. Project tracking and delivery checkpoints
+
+- Keep `docs/project-tracker.csv` current as the repository's spreadsheet-compatible delivery tracker. Update status, evidence and the next action when a workstream materially changes.
+- Record code commits, GitHub push, automated checks, Firebase rule publication, visual/customer/admin QA and Vercel deployment as separate facts. A pushed commit is not a deployment.
+- Do not mark visual QA complete without inspecting rendered mobile and desktop screenshots. Do not mark Firebase rules published without confirmation from the project owner or direct deployment evidence.
