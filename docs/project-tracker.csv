@@ -1,0 +1,14 @@
+workstream,status,evidence,next_action,owner
+Repository,UPDATED,pushed to main; latest checkpoint commit will be recorded in the next commit,Continue implementation in place; never force-push,Assistant
+Visual reference,INSPECTED,"Opened gatshaayanda/iteration13/docs/assets/washride-home-reference.jpeg and read docs/VISUAL-DIRECTION-STANDARD.md","Compare actual mobile and desktop screenshots before marking visual QA complete",Assistant
+Lead service priority,IMPLEMENTED,"Homepage and service configuration lead with solar water heating and air conditioning; agricultural machinery remains third","Verify customer service selection and request form order",Assistant
+Promotional assets,IMPLEMENTED,"public/images/bold.jpg = solar water heating and air conditioning; public/images/bold1.jpg = Solar Edwards solar spare parts","Check masked image presentation on mobile and desktop",Assistant
+Contact suppression,IMPLEMENTED,"No public phone, WhatsApp or email links in the homepage journey; contact strips are covered in customer and admin image presentations","Verify all public routes and image crops; source artwork remains in the public repository",Assistant
+Promotion seeding and CRUD,IMPLEMENTED,"DEFAULT_PROMOTIONS, Firestore servicePromotions subscription, admin edit/reorder/hide/restore and UploadThing replacement flow","Publish matching Firestore rules, sign in as admin, verify create/edit/reorder/hide/restore/upload",Assistant
+Legacy promotion correction,IMPLEMENTED,"Known old agricultural-machinery document using /images/bold1.jpg is migrated to Solar Edwards solar-spares content","Verify migration against live Firestore data after admin opens",Assistant
+Customer requests,EXISTING_FLOW_PRESERVED,"Service request and private in-app conversation journey retained","Run customer request submission and customer tracking end to end",Assistant
+Admin request queue,EXISTING_FLOW_PRESERVED,"Existing admin queue, status, quote, private notes and customer conversation retained","Verify queue reads and updates with published rules",Assistant
+Firestore rules,READY_IN_REPO_NOT_PUBLISHED,"firestore.rules contains public read and admin-claim-only writes for servicePromotions","Owner publishes rules in Firebase Console for project the-wall-ab746",Owner
+Automated checks,NOT_VERIFIED,"GitHub connector reported Vercel status pending at the checkpoint; no completed CI result inspected","Inspect GitHub Actions checks after push",Assistant
+Visual QA,NOT_PERFORMED,"No running browser, screenshots or device checks available in this session","Inspect homepage, services, request form, customer account/tracking and admin at phone and desktop widths",Assistant
+Vercel deployment,NOT_REQUESTED,"No deployment action performed","Owner handles Vercel unless explicitly delegated",Owner
