@@ -10,14 +10,15 @@ export default function PromotionShowcase(){
  const visible=items.filter(item=>item.active).sort((a,b)=>a.order-b.order);
  return <section className="bdPromotionSection" aria-label="Featured Bold Dimensions services">
   <div className="bdPromotionLead">
-   <span className="bdEyebrow">OUR LEAD SERVICES</span>
-   <h2>Solar water heating <em>& air conditioning.</em></h2>
-   <p>Installation, maintenance, fault finding and repairs. Tell us what your system needs.</p>
+   <div><span className="bdEyebrow">TECHNICAL SUPPORT · BOTSWANA</span><h1>Solar & air conditioning<br/><em>service support.</em></h1><p>Installation, maintenance, repairs and spare-parts support. Start with a service request and follow progress in your account.</p></div>
    <Link href="/order?area=solar-water-heating" className="bdPrimary">Request technical support <span>↗</span></Link>
   </div>
-  <div className="bdPromotionGrid">{visible.map((item,index)=><article className={index===0?"bdPromotionCard bdPromotionPrimary":"bdPromotionCard"} key={item.id}>
-   <div className="bdPromotionImage"><Image src={item.imageUrl} alt={item.alt||item.title} fill sizes="(max-width: 760px) 100vw, 50vw" priority={index===0}/></div>
-   <div className="bdPromotionCopy"><span>{index===0?"01 · SOLAR & CLIMATE":"02 · AGRICULTURAL SUPPORT"}</span><h3>{item.title}</h3><p>{item.description}</p><Link href={item.id==="agricultural-machinery"?"/order?area=agricultural-machinery":"/order?area=solar-water-heating"}>Make an enquiry ↗</Link></div>
-  </article>)}</div>
+  <div className="bdPromotionGrid">{visible.map((item,index)=>{
+   const agricultural=item.id==="agricultural-machinery";
+   return <article className={index===0?"bdPromotionCard bdPromotionPrimary":"bdPromotionCard"} key={item.id}>
+    <div className="bdPromotionImage"><Image src={item.imageUrl} alt={item.alt||item.title} fill sizes="(max-width: 760px) 100vw, 50vw" priority={index===0}/><span className="bdImageContactMask" aria-hidden="true"/></div>
+    <div className="bdPromotionCopy"><span>{index===0?"01 · LEAD SERVICE":agricultural?"03 · AGRICULTURAL SUPPORT":"02 · SOLAR SPARES"}</span><h2>{item.title}</h2><p>{item.description}</p><Link href={agricultural?"/order?area=agricultural-machinery":"/order?area=solar-water-heating"}>Make an enquiry ↗</Link></div>
+   </article>;
+  })}</div>
  </section>;
 }
