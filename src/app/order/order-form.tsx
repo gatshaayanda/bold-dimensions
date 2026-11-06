@@ -9,7 +9,7 @@ import BdMobileDock from "@/components/bd-mobile-dock";
 
 export default function OrderForm(){
  const router=useRouter();
- const [areaId,setAreaId]=useState<ServiceAreaId>("agricultural-machinery");
+ const [areaId,setAreaId]=useState<ServiceAreaId>("solar-water-heating");
  const [serviceType,setServiceType]=useState("");
  const [name,setName]=useState("");
  const [phone,setPhone]=useState("");
