@@ -193,3 +193,6 @@
  .bdPromotionImage{min-height:185px}
  .bdPromotionCopy{padding:13px}
 }
+
+.bdPromotionDelete{border-color:#a65e43!important;color:#ffb49a!important}
+.bdPromotionDelete:hover{background:rgba(166,94,67,.14)}
