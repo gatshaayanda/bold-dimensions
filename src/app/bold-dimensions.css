@@ -254,3 +254,90 @@
  .bdPromotionCompact .bdPromotionImage{height:100px}
  .bdPromotionCompact .bdPromotionCopy h2{font-size:.7rem}
 }
+
+/* Final service-hub landing composition: one dominant action, useful service choices. */
+.bdHomeFinal{padding-bottom:0;background:radial-gradient(ellipse at 50% 0,rgba(34,91,155,.2),transparent 42%),#050d1c}
+.bdHomeHeader{width:min(1120px,calc(100% - 40px));padding:10px 0;border-bottom:1px solid rgba(139,220,241,.18)}
+.bdHomeHeader .bdBrand img{width:42px;height:42px}
+.bdHomeHeader nav{display:flex;align-items:center;gap:24px}
+.bdHomeHeader nav a{color:#c2d2e7;text-decoration:none;font-size:.74rem}
+.bdHomeHeader nav a:hover{color:var(--bd-cyan)}
+.bdHomeFeature{width:min(1120px,calc(100% - 40px));margin:14px auto 0}
+.bdHomeFeatureImage{position:relative;min-height:clamp(350px,48vw,535px);overflow:hidden;border:1px solid #31547f;background:#0a1d39;isolation:isolate}
+.bdHomeFeatureImage>img{object-fit:cover;object-position:center 45%;z-index:-2}
+.bdHomeFeatureImage:after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(3,11,25,.96) 0%,rgba(3,11,25,.82) 36%,rgba(3,11,25,.28) 72%,rgba(3,11,25,.06) 100%),linear-gradient(0deg,rgba(3,11,25,.5),transparent 48%)}
+.bdHomeFeatureImage .bdImageContactMask{height:13%;opacity:.9}
+.bdHomeFeatureCopy{position:absolute;left:clamp(20px,5vw,58px);top:50%;transform:translateY(-50%);width:min(520px,57%);display:flex;flex-direction:column;align-items:flex-start;gap:12px}
+.bdHomeFeatureCopy .bdEyebrow{font-size:.63rem}
+.bdHomeFeatureCopy h1{margin:0;font:500 clamp(2.5rem,5.8vw,4.7rem)/.98 Georgia,serif;letter-spacing:-.055em;color:#fff}
+.bdHomeFeatureCopy h1 em{font-weight:500;color:var(--bd-cyan)}
+.bdHomeFeatureCopy p{margin:0;color:#d3e0f2;font-size:.86rem;line-height:1.5}
+.bdHomePrimary{min-height:54px;margin-top:6px;padding:0 21px;display:inline-flex;align-items:center;gap:22px;background:linear-gradient(110deg,#087fcb,#1766bd 58%,#574b9d);border:1px solid #72d8f3;box-shadow:0 8px 28px rgba(0,119,205,.25);color:#fff;text-decoration:none;font-size:.82rem;font-weight:850}
+.bdHomePrimary span{font-size:1.1rem}
+.bdHomeFeatureCopy>small{color:#d4e3f4;font-size:.65rem;line-height:1.45}
+.bdHomeSecondaryPromos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}
+.bdHomeSecondaryPromo{display:grid;grid-template-columns:120px minmax(0,1fr);align-items:center;gap:13px;min-width:0;padding:8px;border:1px solid #29466e;background:linear-gradient(110deg,#10284a,#091a33)}
+.bdHomeSecondaryImage{position:relative;height:78px;overflow:hidden;background:#07152d}
+.bdHomeSecondaryImage img{object-fit:cover;object-position:center 42%}
+.bdHomeSecondaryImage .bdImageContactMask{height:20%}
+.bdHomeSecondaryPromo>div:last-child{display:grid;gap:6px}
+.bdHomeSecondaryPromo>div:last-child>span{color:var(--bd-cyan);font-size:.54rem;font-weight:850;letter-spacing:.12em}
+.bdHomeSecondaryPromo strong{font:500 1rem/1.15 Georgia,serif;color:#fff}
+.bdHomeServices{width:min(1120px,calc(100% - 40px));padding:27px 0 25px;border-top:0}
+.bdHomeServices .bdSectionHead{margin-bottom:12px}
+.bdHomeServices .bdSectionHead h2{font:500 clamp(1.6rem,3vw,2.15rem)/1.05 Georgia,serif;letter-spacing:-.035em}
+.bdHomeServices .bdSectionHead h2 em{color:var(--bd-cyan);font-style:italic}
+.bdHomeServices .bdSectionHead>span{color:#a8bbd5;font-size:.67rem}
+.bdHomeServiceGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.bdHomeService{min-width:0;min-height:94px;padding:14px;display:flex;align-items:center;gap:12px;border:1px solid #29466e;background:linear-gradient(145deg,#10284a,#091a33);color:#fff;text-decoration:none;transition:border-color .16s ease,transform .16s ease}
+.bdHomeService:hover,.bdHomeService:focus-visible{border-color:var(--bd-cyan);transform:translateY(-2px);outline:none}
+.bdHomeServiceIcon{width:42px;height:42px;flex:none;display:grid;place-items:center;border:1px solid #38628c;border-radius:12px;background:rgba(31,107,157,.18);color:var(--bd-cyan)}
+.bdHomeServiceText{min-width:0;flex:1;display:grid;gap:5px}
+.bdHomeServiceText strong{font:500 1rem/1.15 Georgia,serif}
+.bdHomeServiceText small{color:#aec1da;font-size:.62rem;line-height:1.4}
+.bdHomeServiceArrow{flex:none;color:var(--bd-cyan)}
+.bdHomeFooter{width:min(1120px,calc(100% - 40px));padding:12px 0 16px}
+.bdHomeFooter>a{display:inline-flex;align-items:center;gap:5px;color:#c0d0e5;font-size:.68rem;text-decoration:none}
+.bdHomeFooter>a:first-child{color:var(--bd-cyan)}
+@media(max-width:760px){
+ .bdHomeHeader{width:calc(100% - 26px);padding:8px 0}
+ .bdHomeHeader .bdBrand img{width:38px;height:38px}
+ .bdHomeHeader .bdBrand strong{font-size:.7rem}
+ .bdHomeHeader .bdBrand small{font-size:.49rem}
+ .bdHomeHeader nav{gap:13px}
+ .bdHomeHeader nav a{font-size:.64rem}
+ .bdHomeFeature{width:calc(100% - 20px);margin:10px auto 0}
+ .bdHomeFeatureImage{min-height:480px;min-height:min(72vh,590px);max-height:590px}
+ .bdHomeFeatureImage>img{object-position:57% center}
+ .bdHomeFeatureImage:after{background:linear-gradient(0deg,rgba(3,11,25,.97) 0%,rgba(3,11,25,.8) 38%,rgba(3,11,25,.14) 100%),linear-gradient(90deg,rgba(3,11,25,.35),transparent 85%)}
+ .bdHomeFeatureCopy{left:18px;right:18px;top:auto;bottom:24px;transform:none;width:auto;gap:10px}
+ .bdHomeFeatureCopy .bdEyebrow{font-size:.53rem}
+ .bdHomeFeatureCopy h1{max-width:420px;font-size:clamp(2.35rem,10vw,3.45rem);line-height:.96}
+ .bdHomeFeatureCopy p{font-size:.72rem}
+ .bdHomePrimary{min-height:50px;padding:0 16px;font-size:.75rem}
+ .bdHomeFeatureCopy>small{font-size:.59rem}
+ .bdHomeSecondaryPromos{gap:7px;margin-top:7px}
+ .bdHomeSecondaryPromo{grid-template-columns:1fr;gap:7px;padding:7px}
+ .bdHomeSecondaryImage{height:clamp(86px,25vw,125px)}
+ .bdHomeSecondaryPromo>div:last-child{gap:4px}
+ .bdHomeSecondaryPromo>div:last-child>span{font-size:.46rem}
+ .bdHomeSecondaryPromo strong{font-size:.78rem;line-height:1.12}
+ .bdHomeServices{width:calc(100% - 24px);padding:21px 0 18px}
+ .bdHomeServices .bdSectionHead{align-items:center;margin-bottom:9px}
+ .bdHomeServices .bdSectionHead h2{font-size:1.42rem}
+ .bdHomeServices .bdSectionHead>span{font-size:.59rem}
+ .bdHomeServiceGrid{grid-template-columns:1fr;gap:6px}
+ .bdHomeService{min-height:68px;padding:9px 11px;gap:10px}
+ .bdHomeServiceIcon{width:38px;height:38px;border-radius:10px}
+ .bdHomeServiceText strong{font-size:.9rem}
+ .bdHomeServiceText small{font-size:.59rem}
+ .bdHomeFooter{width:calc(100% - 24px);padding-bottom:74px}
+}
+@media(max-width:380px){
+ .bdHomeHeader nav{gap:9px}
+ .bdHomeHeader nav a{font-size:.59rem}
+ .bdHomeFeatureImage{min-height:450px}
+ .bdHomeFeatureCopy{left:14px;right:14px;bottom:19px}
+ .bdHomeFeatureCopy h1{font-size:2.25rem}
+ .bdHomeSecondaryPromo strong{font-size:.7rem}
+}
