@@ -196,3 +196,61 @@
 
 .bdPromotionDelete{border-color:#a65e43!important;color:#ffb49a!important}
 .bdPromotionDelete:hover{background:rgba(166,94,67,.14)}
+
+
+/* Compact service-hub homepage: remove duplicated landing-page sections and shorten scan paths. */
+.bdHomeCompact{padding-bottom:0}
+.bdHomeCompact .bdHeader{padding:8px 0}
+.bdHomeCompact .bdBrand img{width:40px;height:40px}
+.bdPromotionCompact{width:min(1080px,calc(100% - 32px));margin:8px auto 14px;padding:4px 0 0}
+.bdPromotionCompact .bdPromotionLead{align-items:center;margin:0 0 10px;gap:12px}
+.bdPromotionCompact .bdPromotionLead h1{margin:5px 0 3px;font:500 clamp(1.7rem,3.6vw,2.65rem)/1 Georgia,serif;letter-spacing:-.045em}
+.bdPromotionCompact .bdPromotionLead p{font-size:.69rem;line-height:1.35}
+.bdPromotionCompact .bdPromotionLead>.bdPrimary{min-height:39px;padding:0 13px;gap:9px;font-size:.66rem}
+.bdPromotionCompact .bdPromotionGrid{grid-template-columns:1.25fr .85fr;gap:9px}
+.bdPromotionCompact .bdPromotionCard,.bdPromotionCompact .bdPromotionPrimary{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto;min-height:0}
+.bdPromotionCompact .bdPromotionImage{display:block;min-height:0;height:clamp(145px,22vw,235px);aspect-ratio:16/9}
+.bdPromotionCompact .bdPromotionImage img{object-fit:cover;object-position:center 43%}
+.bdPromotionCompact .bdPromotionCopy{display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:12px;padding:9px 11px;min-height:48px}
+.bdPromotionCompact .bdPromotionCopy>span{font-size:.53rem;white-space:nowrap}
+.bdPromotionCompact .bdPromotionCopy h2{font:500 .9rem/1.12 Georgia,serif;margin:0;flex:1}
+.bdPromotionCompact .bdPromotionCopy>a{font-size:.63rem;white-space:nowrap;margin:0;padding:0}
+.bdServicesCompact{width:min(1080px,calc(100% - 32px));padding:12px 0 18px}
+.bdServicesCompact .bdSectionHead{align-items:center;margin:0 0 9px}
+.bdServicesCompact .bdSectionHead h2{font-size:1.42rem;margin-top:4px}
+.bdServicesCompact .bdSectionHead .bdEyebrow{font-size:.53rem}
+.bdServicesCompact .bdAreaGrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.bdServicesCompact .bdAreaCard{min-height:76px;padding:10px;grid-template-columns:22px 1fr 14px;gap:7px;align-items:center}
+.bdServicesCompact .bdAreaCard h3{font-size:.88rem;margin:0 0 3px}
+.bdServicesCompact .bdAreaCard p{font-size:.61rem;line-height:1.3}
+.bdFooterCompact{padding:10px 0 14px}
+.bdFooterCompact>a{font-size:.63rem}
+@media(max-width:680px){
+ .bdPromotionCompact{width:calc(100% - 24px);margin:5px auto 10px}
+ .bdPromotionCompact .bdPromotionLead{align-items:center;flex-direction:row;gap:8px;margin-bottom:8px}
+ .bdPromotionCompact .bdPromotionLead h1{font-size:clamp(1.28rem,5.6vw,1.85rem);line-height:1.02}
+ .bdPromotionCompact .bdPromotionLead p{font-size:.58rem}
+ .bdPromotionCompact .bdPromotionLead>.bdPrimary{min-height:35px;padding:0 9px;font-size:.58rem;white-space:nowrap}
+ .bdPromotionCompact .bdPromotionGrid{grid-template-columns:1fr 1fr;gap:7px}
+ .bdPromotionCompact .bdPromotionCard,.bdPromotionCompact .bdPromotionPrimary{grid-template-columns:1fr;min-width:0}
+ .bdPromotionCompact .bdPromotionImage{height:clamp(105px,34vw,155px);aspect-ratio:1.55/1}
+ .bdPromotionCompact .bdPromotionCopy{display:grid;grid-template-columns:1fr auto;gap:5px 6px;padding:7px;min-height:65px;align-items:center}
+ .bdPromotionCompact .bdPromotionCopy>span{grid-column:1/-1;font-size:.47rem}
+ .bdPromotionCompact .bdPromotionCopy h2{font-size:.76rem;line-height:1.08}
+ .bdPromotionCompact .bdPromotionCopy>a{font-size:.56rem}
+ .bdServicesCompact{width:calc(100% - 24px);padding:9px 0 14px}
+ .bdServicesCompact .bdSectionHead h2{font-size:1.18rem}
+ .bdServicesCompact .bdAreaGrid{grid-template-columns:1fr;gap:5px}
+ .bdServicesCompact .bdAreaCard{min-height:54px;padding:8px 10px;grid-template-columns:22px 1fr 14px}
+ .bdServicesCompact .bdAreaCard h3{font-size:.82rem}
+ .bdServicesCompact .bdAreaCard p{font-size:.57rem}
+ .bdHomeCompact .bdFooter{width:calc(100% - 24px);padding-bottom:74px}
+ .bdHomeCompact .bdHeader nav{gap:8px}
+ .bdHomeCompact .bdHeaderCta{padding:8px 9px;font-size:.58rem!important}
+}
+@media(max-width:360px){
+ .bdPromotionCompact .bdPromotionLead{align-items:flex-start;flex-direction:column}
+ .bdPromotionCompact .bdPromotionLead>.bdPrimary{min-height:32px}
+ .bdPromotionCompact .bdPromotionImage{height:100px}
+ .bdPromotionCompact .bdPromotionCopy h2{font-size:.7rem}
+}
