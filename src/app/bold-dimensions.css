@@ -341,3 +341,8 @@
  .bdHomeFeatureCopy h1{font-size:2.25rem}
  .bdHomeSecondaryPromo strong{font-size:.7rem}
 }
+
+.bdActionToast{position:fixed;z-index:80;top:16px;right:18px;max-width:min(360px,calc(100vw - 32px));padding:11px 15px;border:1px solid #72d8f3;background:#0c2948;color:#eafaff;box-shadow:0 12px 34px rgba(0,0,0,.38);font-size:.72rem;font-weight:750;animation:bdToastIn .18s ease-out}
+@keyframes bdToastIn{from{opacity:0;transform:translateY(-7px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){.bdActionToast{animation:none}}
+@media(max-width:760px){.bdActionToast{top:10px;left:50%;right:auto;transform:translateX(-50%);width:max-content;max-width:calc(100vw - 28px);text-align:center}}
