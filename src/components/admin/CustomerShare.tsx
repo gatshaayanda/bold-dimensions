@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type Contact={id:number;name:string;phone:string};
 let nextContactId=1;
@@ -8,7 +8,8 @@ export default function CustomerShare(){
  const [contacts,setContacts]=useState<Contact[]>([{id:nextContactId++,name:"",phone:""}]);
  const [copied,setCopied]=useState(false);
  const [notice,setNotice]=useState("");
- const appUrl=typeof window!=="undefined"?window.location.origin:"";
+ const [appUrl,setAppUrl]=useState("");
+ useEffect(()=>setAppUrl(window.location.origin),[]);
  const message=useMemo(()=>`Hello! You’re invited to explore Bold Dimensions — solar water heating, air conditioning and agricultural machinery support. Open the link below in Google Chrome to review the services and send a request when convenient. After submitting, you can use “My requests” to follow updates.
 
 ${appUrl}
