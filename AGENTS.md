@@ -69,6 +69,7 @@ The customer and admin screens now use `serviceRequests`. Firestore rules must b
 - No `admins/{uid}` Firestore collection or manual role document is required. Firestore rules and UploadThing staff endpoints authorize the Firebase ID token's `admin` claim.
 - Keep `ADMIN_PASSWORD` server-only; never expose it through a `NEXT_PUBLIC_` variable, client bundle, Firestore document or log. Do not add a hard-coded password, email allowlist or inherited JTS UID.
 - Admin can review service requests, reveal private customer details only when needed, update status, prepare a quote and maintain private work notes.
+- Admin dashboard includes a customer-sharing panel: operators can enter one or more WhatsApp contacts and open a prefilled, manually reviewed WhatsApp invitation to the live app domain. Contact entries are transient UI state and are not saved as customer records.
 - Sensitive customer details are masked until an authorized operator reveals them.
 - Keep admin sections compact but separated enough to scan. Do not cram all operational details into one dense card.
 - Do not create fake analytics, inventory, staff assignment, financial reconciliation, customer chat or appointment availability features unless their workflows and data are implemented end to end.
@@ -228,3 +229,13 @@ Report code/commit, GitHub push, checks, visual QA, outstanding Firebase configu
 - Keep `docs/project-tracker.csv` current as the repository's spreadsheet-compatible delivery tracker. Update status, evidence and the next action when a workstream materially changes.
 - Record code commits, GitHub push, automated checks, Firebase rule publication, visual/customer/admin QA and Vercel deployment as separate facts. A pushed commit is not a deployment.
 - Do not mark visual QA complete without inspecting rendered mobile and desktop screenshots. Do not mark Firebase rules published without confirmation from the project owner or direct deployment evidence.
+
+
+## 13. Admin customer invitation and onboarding
+
+- The admin customer-sharing panel uses the current browser origin as the app URL, so invitations point to the domain actually being used rather than localhost or an unverified hard-coded host.
+- Admin can add/remove multiple contact rows and open a prefilled WhatsApp message per valid international-format number. WhatsApp opens a draft; the operator must review and send it.
+- Invitation directs customers to the public service hub to review services and submit their own service requests. The existing customer account uses Firebase anonymous identity and lists requests created in that browser session; customers may link Google to preserve access across devices.
+- Entered contact names and numbers are transient component state only. Do not persist them or create customer records without an explicit customer-management requirement and privacy/consent design.
+- A normal HTTPS web link cannot force Google Chrome to launch on every device. The invitation asks Android customers to choose Chrome when prompted; actual browser choice is controlled by the device and user.
+- Do not claim that sending an invitation creates an account, links existing request history, or pre-populates an order. The customer must open the app and submit their own request.
