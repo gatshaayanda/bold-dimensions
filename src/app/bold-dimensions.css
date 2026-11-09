@@ -349,12 +349,6 @@
 
 
 
-/* Customer account sharing stays attached to its existing, privately revealed request. */
-.bdAdminCustomerContact{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.bdAdminCustomerContact>div{display:grid;gap:4px}
-.bdAdminCustomerContact button{min-height:36px;padding:0 11px;font-size:.64rem}
-@media(max-width:560px){.bdAdminCustomerContact{align-items:flex-start;flex-direction:column}.bdAdminCustomerContact button{width:100%}}
-
 /* Compact admin customer-onboarding tool */
 .bdCustomerInvite{margin:14px 0 20px;border:1px solid #35547d;background:linear-gradient(110deg,#10294a,#0b1b34);}
 .bdCustomerInviteHead{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:13px 15px;}
