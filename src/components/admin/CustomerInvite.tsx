@@ -37,7 +37,7 @@ export default function CustomerInvite() {
     }
     const accountUrl = window.location.origin + "/account";
     const greeting = contact.name.trim() ? "Hi " + contact.name.trim() + "," : "Hello,";
-    const message = greeting + " welcome to Bold Dimensions. Open your customer account here to review your service requests, follow updates and place another order whenever convenient: " + accountUrl + "\n\nFor the best experience, open the link in Google Chrome.";
+    const message = greeting + " welcome to Bold Dimensions. Open your customer account here to review your service requests, follow updates and place another order whenever convenient: " + accountUrl + "\n\nIf WhatsApp opens the link inside its browser, tap ⋮ and choose Open in Chrome.";
     window.open("https://wa.me/" + number + "?text=" + encodeURIComponent(message), "_blank", "noopener,noreferrer");
     setError("");
     setNotice("WhatsApp opened for " + (contact.name.trim() || number) + ". Review the message and press Send.");
