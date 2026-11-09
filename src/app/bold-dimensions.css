@@ -354,3 +354,28 @@
 .bdAdminCustomerContact>div{display:grid;gap:4px}
 .bdAdminCustomerContact button{min-height:36px;padding:0 11px;font-size:.64rem}
 @media(max-width:560px){.bdAdminCustomerContact{align-items:flex-start;flex-direction:column}.bdAdminCustomerContact button{width:100%}}
+
+/* Compact admin customer-onboarding tool */
+.bdCustomerInvite{margin:14px 0 20px;border:1px solid #35547d;background:linear-gradient(110deg,#10294a,#0b1b34);}
+.bdCustomerInviteHead{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:13px 15px;}
+.bdCustomerInviteHead>div{display:grid;gap:4px;min-width:0;}
+.bdCustomerInviteHead>div>strong{font:500 1.08rem Georgia,serif;color:var(--bd-text);}
+.bdCustomerInviteHead>div>small{font-size:.66rem;color:var(--bd-muted);}
+.bdCustomerInviteHead .bdPrimary{min-height:37px;padding:0 12px;white-space:nowrap;font-size:.65rem;}
+.bdCustomerInviteBody{padding:0 15px 14px;border-top:1px solid #29466e;}
+.bdCustomerInviteIntro{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 0;color:var(--bd-muted);font-size:.66rem;}
+.bdCustomerInviteIntro>a{color:var(--bd-cyan);text-decoration:none;font-weight:800;}
+.bdCustomerInviteIntro>small{flex-basis:100%;color:#91a8c7;font-size:.62rem;}
+.bdInviteContact{display:grid;grid-template-columns:26px minmax(120px,.8fr) minmax(170px,1fr) auto auto;align-items:end;gap:9px;padding:10px 0;border-top:1px solid rgba(53,84,125,.55);}
+.bdInviteIndex{align-self:center;color:var(--bd-orange);font-size:.62rem;font-weight:800;}
+.bdInviteContact label{display:grid;gap:5px;color:#c8d8eb;font-size:.62rem;font-weight:750;}
+.bdInviteContact label span{display:flex;gap:6px;align-items:center;}
+.bdInviteContact label i{font-style:normal;color:#8199b8;font-weight:400;}
+.bdInviteContact input{width:100%;min-height:37px;padding:0 10px;border:1px solid #36557f;background:#07152d;color:white;font:inherit;font-size:.72rem;}
+.bdInviteContact .bdSecondary{min-height:37px;padding:0 12px;font-size:.63rem;white-space:nowrap;}
+.bdInviteContact .bdSecondary:disabled{opacity:.4;cursor:not-allowed;}
+.bdInviteRemove{width:30px;height:37px;border:1px solid #47678e;background:transparent;color:#ffc39e;font-size:1.1rem;cursor:pointer;}
+.bdInviteFooter{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-top:10px;}
+.bdInviteAdd{border:0;background:transparent;color:var(--bd-cyan);font-size:.66rem;font-weight:800;cursor:pointer;}
+.bdInviteFooter>small{color:#91a8c7;font-size:.6rem;}
+@media(max-width:650px){.bdCustomerInviteHead{align-items:flex-start;flex-direction:column;gap:10px}.bdInviteContact{grid-template-columns:24px minmax(0,1fr) auto;gap:8px}.bdInviteContact label:first-of-type{grid-column:2/4}.bdInviteContact label:nth-of-type(2){grid-column:2/3}.bdInviteContact .bdSecondary{grid-column:3;grid-row:2}.bdInviteRemove{grid-column:3;grid-row:1;justify-self:end}.bdInviteFooter{align-items:flex-start;flex-direction:column;gap:6px}}
