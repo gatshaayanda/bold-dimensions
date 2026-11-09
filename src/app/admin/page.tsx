@@ -29,9 +29,9 @@ function Dashboard(){
  const filtered=useMemo(()=>requests.filter(item=>filter==="All"?true:filter==="Closed"?["Completed","Cancelled"].includes(item.status):!["Completed","Cancelled"].includes(item.status)),[requests,filter]);
  function draftFor(item:ServiceRequest){return drafts[item.id]??{quoteAmount:item.quoteAmount===undefined?"":String(item.quoteAmount),quoteNote:item.quoteNote||"",internalNote:item.internalNote||"",scheduledFor:localDateTime(item.scheduledFor)}}
  function shareAccountLinkOnWhatsApp(item:ServiceRequest){
-  const digits=item.phone.replace(/\\D/g,"");
+  const digits=item.phone.replace(/\D/g,"");
   const normalized=digits.startsWith("267")?digits:digits.startsWith("0")?"267"+digits.slice(1):digits.length===8?"267"+digits:digits;
-  if(!/^\\d{8,15}$/.test(normalized)){setError("This customer's WhatsApp number is not valid. Reveal the customer details and check the saved number.");return}
+  if(!/^\d{8,15}$/.test(normalized)){setError("This customer's WhatsApp number is not valid. Reveal the customer details and check the saved number.");return}
   const accountUrl=window.location.origin+"/account";
   const message="Thanks for contacting Bold Dimensions. Review your service requests, follow updates and make another service request whenever convenient: "+accountUrl;
   window.open("https://wa.me/"+normalized+"?text="+encodeURIComponent(message),"_blank","noopener,noreferrer");
