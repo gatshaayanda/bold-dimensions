@@ -5,6 +5,7 @@ import AdminGate from "@/app/admin/admin-gate";
 import ConversationThread from "@/components/ConversationThread";
 import NotificationSettings from "@/components/NotificationSettings";
 import PromotionManager from "@/components/admin/PromotionManager";
+import CustomerInvite from "@/components/admin/CustomerInvite";
 import { auth } from "@/lib/firebase/client";
 import { subscribeToServiceRequests, updateServiceRequest, SERVICE_AREAS, type ServiceRequest, type ServiceRequestStatus } from "@/lib/bold-dimensions";
 
@@ -42,6 +43,7 @@ function Dashboard(){
  async function saveNotes(item:ServiceRequest){const draft=draftFor(item);setSaving(item.id);setError("");setNotice("");try{const amount=draft.quoteAmount.trim()===""?undefined:Number(draft.quoteAmount);if(amount!==undefined&&(!Number.isFinite(amount)||amount<0))throw new Error("Enter a valid quote amount.");await updateServiceRequest(item.id,{quoteAmount:amount,quoteNote:draft.quoteNote.trim(),internalNote:draft.internalNote.trim(),scheduledFor:draft.scheduledFor?new Date(draft.scheduledFor).toISOString():undefined});setNotice("Quote and work notes saved.")}catch(cause){setError(cause instanceof Error?cause.message:"Changes could not be saved. Check admin permissions.")}finally{setSaving("")}}
  return <main className="bdAdminMain">
   <section className="bdAdminWelcome"><div><span className="bdEyebrow">OPERATIONS OVERVIEW</span><h1>Service<br/><em>desk.</em></h1><p>Review incoming work, agree the next step and keep each customer request moving.</p></div><Link className="bdAdminPublicLink" href="/">View customer app ↗</Link></section>
+  <CustomerInvite/>
   <section className="bdAdminStats"><article><small>OPEN REQUESTS</small><strong>{openCount}</strong><span>Needs follow-up</span></article><article><small>NEW REQUESTS</small><strong>{newCount}</strong><span>Awaiting first review</span></article><article><small>COMPLETED</small><strong>{requests.filter(item=>item.status==="Completed").length}</strong><span>Marked complete</span></article><article><small>TOTAL RECORDS</small><strong>{requests.length}</strong><span>All submitted requests</span></article></section>
   <NotificationSettings/>
   <PromotionManager/>
