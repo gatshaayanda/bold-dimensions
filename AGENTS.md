@@ -231,11 +231,12 @@ Report code/commit, GitHub push, checks, visual QA, outstanding Firebase configu
 - Do not mark visual QA complete without inspecting rendered mobile and desktop screenshots. Do not mark Firebase rules published without confirmation from the project owner or direct deployment evidence.
 
 
-## 13. Admin customer invitation and onboarding
 
-- The admin customer-sharing panel uses the current browser origin as the app URL, so invitations point to the domain actually being used rather than localhost or an unverified hard-coded host.
-- Admin can add/remove multiple contact rows and open a prefilled WhatsApp message per valid international-format number. WhatsApp opens a draft; the operator must review and send it.
-- Invitation directs customers to the public service hub to review services and submit their own service requests. The existing customer account uses Firebase anonymous identity and lists requests created in that browser session; customers may link Google to preserve access across devices.
-- Entered contact names and numbers are transient component state only. Do not persist them or create customer records without an explicit customer-management requirement and privacy/consent design.
-- A normal HTTPS web link cannot force Google Chrome to launch on every device. The invitation asks Android customers to choose Chrome when prompted; actual browser choice is controlled by the device and user.
-- Do not claim that sending an invitation creates an account, links existing request history, or pre-populates an order. The customer must open the app and submit their own request.
+## 13. Customer account sharing from admin requests
+
+- Match the Big Brothers admin workflow: account sharing is an action on an existing customer request, not a separate customer-contact entry form.
+- Customer phone numbers remain masked until staff deliberately reveals that request's customer details. Show the WhatsApp account-link action alongside that revealed phone number and use the phone already saved on the request; do not ask staff to re-enter contacts.
+- Normalize Botswana numbers for WhatsApp: preserve numbers already beginning 267, convert leading 0 to 267, and prefix 8-digit local numbers with 267. Reject numbers outside 8–15 digits after normalization.
+- Open a WhatsApp draft addressed to that customer with the current app origin plus /account and a concise Bold Dimensions message. The operator reviews and sends the draft; never claim delivery.
+- Keep the existing account route and authentication model. The account page displays requests associated with the customer's current browser guest session; Google linking is the existing way to retain access across devices. Do not claim a generic account link automatically transfers or exposes another device's guest-session history.
+- Do not add a standalone contact manager, contact persistence, bulk invite UI, forced Chrome behavior, or duplicate account creation for this flow.
