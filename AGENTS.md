@@ -232,11 +232,10 @@ Report code/commit, GitHub push, checks, visual QA, outstanding Firebase configu
 
 
 
-## 13. Customer account sharing from admin requests
+## 13. Admin customer WhatsApp onboarding
 
-- Match the Big Brothers admin workflow: account sharing is an action on an existing customer request, not a separate customer-contact entry form.
-- Customer phone numbers remain masked until staff deliberately reveals that request's customer details. Show the WhatsApp account-link action alongside that revealed phone number and use the phone already saved on the request; do not ask staff to re-enter contacts.
-- Normalize Botswana numbers for WhatsApp: preserve numbers already beginning 267, convert leading 0 to 267, and prefix 8-digit local numbers with 267. Reject numbers outside 8–15 digits after normalization.
-- Open a WhatsApp draft addressed to that customer with the current app origin plus /account and a concise Bold Dimensions message. The operator reviews and sends the draft; never claim delivery.
-- Keep the existing account route and authentication model. The account page displays requests associated with the customer's current browser guest session; Google linking is the existing way to retain access across devices. Do not claim a generic account link automatically transfers or exposes another device's guest-session history.
-- Do not add a standalone contact manager, contact persistence, bulk invite UI, forced Chrome behavior, or duplicate account creation for this flow.
+- The admin dashboard has a compact, collapsible **Share with customer** tool. Staff can add one or multiple contact rows with an optional name and WhatsApp number; no customer contact data is persisted by this utility.
+- Each contact has its own WhatsApp action. Normalize Botswana numbers by preserving 267, converting a leading 0 to 267, or prefixing 8-digit local numbers with 267; reject invalid 8–15 digit normalized values.
+- Open a prefilled WhatsApp message to the entered contact with the current app origin plus /account. The message explains that customers can review their service requests, follow updates and place another service order, and asks them to open the link in Google Chrome.
+- WhatsApp is only prepared for review; the admin must press Send. Do not claim the message was delivered or that Chrome can be forced remotely.
+- The account route uses the customer's own browser guest session. Existing history is available on the device/session where it was created; customers can link Google to retain access across devices. A generic account URL does not transfer another device's guest history.
