@@ -252,3 +252,14 @@ Report code/commit, GitHub push, checks, visual QA, outstanding Firebase configu
 - Customer request forms show the selected service's current active price and persist a snapshot on submission. Existing requests retain their original snapshot when catalogue prices later change.
 - Prices are provisional starter figures, not an owner-approved tariff or final quote. Public comparables informed some values (Botswana geyser labour and AC installation); unsupported categories use clearly documented provisional internal estimates. The two parts-enquiry prices are identification/sourcing service fees only; the physical spare part is priced separately after identification.
 - Before public launch, the owner must confirm labour costs, travel zones, parts markups, VAT/tax treatment and margins, then adjust the catalogue in admin. Do not imply the seeded amount includes parts or travel unless its description explicitly says so.
+
+
+## 15. Customer service workspace — 2026-11-10
+
+- `/account` is a compact task-first workspace with Overview, My services, Receipts and Messages destinations. Keep the current Firebase auth, invitation claim flow, customer UID-scoped request subscription and Google account-linking behavior intact.
+- Overview shows real counts derived from the customer's own service requests, the latest request state and a concise next-step explanation. Never invent unread-message counts, service completion percentages, staff assignments or customer equipment profiles.
+- Service history links to the existing owner-authorized request detail and private conversation. Receipts are listed only when the request contains a receipt number and a positive recorded payment; continue to use the existing secure `/orders/[id]/receipt` route.
+- Guest accounts must be described accurately as device/session-linked until Google is linked. Do not show a “Google connected” state while simultaneously claiming the history is only a guest session.
+- Messages remain attached to each service request; the account Messages destination links into the existing private thread rather than duplicating message storage or weakening Firestore access.
+- Do not add loyalty points, streaks, artificial progress, generic gamification or speculative saved-equipment features. Reorder shortcuts must reuse verified customer data and must not claim to prefill a form unless the order route actually supports it.
+- Visual QA must cover phone and desktop, all four account destinations, empty/loading/error states, guest vs Google-linked copy, receipt visibility, private conversation links, invitation claim, and existing account dock/navigation.
