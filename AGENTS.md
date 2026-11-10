@@ -263,3 +263,15 @@ Report code/commit, GitHub push, checks, visual QA, outstanding Firebase configu
 - Messages remain attached to each service request; the account Messages destination links into the existing private thread rather than duplicating message storage or weakening Firestore access.
 - Do not add loyalty points, streaks, artificial progress, generic gamification or speculative saved-equipment features. Reorder shortcuts must reuse verified customer data and must not claim to prefill a form unless the order route actually supports it.
 - Visual QA must cover phone and desktop, all four account destinations, empty/loading/error states, guest vs Google-linked copy, receipt visibility, private conversation links, invitation claim, and existing account dock/navigation.
+
+
+## 16. Customer workspace experience and service pricing — 2026-11-10
+
+- The customer account is the customer-facing counterpart to the Iteration 13 owner workspace: a personal greeting/date, compact actionable overview, local weather, service navigation, request history, receipts and conversations. Keep the design task-first; do not copy owner-only controls, demo records or local-storage business data.
+- Weather uses Open-Meteo current conditions, defaults to Gaborone, and only accesses precise browser location after the customer explicitly selects “Use my location”. Weather is informational only and must not imply confirmed technician availability, safe roof access, or appointment scheduling. Provide loading, error and refresh states.
+- The account greeting may use the customer's own submitted name or Firebase display name. Do not infer a name from unrelated account data.
+- Customer quick actions must lead to real request, service-history and receipt destinations. Do not add fake analytics, loyalty scores, artificial streaks or unread counts unsupported by persisted data.
+- SEEDED_SERVICE_PRICES in src/lib/bold-dimensions-pricing.ts is the 19-entry starter catalogue. If Firestore servicePricing is empty or unavailable, customer order choices must continue to show the built-in prices, and admin must show the same entries with a clear warning that persistent CRUD requires the published servicePricing rules.
+- Admin Service price list must be visible near the top of the operations dashboard, not buried after promotional content. It supports create, edit, active/hidden state and delete. Never silently overwrite an existing numeric price during seed migration.
+- Firestore servicePricing must allow public reads and admin-claim-only create/update/delete with field validation. Verify the live rules are published to project the-wall-ab746; a code push alone does not publish Firestore rules.
+- The customer request form displays the selected service's current active starting price and stores a price snapshot on submission. A starting price is guidance, not a final quote or payment request.
