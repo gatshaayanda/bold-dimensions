@@ -546,3 +546,19 @@
  .bdWorkspaceQuickActions>a>span,.bdWorkspaceQuickActions>button>span{grid-row:span 2}
  .bdWorkspaceQuickActions small{grid-column:2}
 }
+
+
+/* Admin workspace: compact destinations with clear separation and mobile-first navigation */
+.bdAdminWorkspace{width:min(1160px,calc(100% - 36px));margin:0 auto;padding:24px 0 64px}
+.bdAdminTopbar{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:8px 0 20px;border-bottom:1px solid var(--bd-line)}
+.bdAdminTopbar h1{margin:7px 0 5px;font:500 clamp(1.9rem,4vw,2.8rem)/1 Georgia,serif;letter-spacing:-.04em}.bdAdminTopbar h1 em{color:var(--bd-cyan);font-style:italic}.bdAdminTopbar p{margin:0;color:var(--bd-muted);font-size:.72rem}
+.bdAdminNav{position:sticky;top:0;z-index:15;display:flex;gap:5px;overflow-x:auto;padding:10px 0;background:rgba(7,21,45,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--bd-line);scrollbar-width:thin}
+.bdAdminNav button{flex:1 0 auto;min-height:40px;padding:0 17px;border:1px solid transparent;background:transparent;color:var(--bd-muted);font:700 .72rem Inter,Arial,sans-serif;cursor:pointer}.bdAdminNav button.active{border-color:var(--bd-cyan);background:rgba(139,220,241,.1);color:var(--bd-text)}
+.bdAdminDestination,.bdAdminToday{padding-top:20px}.bdAdminDestination>.bdAdminSectionHead,.bdAdminToday>.bdAdminSectionHead{margin-bottom:14px}.bdAdminDestination .bdAdminSectionHead h2,.bdAdminToday .bdAdminSectionHead h2{margin:5px 0 0;font:500 clamp(1.55rem,3vw,2.15rem)/1 Georgia,serif}
+.bdAdminLiveCount{color:var(--bd-muted);font-size:.7rem}.bdAdminStatsCompact{margin:12px 0 16px}.bdAdminQuickLinks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:0 0 20px}
+.bdAdminQuickLinks button{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px;padding:10px 13px;border:1px solid var(--bd-line);background:#0b1c36;color:var(--bd-text);font-size:.72rem;text-align:left;cursor:pointer}.bdAdminQuickLinks b{color:var(--bd-cyan)}
+.bdAdminSearch{display:grid;gap:6px;max-width:620px;margin:0 0 14px;color:var(--bd-muted);font-size:.68rem;font-weight:700}.bdAdminSearch input{width:100%;min-height:43px;padding:10px 12px;border:1px solid var(--bd-line);border-radius:0;background:#091a32;color:var(--bd-text);font:inherit}.bdAdminSearch input::placeholder{color:#9aadc6}
+.bdAdminQueueWorkspace{margin-top:12px}.bdAdminFinanceStats article strong{font-size:clamp(1.15rem,2.8vw,1.65rem)}.bdAdminSectionNote{margin:0 0 16px;color:var(--bd-muted);font-size:.7rem;line-height:1.6}
+.bdAdminSettingsNote{margin-top:18px;padding:15px;border:1px solid var(--bd-line);background:#0b1c36}.bdAdminSettingsNote strong{font-size:.78rem}.bdAdminSettingsNote p{margin:6px 0 0;color:var(--bd-muted);font-size:.72rem;line-height:1.6}
+.bdAdminDestination>.bdPricingManager,.bdAdminDestination>.bdPromotionManager{margin-top:18px}.bdAdminDestination .bdAdminServiceScope{margin-top:20px}
+@media(max-width:680px){.bdAdminWorkspace{width:calc(100% - 24px);padding-top:16px}.bdAdminTopbar{align-items:flex-start;padding-bottom:14px}.bdAdminTopbar h1{font-size:2rem}.bdAdminNav{margin:0 -12px;padding:8px 12px}.bdAdminNav button{min-height:42px;padding:0 14px}.bdAdminQuickLinks{grid-template-columns:1fr;gap:7px}.bdAdminQuickLinks button{min-height:44px}.bdAdminDestination,.bdAdminToday{padding-top:15px}.bdAdminFinanceStats{grid-template-columns:repeat(2,minmax(0,1fr))}.bdAdminDestination>.bdAdminSectionHead,.bdAdminToday>.bdAdminSectionHead{align-items:flex-start}}
