@@ -404,3 +404,43 @@
 .bdAdminPaymentEditor>small{color:var(--bd-muted);font-size:.62rem;line-height:1.45}
 .bdAdminPaymentEditor>a{color:var(--bd-cyan);font-size:.68rem;text-decoration:none;font-weight:800}
 @media(max-width:650px){.bdPricingFields,.bdAdminPaymentGrid{grid-template-columns:1fr}.bdPricingFields .wide{grid-column:auto}.bdPricingList article{align-items:flex-start}.bdPricingActions{flex-direction:column}.bdPricingActions .bdInviteRemove{width:32px}}
+
+/* Branded, account-authorized customer and admin receipt */
+.bdReceiptPage{padding-bottom:40px}
+.bdReceiptLoading{width:min(760px,calc(100% - 32px));margin:35px auto;padding:24px;border:1px solid var(--bd-line);background:#0d2241;color:var(--bd-muted);font-size:.8rem;line-height:1.6}
+.bdReceiptLoading h1{margin:0 0 8px;color:var(--bd-text);font:500 2rem Georgia,serif}
+.bdReceiptSheet{width:min(760px,calc(100% - 32px));margin:28px auto;padding:30px;background:#fff;color:#17243a;border:1px solid #d7dfeb;box-shadow:0 18px 55px rgba(0,0,0,.22)}
+.bdReceiptTop{display:flex;align-items:center;justify-content:space-between;gap:18px;padding-bottom:20px;border-bottom:2px solid #17243a}
+.bdReceiptBrand{display:flex;align-items:center;gap:12px;min-width:0}
+.bdReceiptBrand img{width:64px;height:64px;object-fit:contain}
+.bdReceiptBrand>div{display:grid;gap:5px}
+.bdReceiptBrand strong{font-size:.9rem;letter-spacing:.13em}
+.bdReceiptBrand small{font-size:.55rem;letter-spacing:.1em;color:#52647d}
+.bdReceiptLabel{padding:8px 10px;background:#102b4d;color:white;font-size:.65rem;font-weight:900;letter-spacing:.12em;white-space:nowrap}
+.bdReceiptMeta{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:18px 0;border-bottom:1px solid #d7dfeb}
+.bdReceiptMeta>div,.bdReceiptParties>div,.bdReceiptPayment>div{display:grid;gap:5px;min-width:0}
+.bdReceiptSheet small{font-size:.55rem;font-weight:850;letter-spacing:.1em;color:#60728a}
+.bdReceiptMeta strong,.bdReceiptParties strong,.bdReceiptPayment strong{font-size:.72rem;overflow-wrap:anywhere}
+.bdReceiptParties{display:grid;grid-template-columns:1fr 1fr;gap:22px;padding:18px 0;border-bottom:1px solid #d7dfeb}
+.bdReceiptParties span{font-size:.68rem;color:#52647d;overflow-wrap:anywhere}
+.bdReceiptTable{display:grid;gap:0;padding:12px 0;border-bottom:1px solid #d7dfeb}
+.bdReceiptTable>div{display:flex;justify-content:space-between;gap:12px;padding:9px 0;font-size:.76rem}
+.bdReceiptTable>div:last-child{margin-top:4px;padding-top:13px;border-top:1px solid #aab7c8;font-weight:900}
+.bdReceiptPayment{display:flex;gap:25px;flex-wrap:wrap;padding:16px 0}
+.bdReceiptFootnote{margin:8px 0 0;padding:12px;background:#f0f4f8;color:#53647a;font-size:.62rem;line-height:1.55}
+.bdReceiptActions{display:flex;align-items:center;gap:14px;margin-top:18px}
+.bdReceiptActions>a{color:#244d78;font-size:.7rem;font-weight:800;text-decoration:none}
+.bdReceiptAvailable{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:16px 0;padding:13px;border:1px solid #48618a;background:#0a1930}
+.bdReceiptAvailable>div{display:grid;gap:4px}
+.bdReceiptAvailable>div>strong{font:500 1rem Georgia,serif}
+.bdReceiptAvailable small{color:var(--bd-muted);font-size:.62rem}
+.bdReceiptAvailable .bdPrimary{flex-shrink:0}
+@media(max-width:560px){.bdReceiptSheet{padding:18px}.bdReceiptTop{align-items:flex-start;flex-direction:column}.bdReceiptMeta{grid-template-columns:1fr 1fr}.bdReceiptParties{gap:12px}.bdReceiptAvailable{align-items:flex-start;flex-direction:column}}
+@media print{
+ @page{size:A4;margin:14mm}
+ body{background:#fff!important}
+ .bdReceiptPage{min-height:0!important;padding:0!important;background:#fff!important;color:#17243a!important}
+ .bdReceiptPage .bdUtilityHeader,.bdReceiptPage .bdUtilityFooter{display:none!important}
+ .bdReceiptSheet{width:100%;max-width:none;margin:0;padding:0;border:0;box-shadow:none}
+ .bdReceiptActions{display:none!important}
+}
