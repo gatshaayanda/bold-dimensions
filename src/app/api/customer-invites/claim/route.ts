@@ -14,6 +14,7 @@ function adminApp() {
   return initializeApp({ credential: cert(account as Parameters<typeof cert>[0]) });
 }
 function digest(token: string) { return createHash("sha256").update(token).digest("hex"); }
+function normalizePhone(value: string) { const digits=value.replace(/\\D/g, ""); return digits.startsWith("267")?digits:digits.startsWith("0")?"267"+digits.slice(1):digits.length===8?"267"+digits:digits; }
 
 export async function POST(request: Request) {
   try {
@@ -38,7 +39,7 @@ export async function POST(request: Request) {
       const conversationSnaps = await Promise.all(conversationRefs.map((ref: FirebaseFirestore.DocumentReference) => transaction.get(ref)));
       let linked = 0;
       requestSnaps.forEach((snap: FirebaseFirestore.DocumentSnapshot, index: number) => {
-        if (snap.exists && String(snap.get("phone") || "").replace(/\\D/g, "").endsWith(String(invite.phone).slice(-8))) {
+        if (snap.exists && normalizePhone(String(snap.get("phone") || "")) === String(invite.phone)) {
           transaction.update(requestRefs[index], { customerId: decoded.uid, accountLinkedAt: new Date().toISOString() });
           if (conversationSnaps[index].exists) transaction.update(conversationRefs[index], { customerId: decoded.uid });
           linked++;
