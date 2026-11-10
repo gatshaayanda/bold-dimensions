@@ -20,7 +20,7 @@ service cloud.firestore {
       return data.keys().hasOnly([
           'customerId', 'customerName', 'phone', 'email', 'areaId', 'serviceType',
           'equipment', 'makeModel', 'location', 'description', 'urgency',
-          'preferredContact', 'status', 'createdAt', 'updatedAt'
+          'preferredContact', 'status', 'createdAt', 'updatedAt', 'pricingSnapshot'
         ])
         && data.keys().hasAll([
           'customerId', 'customerName', 'phone', 'areaId', 'serviceType',
@@ -62,7 +62,7 @@ service cloud.firestore {
     function validServiceRequestStaffUpdate() {
       let data = request.resource.data;
       return data.diff(resource.data).affectedKeys().hasOnly([
-          'status', 'scheduledFor', 'quoteAmount', 'quoteNote', 'internalNote', 'updatedAt'
+          'status', 'scheduledFor', 'quoteAmount', 'quoteNote', 'internalNote', 'agreedAmount', 'amountPaid', 'paymentStatus', 'paymentMethod', 'paymentReference', 'receiptNumber', 'receiptIssuedAt', 'updatedAt'
         ])
         && data.customerId == resource.data.customerId
         && data.status in [
@@ -181,6 +181,23 @@ service cloud.firestore {
           || (signedIn() && get(/databases/$(database)/documents/conversations/$(conversationId)).data.customerId == request.auth.uid);
         allow update, delete: if false;
       }
+    }
+
+
+    match /servicePricing/{priceId} {
+      allow read: if true;
+      allow create, update: if isAdmin()
+        && request.resource.data.keys().hasOnly(['id', 'areaId', 'serviceType', 'startingPrice', 'priceMode', 'unit', 'description', 'active', 'sortOrder', 'sourceNote', 'updatedAt'])
+        && request.resource.data.areaId in ['solar-water-heating', 'air-conditioning', 'agricultural-machinery']
+        && request.resource.data.serviceType is string && request.resource.data.serviceType.size() > 0 && request.resource.data.serviceType.size() <= 100
+        && request.resource.data.priceMode in ['from', 'quote']
+        && (request.resource.data.priceMode == 'quote' ? request.resource.data.startingPrice == null : (request.resource.data.startingPrice is number && request.resource.data.startingPrice >= 0))
+        && request.resource.data.unit is string && request.resource.data.unit.size() <= 100
+        && request.resource.data.description is string && request.resource.data.description.size() <= 500
+        && request.resource.data.active is bool
+        && request.resource.data.sortOrder is number && request.resource.data.sortOrder >= 1 && request.resource.data.sortOrder <= 500
+        && request.resource.data.sourceNote is string && request.resource.data.sourceNote.size() <= 1000;
+      allow delete: if isAdmin();
     }
 
     match /servicePromotions/{promotionId} {
