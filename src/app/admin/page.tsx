@@ -53,7 +53,7 @@ function Dashboard(){
     </article>;
    })}</div>}
   </section>
-  <section className="bdAdminSection bdAdminServiceScope"><div className="bdAdminSectionHead"><div><span className="bdEyebrow">SERVICE SCOPE</span><h2>What we handle</h2></div><Link href="/services">Public service view ↗</Link></div><div className="bdAdminScopeGrid">{SERVICE_AREAS.map((area,index)=><article key={area.id}><span>0{index+1}</span><strong>{area.name}</strong><small>{area.options.join(" · ")}</small></article>)}</div><p>Keep customer promises within confirmed company capability. Pricing, stock and appointment availability are not published in this workspace until the business supplies those details.</p></section>
+  <section className="bdAdminSection bdAdminServiceScope"><div className="bdAdminSectionHead"><div><span className="bdEyebrow">SERVICE SCOPE</span><h2>What we handle</h2></div><Link href="/services">Public service view ↗</Link></div><div className="bdAdminScopeGrid">{SERVICE_AREAS.map((area,index)=><article key={area.id}><span>0{index+1}</span><strong>{area.name}</strong><small>{area.options.join(" · ")}</small></article>)}</div><p>Keep customer promises within confirmed company capability. Starting prices are editable guides; confirm scope, stock, travel and the final agreed price before accepting work.</p></section>
  </main>;
 }
 export default function AdminPage(){return <AdminGate><Dashboard/></AdminGate>}
