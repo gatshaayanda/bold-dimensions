@@ -85,7 +85,7 @@ export default function AccountPage(){
  const receipts=useMemo(()=>requests.filter(item=>Boolean(item.receiptNumber)&&Number(item.amountPaid||0)>0),[requests]);
  const needingCustomer=useMemo(()=>requests.filter(item=>["Quote prepared","Awaiting customer"].includes(item.status)),[requests]);
  const latest=active[0]||requests[0];
- const customerName=(latest?.customerName||user?.displayName||"").trim().split(/\\s+/)[0];
+ const customerName=(latest?.customerName||user?.displayName||"").trim().split(/\s+/)[0];
  const hour=Number(new Intl.DateTimeFormat("en-GB",{timeZone:"Africa/Gaborone",hour:"2-digit",hourCycle:"h23"}).format(new Date()));
  const greeting=hour<12?"Good morning":hour<17?"Good afternoon":"Good evening";
  const today=new Intl.DateTimeFormat("en-GB",{timeZone:"Africa/Gaborone",weekday:"long",day:"numeric",month:"long"}).format(new Date());
