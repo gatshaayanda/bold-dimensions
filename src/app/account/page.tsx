@@ -18,11 +18,38 @@ export default function AccountPage(){
  const [busy,setBusy]=useState(false);
  const [inviteToken,setInviteToken]=useState("");
  const claimStarted=useRef(false);
- useEffect(()=>onAuthStateChanged(auth,async next=>{
-  if(next){setUser(next);return}
-  try{const guest=(await signInAnonymously(auth)).user;setUser(guest)}
-  catch{setError("We couldn’t open your private request history. Check your connection and refresh.");setLoading(false)}
- }),[]);
+ useEffect(()=>{
+  const token=new URLSearchParams(window.location.search).get("invite");
+  if(token)setInviteToken(token);
+  return onAuthStateChanged(auth,async next=>{
+   if(next){setUser(next);return}
+   try{const guest=(await signInAnonymously(auth)).user;setUser(guest)}
+   catch{setError("We couldn’t open your private request history. Check your connection and refresh.");setLoading(false)}
+  });
+ },[]);
+ useEffect(()=>{
+  if(!user||!inviteToken||claimStarted.current)return;
+  claimStarted.current=true;
+  let active=true;
+  void (async()=>{
+   setBusy(true);setError("");setMessage("Connecting this invitation to your customer account…");
+   try{
+    const token=await user.getIdToken();
+    const response=await fetch("/api/customer-invites/claim",{method:"POST",headers:{Authorization:"Bearer "+token,"Content-Type":"application/json"},body:JSON.stringify({token:inviteToken})});
+    const result=await response.json() as {success?:boolean;linkedRequests?:number;error?:string};
+    if(!response.ok)throw new Error(result.error||"The invitation could not be connected.");
+    if(!active)return;
+    setMessage(result.linkedRequests?result.linkedRequests+" previous service request(s) are now connected to this customer account.":"Your customer account is ready. You can now place and track service requests here.");
+    setInviteToken("");
+    window.history.replaceState({}, "", "/account");
+   }catch(cause){
+    if(!active)return;
+    setError(cause instanceof Error?cause.message:"The invitation could not be connected.");
+    claimStarted.current=false;
+   }finally{if(active)setBusy(false)}
+  })();
+  return()=>{active=false};
+ },[user,inviteToken]);
  useEffect(()=>{
   if(!user)return;
   setLoading(true);
