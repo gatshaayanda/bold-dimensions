@@ -8,7 +8,19 @@ import BdMobileDock from "@/components/bd-mobile-dock";
 import NotificationSettings from "@/components/NotificationSettings";
 import { subscribeToCustomerServiceRequests, SERVICE_AREAS, type ServiceRequest } from "@/lib/bold-dimensions";
 
+type AccountTab = "overview" | "services" | "receipts" | "messages";
 function dateText(value:string){const date=new Date(value);return Number.isFinite(date.getTime())?new Intl.DateTimeFormat("en-GB",{timeZone:"Africa/Gaborone",dateStyle:"medium",timeStyle:"short"}).format(date):value}
+function money(value:number){return "P"+value.toLocaleString("en-BW",{minimumFractionDigits:2,maximumFractionDigits:2})}
+function nextStep(item:ServiceRequest){
+ if(item.status==="New")return "The team will review your request";
+ if(item.status==="Reviewing")return "The team is checking the service details";
+ if(item.status==="Quote prepared")return "Review the quote and reply to the team";
+ if(item.status==="Awaiting customer")return "The team needs your response";
+ if(item.status==="Scheduled")return "Your service time has been agreed";
+ if(item.status==="In progress")return "The service work is in progress";
+ if(item.status==="Completed")return "This service request is complete";
+ return "This request is closed";
+}
 export default function AccountPage(){
  const [user,setUser]=useState<User|null>(null);
  const [requests,setRequests]=useState<ServiceRequest[]>([]);
@@ -17,6 +29,7 @@ export default function AccountPage(){
  const [message,setMessage]=useState("");
  const [busy,setBusy]=useState(false);
  const [inviteToken,setInviteToken]=useState("");
+ const [tab,setTab]=useState<AccountTab>("overview");
  const claimStarted=useRef(false);
  useEffect(()=>{
   const token=new URLSearchParams(window.location.search).get("invite");
@@ -58,20 +71,51 @@ export default function AccountPage(){
  async function connectGoogle(){
   if(!user)return;
   setBusy(true);setError("");setMessage("");
-  try{const provider=new GoogleAuthProvider();provider.setCustomParameters({prompt:"select_account"});if(user.isAnonymous){const linked=await linkWithPopup(user,provider);setUser(linked.user);setMessage("Google is now linked to this request history. Use the same account when you return.")}else setMessage("Your Google account is already connected.")}
-  catch(cause){const code=typeof cause==="object"&&cause&&"code" in cause?String((cause as {code?:unknown}).code):"";setError(code==="auth/credential-already-in-use"?"That Google account is already linked to another account. Your current requests have not been moved.":code==="auth/popup-closed-by-user"?"Google connection was cancelled. Your request history is unchanged.":"Google could not be connected. Your current request history is unchanged.")}
-  finally{setBusy(false)}
+  try{
+   const provider=new GoogleAuthProvider();provider.setCustomParameters({prompt:"select_account"});
+   if(user.isAnonymous){const linked=await linkWithPopup(user,provider);setUser(linked.user);setMessage("Google is now linked to this request history. Use the same account when you return.")}
+   else setMessage("Your Google account is already connected.");
+  }catch(cause){
+   const code=typeof cause==="object"&&cause&&"code" in cause?String((cause as {code?:unknown}).code):"";
+   setError(code==="auth/credential-already-in-use"?"That Google account is already linked to another account. Your current requests have not been moved.":code==="auth/popup-closed-by-user"?"Google connection was cancelled. Your request history is unchanged.":"Google could not be connected. Your current request history is unchanged.");
+  }finally{setBusy(false)}
  }
  const active=useMemo(()=>requests.filter(item=>!["Completed","Cancelled"].includes(item.status)),[requests]);
+ const receipts=useMemo(()=>requests.filter(item=>Boolean(item.receiptNumber)&&Number(item.amountPaid||0)>0),[requests]);
+ const needingCustomer=useMemo(()=>requests.filter(item=>["Quote prepared","Awaiting customer"].includes(item.status)),[requests]);
+ const latest=active[0]||requests[0];
+ const tabs:{id:AccountTab;label:string;count?:number}[]=[
+  {id:"overview",label:"Overview"},
+  {id:"services",label:"My services",count:requests.length},
+  {id:"receipts",label:"Receipts",count:receipts.length},
+  {id:"messages",label:"Messages",count:requests.length}
+ ];
+ function requestRow(item:ServiceRequest){
+  const area=SERVICE_AREAS.find(value=>value.id===item.areaId);
+  return <article className="bdWorkspaceRequest" key={item.id}>
+   <div className="bdWorkspaceRequestTop"><span>#{item.id.slice(0,8).toUpperCase()}</span><b className={"bdStatus bdStatus-"+item.status.toLowerCase().replace(/[^a-z]+/g,"-")}>{item.status}</b></div>
+   <div className="bdWorkspaceRequestMain"><div><h3>{item.serviceType}</h3><p>{area?.name||"Service request"} · {item.location}</p><small>Submitted {dateText(item.createdAt)}</small></div><Link href={"/orders/"+item.id}>Open ↗</Link></div>
+   <p className="bdWorkspaceNext">{nextStep(item)}</p>
+   <div className="bdWorkspaceRequestActions"><Link href={"/orders/"+item.id+"#conversation"}>View messages</Link>{item.receiptNumber&&Number(item.amountPaid||0)>0&&<Link href={"/orders/"+item.id+"/receipt"}>Receipt ↗</Link>}</div>
+  </article>;
+ }
  return <main className="bdUtility bdAccountPage">
-  <header className="bdUtilityHeader"><Link href="/" className="bdBrand"><Image src="/brand/bold-dimensions-logo.jpg" alt="" width={42} height={42}/><span><strong>BOLD DIMENSIONS</strong><small>MY REQUESTS</small></span></Link><Link href="/order" className="bdHeaderCta">New request ↗</Link></header>
-  <section className="bdAccountIntro"><div><span className="bdEyebrow">CUSTOMER WORKSPACE</span><h1>Your service<br/><em>requests.</em></h1><p>Review your requests, follow progress and place your next service order from one account.</p></div><div className="bdAccountCounts"><strong>{active.length}</strong><span>Active requests</span><i/><strong>{requests.length}</strong><span>Total requests</span></div></section>
+  <header className="bdUtilityHeader"><Link href="/" className="bdBrand"><Image src="/brand/bold-dimensions-logo.jpg" alt="" width={42} height={42}/><span><strong>BOLD DIMENSIONS</strong><small>MY ACCOUNT</small></span></Link><Link href="/order" className="bdHeaderCta">New service request ↗</Link></header>
+  <section className="bdWorkspaceHeading"><div><span className="bdEyebrow">CUSTOMER WORKSPACE</span><h1>Your services.</h1><p>Requests, updates and payment records in one place.</p></div><span className="bdWorkspaceAccountState">{user?.isAnonymous?"Guest session":"Account connected"}</span></section>
   {(error||message)&&<p className={error?"bdFormError":"bdInlineSuccess"} role="status">{error||message}</p>}
-  <section className="bdRequestHistory"><div className="bdSectionHead"><div><span className="bdEyebrow">YOUR HISTORY</span><h2>Recent requests</h2></div><span>{requests.length} total</span></div>
-   {loading?<p className="bdLoading">Loading your private requests…</p>:requests.length===0?<div className="bdEmpty"><h3>No requests yet.</h3><p>When you send a service request, its status and updates will appear here.</p><Link className="bdPrimary" href="/order">Make your first request ↗</Link></div>:<div className="bdHistoryList">{requests.map(item=>{const area=SERVICE_AREAS.find(value=>value.id===item.areaId);return <article className="bdHistoryRow" key={item.id}><div className="bdHistoryTop"><span>#{item.id.slice(0,8).toUpperCase()}</span><b className={"bdStatus bdStatus-"+item.status.toLowerCase().replace(/[^a-z]+/g,"-")}>{item.status}</b></div><h3>{item.serviceType}</h3><p>{area?.name||"Service request"} · {item.location}</p><div className="bdHistoryMeta"><small>Submitted {dateText(item.createdAt)}</small><Link href={"/orders/"+item.id}>View request ↗</Link></div></article>})}</div>}
-  </section>
-  <NotificationSettings/>
-  <section className="bdAccountIdentity"><div><span className="bdEyebrow">KEEP YOUR HISTORY</span><h2>Save access across devices.</h2><p>Your request history is currently linked to this device’s guest session. Connect Google if you want to return on another device.</p></div><button type="button" className="bdSecondary" disabled={busy||!user||!user.isAnonymous} onClick={()=>void connectGoogle()}>{busy?"Connecting…":user?.isAnonymous?"Connect Google ↗":"Google connected"}</button></section>
+  <nav className="bdWorkspaceTabs" aria-label="Customer account sections">{tabs.map(item=><button key={item.id} type="button" className={tab===item.id?"active":""} aria-current={tab===item.id?"page":undefined} onClick={()=>setTab(item.id)}>{item.label}{item.count!==undefined&&<span>{item.count}</span>}</button>)}</nav>
+  {loading?<section className="bdWorkspacePanel"><p className="bdLoading">Loading your private service records…</p></section>:<>
+   {tab==="overview"&&<div className="bdWorkspaceContent">
+    <div className="bdWorkspaceMetrics"><div><strong>{active.length}</strong><span>Active services</span></div><div><strong>{needingCustomer.length}</strong><span>Need your response</span></div><div><strong>{receipts.length}</strong><span>Receipts ready</span></div></div>
+    {latest?<section className="bdWorkspacePanel"><div className="bdWorkspaceSectionHead"><div><span className="bdEyebrow">{active.includes(latest)?"CURRENT SERVICE":"MOST RECENT SERVICE"}</span><h2>{latest.serviceType}</h2></div><b className="bdStatus">{latest.status}</b></div><p className="bdWorkspaceContext">{nextStep(latest)}</p><div className="bdWorkspaceProgress"><span className={["New","Reviewing","Quote prepared","Awaiting customer","Scheduled","In progress","Completed"].indexOf(latest.status)>=0?"reached":""}/><span className={["Reviewing","Quote prepared","Awaiting customer","Scheduled","In progress","Completed"].includes(latest.status)?"reached":""}/><span className={["Scheduled","In progress","Completed"].includes(latest.status)?"reached":""}/><span className={latest.status==="Completed"?"reached":""}/></div><div className="bdWorkspacePanelActions"><Link className="bdPrimary" href={"/orders/"+latest.id}>View service progress ↗</Link><Link href={"/orders/"+latest.id+"#conversation"}>Message the team</Link></div></section>:<section className="bdWorkspacePanel bdWorkspaceEmpty"><h2>Start with your first service</h2><p>Choose solar water heating, air conditioning or machinery support and send the team your requirements.</p><Link className="bdPrimary" href="/order">Create a service request ↗</Link></section>}
+    <section className="bdWorkspacePanel"><div className="bdWorkspaceSectionHead"><div><span className="bdEyebrow">RECENT ACTIVITY</span><h2>Latest requests</h2></div><button type="button" onClick={()=>setTab("services")}>View all ↗</button></div>{requests.slice(0,3).length?requests.slice(0,3).map(requestRow):<p className="bdWorkspaceContext">Your submitted requests will appear here.</p>}</section>
+    <section className="bdWorkspacePanel bdWorkspaceAccount"><div><span className="bdEyebrow">ACCOUNT ACCESS</span><strong>{user?.isAnonymous?"Save your service history":"Your account is connected"}</strong><p>{user?.isAnonymous?"Connect Google to return to these same service records on another device.":"Your request history is linked to this Google account."}</p></div><button type="button" className="bdSecondary" disabled={busy||!user||!user.isAnonymous} onClick={()=>void connectGoogle()}>{busy?"Connecting…":user?.isAnonymous?"Connect Google ↗":"Google connected"}</button></section>
+    <NotificationSettings/>
+   </div>}
+   {tab==="services"&&<section className="bdWorkspacePanel"><div className="bdWorkspaceSectionHead"><div><span className="bdEyebrow">YOUR HISTORY</span><h2>All service requests</h2></div><span>{requests.length} records</span></div>{requests.length?requests.map(requestRow):<div className="bdWorkspaceEmpty"><p>No service requests yet.</p><Link className="bdPrimary" href="/order">Create your first request ↗</Link></div>}</section>}
+   {tab==="receipts"&&<section className="bdWorkspacePanel"><div className="bdWorkspaceSectionHead"><div><span className="bdEyebrow">PAYMENT RECORDS</span><h2>Your receipts</h2></div><span>{receipts.length} available</span></div>{receipts.length?receipts.map(item=><article className="bdWorkspaceReceipt" key={item.id}><div><strong>{item.serviceType}</strong><small>Receipt {item.receiptNumber} · {item.receiptIssuedAt?dateText(item.receiptIssuedAt):"Issued"}</small><span>{money(item.amountPaid||0)} received</span></div><Link href={"/orders/"+item.id+"/receipt"}>View receipt ↗</Link></article>):<div className="bdWorkspaceEmpty"><p>No payment receipts are available yet. A receipt appears here after the team records a verified payment.</p><Link href="/order">Request a service ↗</Link></div>}</section>}
+   {tab==="messages"&&<section className="bdWorkspacePanel"><div className="bdWorkspaceSectionHead"><div><span className="bdEyebrow">PRIVATE CONVERSATIONS</span><h2>Messages with the team</h2></div></div>{requests.length?requests.map(item=><article className="bdWorkspaceReceipt" key={item.id}><div><strong>{item.serviceType}</strong><small>Request #{item.id.slice(0,8).toUpperCase()} · {item.status}</small><span>Open the private conversation for this service</span></div><Link href={"/orders/"+item.id+"#conversation"}>Open messages ↗</Link></article>):<div className="bdWorkspaceEmpty"><p>Messages about your services will appear here.</p></div>}</section>}
+  </>}
   <footer className="bdUtilityFooter"><Link href="/">← Bold Dimensions</Link><Link href="/order">Request another service ↗</Link></footer>
- <BdMobileDock/></main>;
+  <BdMobileDock/></main>;
 }
