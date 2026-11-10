@@ -14,11 +14,11 @@ function adminApp() {
   return initializeApp({ credential: cert(account as Parameters<typeof cert>[0]) });
 }
 function digest(token: string) { return createHash("sha256").update(token).digest("hex"); }
-function normalizePhone(value: string) { const digits=value.replace(/\\D/g, ""); return digits.startsWith("267")?digits:digits.startsWith("0")?"267"+digits.slice(1):digits.length===8?"267"+digits:digits; }
+function normalizePhone(value: string) { const digits=value.replace(/\D/g, ""); return digits.startsWith("267")?digits:digits.startsWith("0")?"267"+digits.slice(1):digits.length===8?"267"+digits:digits; }
 
 export async function POST(request: Request) {
   try {
-    const bearer = request.headers.get("authorization")?.match(/^Bearer\\s+(.+)$/i)?.[1];
+    const bearer = request.headers.get("authorization")?.match(/^Bearer\s+(.+)$/i)?.[1];
     if (!bearer) return NextResponse.json({ error: "Open the invitation from the customer device and try again." }, { status: 401 });
     const app = adminApp();
     const decoded = await getAuth(app).verifyIdToken(bearer);
