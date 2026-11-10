@@ -10,7 +10,7 @@ type Draft = Omit<ServicePrice,"id">;
 const blank: Draft = {areaId:"solar-water-heating",serviceType:"",startingPrice:null,priceMode:"quote",unit:"per job",description:"",active:true,sortOrder:99,sourceNote:"Admin supplied"};
 
 export default function ServicePricingManager(){
- const [items,setItems]=useState<ServicePrice[]>([]);
+ const [items,setItems]=useState<ServicePrice[]>(SEEDED_SERVICE_PRICES);
  const [loading,setLoading]=useState(true);
  const [draft,setDraft]=useState<Draft>(blank);
  const [editing,setEditing]=useState("");
@@ -21,12 +21,15 @@ export default function ServicePricingManager(){
  const seedMigrationStarted=useRef(false);
  useEffect(()=>onSnapshot(collection(db,"servicePricing"),async snapshot=>{
   if(snapshot.empty){
-   try{const batch=writeBatch(db);SEEDED_SERVICE_PRICES.forEach(item=>batch.set(doc(db,"servicePricing",item.id),item));await batch.commit();setNotice("Starter service prices have been added. Review provisional guides before publishing them.");}
-   catch{setError("Starter prices could not be seeded. Check the published Firestore admin rules.");}
-   setItems([]);setLoading(false);return;
+   setItems(SEEDED_SERVICE_PRICES);setLoading(false);
+   if(seedMigrationStarted.current)return;
+   seedMigrationStarted.current=true;
+   try{const batch=writeBatch(db);SEEDED_SERVICE_PRICES.forEach(item=>batch.set(doc(db,"servicePricing",item.id),item));await batch.commit();setNotice("19 starter prices are shown below. Firestore seed saved; review provisional guides before publishing.");}
+   catch{setError("Showing the 19 built-in starter prices, but Firestore has not saved them. Publish the servicePricing admin rules for persistent CRUD.");}
+   return;
   }
   const existing=snapshot.docs.map(item=>({id:item.id,...item.data()} as ServicePrice));
-  setItems(existing.sort((a,b)=>a.sortOrder-b.sortOrder));setLoading(false);
+  const merged=[...existing,...SEEDED_SERVICE_PRICES.filter(seed=>!snapshot.docs.some(saved=>saved.id===seed.id))];setItems(merged.sort((a,b)=>a.sortOrder-b.sortOrder));setLoading(false);
   if(!seedMigrationStarted.current){
    seedMigrationStarted.current=true;
    const batch=writeBatch(db);let changes=0;
@@ -44,12 +47,12 @@ export default function ServicePricingManager(){
    });
    if(changes){try{await batch.commit();setNotice("Missing service prices were seeded and old quote-only starter entries were upgraded. Admin-set prices were kept.")}catch{setError("Service price seeding could not be completed. Check the published Firestore admin rules.")}}
   }
- },cause=>{setError(cause.message||"Service prices could not be loaded.");setLoading(false)}),[]);
+ },cause=>{setItems(current=>current.length?current:SEEDED_SERVICE_PRICES);setError((cause as Error&{code?:string}).code==="permission-denied"?"Showing built-in prices. Firestore rejected the live catalogue; publish the servicePricing admin rules to enable saved edits.":cause.message||"Service prices could not be loaded.");setLoading(false)}),[]);
  function startEdit(item:ServicePrice){const {id,...rest}=item;setEditing(id);setDraft(rest);setEditorOpen(true);setError("");setNotice("");}
  async function save(){if(!draft.serviceType.trim()){setError("Enter a service name.");return}if(draft.priceMode==="from"&&(!Number.isFinite(draft.startingPrice)||Number(draft.startingPrice)<0)){setError("Enter a valid starting price.");return}setBusy(true);setError("");setNotice("");const id=editing||("custom-"+crypto.randomUUID());try{await setDoc(doc(db,"servicePricing",id),{...draft,serviceType:draft.serviceType.trim(),startingPrice:draft.priceMode==="quote"?null:Number(draft.startingPrice),updatedAt:new Date().toISOString()});setNotice("Service price saved.");setEditing("");setEditorOpen(false);setDraft(blank)}catch{setError("Price could not be saved. Check admin permissions and connection.")}finally{setBusy(false)}}
  async function remove(id:string){if(!window.confirm("Permanently delete this service price?"))return;try{await deleteDoc(doc(db,"servicePricing",id));setNotice("Service price deleted.");if(editing===id){setEditing("");setDraft(blank)}}catch{setError("Price could not be deleted.")}}
  return <section className="bdAdminSection bdPricingManager"><div className="bdAdminSectionHead"><div><span className="bdEyebrow">CATALOGUE & PRICING</span><h2>Service price list</h2></div><button type="button" className="bdSecondary" onClick={()=>{setEditing("");setDraft({...blank,sortOrder:items.length+1});setEditorOpen(true);}}>+ Add service</button></div>
-  <p className="bdPricingIntro">Starting guides are editable. Parts, travel, site conditions and final scope may change the agreed quote. Prices marked provisional need business approval before publication.</p>
+  <p className="bdPricingIntro">19 single-price starter entries are available below even before Firestore seeding. Edit, add, hide or delete entries here. Changes persist when the admin Firestore rules are published. Parts, travel and final scope may change the agreed quote.</p>
   {error&&<p className="bdFormError" role="alert">{error}</p>}{notice&&<p className="bdAdminNotice" role="status">{notice}</p>}
   {loading?<p className="bdAdminEmpty">Loading service prices…</p>:<div className="bdPricingList">{items.map(item=><article key={item.id}><div><small>{SERVICE_AREAS.find(area=>area.id===item.areaId)?.name}</small><strong>{item.serviceType}</strong><span>{item.priceMode==="from"?"From P"+Number(item.startingPrice).toLocaleString("en-BW"):"Quote after assessment"} · {item.unit}</span><p>{item.description}</p></div><div className="bdPricingActions"><button type="button" className="bdSecondary" onClick={()=>startEdit(item)}>Edit</button><button type="button" className="bdInviteRemove" onClick={()=>void remove(item.id)} aria-label={"Delete "+item.serviceType}>×</button></div></article>)}</div>}
   {editorOpen&&<div className="bdPricingEditor"><h3>{editing?"Edit service price":"Add a service price"}</h3><div className="bdPricingFields"><label>Service area<select value={draft.areaId} onChange={e=>setDraft(v=>({...v,areaId:e.target.value as Draft["areaId"]}))}>{SERVICE_AREAS.map(area=><option key={area.id} value={area.id}>{area.name}</option>)}</select></label><label>Service name<input value={draft.serviceType} onChange={e=>setDraft(v=>({...v,serviceType:e.target.value}))} placeholder="Service name"/></label><label>Price type<select value={draft.priceMode} onChange={e=>setDraft(v=>({...v,priceMode:e.target.value as Draft["priceMode"],startingPrice:e.target.value==="quote"?null:v.startingPrice}))}><option value="from">Starting price</option><option value="quote">Quote after assessment</option></select></label>{draft.priceMode==="from"&&<label>Starting price (BWP)<input type="number" min="0" step="0.01" value={draft.startingPrice??""} onChange={e=>setDraft(v=>({...v,startingPrice:e.target.value===""?null:Number(e.target.value)}))}/></label>}<label>Unit / basis<input value={draft.unit} onChange={e=>setDraft(v=>({...v,unit:e.target.value}))}/></label><label>Sort order<input type="number" min="1" value={draft.sortOrder} onChange={e=>setDraft(v=>({...v,sortOrder:Number(e.target.value)}))}/></label><label className="wide">Customer explanation<textarea rows={2} value={draft.description} onChange={e=>setDraft(v=>({...v,description:e.target.value}))}/></label><label className="wide">Price source / internal note<textarea rows={2} value={draft.sourceNote} onChange={e=>setDraft(v=>({...v,sourceNote:e.target.value}))}/></label><label className="bdPricingActive"><input type="checkbox" checked={draft.active} onChange={e=>setDraft(v=>({...v,active:e.target.checked}))}/> Show in customer service list</label></div><div className="bdPricingEditorActions"><button type="button" className="bdSecondary" onClick={()=>{setEditing("");setDraft(blank);setEditorOpen(false)}}>Close</button><button type="button" className="bdPrimary" disabled={busy} onClick={()=>void save()}>{busy?"Saving…":"Save service price"}</button></div></div>}
