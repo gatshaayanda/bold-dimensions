@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { createHash } from "node:crypto";
 import { cert, getApps, initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
-import { FieldValue, getFirestore } from "firebase-admin/firestore";
+import { getFirestore } from "firebase-admin/firestore";
 
 export const runtime = "nodejs";
 function adminApp() {
@@ -34,9 +34,9 @@ export async function POST(request: Request) {
       if (typeof invite.expiresAt !== "string" || Date.parse(invite.expiresAt) <= Date.now()) throw new Error("This customer invitation has expired. Ask Bold Dimensions for a fresh link.");
       const ids = Array.isArray(invite.requestIds) ? invite.requestIds.filter((id: unknown): id is string => typeof id === "string").slice(0, 200) : [];
       const requestRefs = ids.map((id: string) => db.collection("serviceRequests").doc(id));
-      const requestSnaps = await Promise.all(requestRefs.map((ref: FirebaseFirestore.DocumentReference) => transaction.get(ref)));
+      const requestSnaps = await Promise.all(requestRefs.map(ref => transaction.get(ref)));
       const conversationRefs = ids.map((id: string) => db.collection("conversations").doc(id));
-      const conversationSnaps = await Promise.all(conversationRefs.map((ref: FirebaseFirestore.DocumentReference) => transaction.get(ref)));
+      const conversationSnaps = await Promise.all(conversationRefs.map(ref => transaction.get(ref)));
       let linked = 0;
       requestSnaps.forEach((snap: FirebaseFirestore.DocumentSnapshot, index: number) => {
         if (snap.exists && normalizePhone(String(snap.get("phone") || "")) === String(invite.phone)) {
