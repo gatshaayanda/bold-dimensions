@@ -15,14 +15,14 @@ function adminApp() {
   return initializeApp({ credential: cert(account as Parameters<typeof cert>[0]) });
 }
 function normalizePhone(value: string) {
-  const digits = value.replace(/\\D/g, "");
+  const digits = value.replace(/\D/g, "");
   return digits.startsWith("267") ? digits : digits.startsWith("0") ? "267" + digits.slice(1) : digits.length === 8 ? "267" + digits : digits;
 }
 function digest(token: string) { return createHash("sha256").update(token).digest("hex"); }
 
 export async function POST(request: Request) {
   try {
-    const bearer = request.headers.get("authorization")?.match(/^Bearer\\s+(.+)$/i)?.[1];
+    const bearer = request.headers.get("authorization")?.match(/^Bearer\s+(.+)$/i)?.[1];
     if (!bearer) return NextResponse.json({ error: "Admin sign-in is required." }, { status: 401 });
     const app = adminApp();
     const decoded = await getAuth(app).verifyIdToken(bearer);
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
     const body = await request.json() as { name?: unknown; phone?: unknown };
     if (typeof body.phone !== "string" || typeof body.name !== "string" || body.name.length > 100) return NextResponse.json({ error: "Enter a contact name and WhatsApp number." }, { status: 400 });
     const phone = normalizePhone(body.phone);
-    if (!/^\\d{8,15}$/.test(phone)) return NextResponse.json({ error: "Enter a valid Botswana or international WhatsApp number." }, { status: 400 });
+    if (!/^\d{8,15}$/.test(phone)) return NextResponse.json({ error: "Enter a valid Botswana or international WhatsApp number." }, { status: 400 });
     const db = getFirestore(app);
     const requests = await db.collection("serviceRequests").get();
     const requestIds = requests.docs.filter(doc => normalizePhone(String(doc.get("phone") || "")) === phone).map(doc => doc.id).slice(0, 200);
