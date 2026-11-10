@@ -74,7 +74,15 @@ service cloud.firestore {
         && (data.status != 'Scheduled' || data.keys().hasAny(['scheduledFor']))
         && (!data.keys().hasAny(['quoteAmount']) || (data.quoteAmount is number && data.quoteAmount >= 0))
         && (!data.keys().hasAny(['quoteNote']) || (data.quoteNote is string && data.quoteNote.size() <= 1200))
-        && (!data.keys().hasAny(['internalNote']) || (data.internalNote is string && data.internalNote.size() <= 1200));
+        && (!data.keys().hasAny(['internalNote']) || (data.internalNote is string && data.internalNote.size() <= 1200))
+        && (!data.keys().hasAny(['agreedAmount']) || (data.agreedAmount is number && data.agreedAmount >= 0))
+        && (!data.keys().hasAny(['amountPaid']) || (data.amountPaid is number && data.amountPaid >= 0))
+        && (!data.keys().hasAny(['paymentStatus']) || data.paymentStatus in ['unpaid', 'part-paid', 'paid'])
+        && (!data.keys().hasAny(['paymentMethod']) || (data.paymentMethod is string && data.paymentMethod.size() <= 60))
+        && (!data.keys().hasAny(['paymentReference']) || (data.paymentReference is string && data.paymentReference.size() <= 120))
+        && (!data.keys().hasAny(['receiptNumber']) || (data.receiptNumber is string && data.receiptNumber.size() <= 40))
+        && (!data.keys().hasAny(['receiptIssuedAt']) || (data.receiptIssuedAt is string && data.receiptIssuedAt.size() <= 40))
+        && (!data.keys().hasAny(['amountPaid']) || !data.keys().hasAny(['agreedAmount']) || data.amountPaid <= data.agreedAmount);
     }
 
     function validConversationCreate(conversationId) {
