@@ -243,3 +243,12 @@ Report code/commit, GitHub push, checks, visual QA, outstanding Firebase configu
 - Admin records the agreed job total and cumulative verified amount received, payment method and optional payment reference. A receipt is created only after a positive payment is recorded against an agreed total. Receipt number and issue timestamp are stored on the service request. Never record a payment based only on an initiated transfer or customer claim.
 - Customer and admin use the same /orders/[id]/receipt route. Firestore service-request rules restrict reads to the owning customer UID or admin claim; the receipt page also checks the authenticated owner/admin identity. The branded print-ready receipt shows agreed total, amount received, balance, payment status, method and reference. It is a payment receipt, not a tax invoice or proof of bank settlement beyond staff verification.
 - Publish the updated firestore.rules for servicePricing reads/admin writes and validated payment/receipt fields before expecting live CRUD or payment writes to work. Publishing rules and deploying the web app are separate actions.
+
+
+## 14. Seeded service prices — 2026-11-10
+
+- Seed one numeric BWP starting price for every one of the 19 configured service options across solar water heating, air conditioning and agricultural machinery. Keep prices editable in the admin Service price list; add/edit/deactivate/delete remain available.
+- The seed catalogue lives in `src/lib/bold-dimensions-pricing.ts`. The admin manager creates missing defaults and upgrades legacy seeded quote-only entries once, while retaining existing admin-set numeric prices. Do not repeatedly overwrite operator edits.
+- Customer request forms show the selected service's current active price and persist a snapshot on submission. Existing requests retain their original snapshot when catalogue prices later change.
+- Prices are provisional starter figures, not an owner-approved tariff or final quote. Public comparables informed some values (Botswana geyser labour and AC installation); unsupported categories use clearly documented provisional internal estimates. The two parts-enquiry prices are identification/sourcing service fees only; the physical spare part is priced separately after identification.
+- Before public launch, the owner must confirm labour costs, travel zones, parts markups, VAT/tax treatment and margins, then adjust the catalogue in admin. Do not imply the seeded amount includes parts or travel unless its description explicitly says so.
