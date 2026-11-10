@@ -38,13 +38,14 @@ export async function POST(request: Request) {
       const conversationRefs = ids.map((id: string) => db.collection("conversations").doc(id));
       const conversationSnaps = await Promise.all(conversationRefs.map(ref => transaction.get(ref)));
       let linked = 0;
-      requestSnaps.forEach((snap: FirebaseFirestore.DocumentSnapshot, index: number) => {
+      for (let index = 0; index < requestSnaps.length; index++) {
+        const snap = requestSnaps[index];
         if (snap.exists && normalizePhone(String(snap.get("phone") || "")) === String(invite.phone)) {
           transaction.update(requestRefs[index], { customerId: decoded.uid, accountLinkedAt: new Date().toISOString() });
           if (conversationSnaps[index].exists) transaction.update(conversationRefs[index], { customerId: decoded.uid });
           linked++;
         }
-      });
+      }
       transaction.update(inviteRef, { claimedAt: new Date().toISOString(), claimedBy: decoded.uid, matchedRequestCount: linked });
       return { linked };
     });
