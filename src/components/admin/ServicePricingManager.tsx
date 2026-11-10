@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { collection, deleteDoc, doc, onSnapshot, setDoc, writeBatch } from "firebase/firestore";
 import { db } from "@/lib/firebase/client";
 import { SERVICE_AREAS } from "@/lib/bold-dimensions-config";
@@ -18,13 +18,32 @@ export default function ServicePricingManager(){
  const [busy,setBusy]=useState(false);
  const [error,setError]=useState("");
  const [notice,setNotice]=useState("");
+ const seedMigrationStarted=useRef(false);
  useEffect(()=>onSnapshot(collection(db,"servicePricing"),async snapshot=>{
   if(snapshot.empty){
    try{const batch=writeBatch(db);SEEDED_SERVICE_PRICES.forEach(item=>batch.set(doc(db,"servicePricing",item.id),item));await batch.commit();setNotice("Starter service prices have been added. Review provisional guides before publishing them.");}
    catch{setError("Starter prices could not be seeded. Check the published Firestore admin rules.");}
    setItems([]);setLoading(false);return;
   }
-  setItems(snapshot.docs.map(item=>({id:item.id,...item.data()} as ServicePrice)).sort((a,b)=>a.sortOrder-b.sortOrder));setLoading(false);
+  const existing=snapshot.docs.map(item=>({id:item.id,...item.data()} as ServicePrice));
+  setItems(existing.sort((a,b)=>a.sortOrder-b.sortOrder));setLoading(false);
+  if(!seedMigrationStarted.current){
+   seedMigrationStarted.current=true;
+   const batch=writeBatch(db);let changes=0;
+   SEEDED_SERVICE_PRICES.forEach(seed=>{
+    const saved=snapshot.docs.find(item=>item.id===seed.id);
+    if(!saved){batch.set(doc(db,"servicePricing",seed.id),seed);changes++;return}
+    const current=saved.data() as ServicePrice;
+    // Upgrade old quote-only starter entries, but retain any admin-set price.
+    if(current.priceMode==="quote"&&seed.priceMode==="from"){
+     batch.update(doc(db,"servicePricing",seed.id),{
+      startingPrice:seed.startingPrice,priceMode:seed.priceMode,unit:seed.unit,
+      description:seed.description,sourceNote:seed.sourceNote
+     });changes++;
+    }
+   });
+   if(changes){try{await batch.commit();setNotice("Missing service prices were seeded and old quote-only starter entries were upgraded. Admin-set prices were kept.")}catch{setError("Service price seeding could not be completed. Check the published Firestore admin rules.")}}
+  }
  },cause=>{setError(cause.message||"Service prices could not be loaded.");setLoading(false)}),[]);
  function startEdit(item:ServicePrice){const {id,...rest}=item;setEditing(id);setDraft(rest);setEditorOpen(true);setError("");setNotice("");}
  async function save(){if(!draft.serviceType.trim()){setError("Enter a service name.");return}if(draft.priceMode==="from"&&(!Number.isFinite(draft.startingPrice)||Number(draft.startingPrice)<0)){setError("Enter a valid starting price.");return}setBusy(true);setError("");setNotice("");const id=editing||("custom-"+crypto.randomUUID());try{await setDoc(doc(db,"servicePricing",id),{...draft,serviceType:draft.serviceType.trim(),startingPrice:draft.priceMode==="quote"?null:Number(draft.startingPrice),updatedAt:new Date().toISOString()});setNotice("Service price saved.");setEditing("");setEditorOpen(false);setDraft(blank)}catch{setError("Price could not be saved. Check admin permissions and connection.")}finally{setBusy(false)}}
