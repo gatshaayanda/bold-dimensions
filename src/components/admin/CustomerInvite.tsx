@@ -53,7 +53,7 @@ export default function CustomerInvite() {
         <button type="button" className="bdPrimary" onClick={() => { setOpen(value => !value); setError(""); setNotice(""); }}>{open ? "Close" : "Share with customer ↗"}</button>
       </div>
       {open && <div className="bdCustomerInviteBody">
-        <div className="bdCustomerInviteIntro"><span>Personal customer account</span><small>The one-time link connects requests already recorded under the customer's WhatsApp number to the account opened from that invitation.</small></div>
+        <div className="bdCustomerInviteIntro"><span>Personal customer account</span><small>The one-time link connects requests already recorded under the customer&apos;s WhatsApp number to the account opened from that invitation.</small></div>
         {contacts.map((contact, index) => <div className="bdInviteContact" key={contact.id}>
           <span className="bdInviteIndex">{String(index + 1).padStart(2, "0")}</span>
           <label><span>Name</span><input value={contact.name} onChange={event => update(contact.id, "name", event.target.value)} placeholder="Customer name" /></label>
