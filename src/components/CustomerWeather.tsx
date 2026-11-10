@@ -22,8 +22,8 @@ export default function CustomerWeather(){
    setConditions({temperature:data.current.temperature_2m,feelsLike:data.current.apparent_temperature,humidity:data.current.relative_humidity_2m,wind:data.current.wind_speed_10m,code:data.current.weather_code,day:data.current.is_day});
   }catch(cause){setError(cause instanceof Error?cause.message:"Weather could not be loaded.");}
   finally{setBusy(false)}
- },[coordinates]);
- useEffect(()=>{void load(DEFAULT)},[]);
+ },[]);
+ useEffect(()=>{void load(DEFAULT)},[load]);
  function useLocation(){
   if(!navigator.geolocation){setError("Location is not available in this browser.");return}
   setBusy(true);setError("");
