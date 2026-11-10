@@ -62,8 +62,32 @@ function Dashboard(){
   {section==="Work"&&<section className="bdAdminDestination"><div className="bdAdminSectionHead"><div><span className="bdEyebrow">SERVICE DESK</span><h2>Work queue</h2></div><span className="bdAdminLiveCount">{filtered.length} matching records</span></div><label className="bdAdminSearch">Search requests<input value={searchQuery} onChange={event=>setSearchQuery(event.target.value)} placeholder="Reference, customer, service, location or status"/></label>{requestWorkspace}</section>}
   {section==="Customers"&&<section className="bdAdminDestination"><div className="bdAdminSectionHead"><div><span className="bdEyebrow">CUSTOMER RELATIONSHIPS</span><h2>Customers</h2></div><span className="bdAdminLiveCount">{customerCount} distinct phone records</span></div><CustomerInvite/><label className="bdAdminSearch">Find customer or service<input value={searchQuery} onChange={event=>setSearchQuery(event.target.value)} placeholder="Search by customer, phone reference or service"/></label>{requestWorkspace}</section>}
   {section==="Money"&&<section className="bdAdminDestination"><div className="bdAdminSectionHead"><div><span className="bdEyebrow">FINANCIAL RECORD</span><h2>Money</h2></div><span className="bdAdminLiveCount">Recorded figures only</span></div><div className="bdAdminStats bdAdminFinanceStats"><article><small>AGREED TOTALS</small><strong>P{agreedTotal.toLocaleString("en-BW")}</strong><span>{finance.length} jobs with agreed totals</span></article><article><small>RECEIVED</small><strong>P{receivedTotal.toLocaleString("en-BW")}</strong><span>Recorded by staff as verified</span></article><article><small>OUTSTANDING</small><strong>P{Math.max(0,agreedTotal-receivedTotal).toLocaleString("en-BW")}</strong><span>Agreed less recorded payments</span></article><article><small>RECEIPTS</small><strong>{requests.filter(item=>Boolean(item.receiptNumber)&&Number(item.amountPaid||0)>0).length}</strong><span>Payment receipts issued</span></article></div><p className="bdAdminSectionNote">Figures reflect currently loaded service records. Only payments entered and verified by staff are included; this is not a bank reconciliation.</p>{requestWorkspace}</section>}
-  {section==="Store"&&<section className="bdAdminDestination"><div className="bdAdminSectionHead"><div><span className="bdEyebrow">CUSTOMER EXPERIENCE</span><h2>Store & services</h2></div><Link href="/services">Public service view ↗</Link></div><ServicePricingManager/><PromotionManager/><section className="bdAdminSection bdAdminServiceScope"><div className="bdAdminSectionHead"><div><span className="bdEyebrow">SERVICE SCOPE</span><h2>What we handle</h2></div><Link href="/services">Public service view ↗</Link></div><div className="bdAdminScopeGrid">{SERVICE_AREAS.map((area,index)=><article key={area.id}><span>0{index+1}</span><strong>{area.name}</strong><small>{area.options.join(" · ")}</small></article>)}</div><p>Keep customer promises within confirmed company capability. Starting prices are editable guides; confirm scope, stock, travel and the final agreed price before accepting work.</p></section>
- </section>}
+  {section === "Store" && (
+   <section className="bdAdminDestination">
+    <div className="bdAdminSectionHead">
+     <div><span className="bdEyebrow">CUSTOMER EXPERIENCE</span><h2>Store & services</h2></div>
+     <Link href="/services">Public service view ↗</Link>
+    </div>
+    <ServicePricingManager />
+    <PromotionManager />
+    <section className="bdAdminSection bdAdminServiceScope">
+     <div className="bdAdminSectionHead">
+      <div><span className="bdEyebrow">SERVICE SCOPE</span><h2>What we handle</h2></div>
+      <Link href="/services">Public service view ↗</Link>
+     </div>
+     <div className="bdAdminScopeGrid">
+      {SERVICE_AREAS.map((area, index) => (
+       <article key={area.id}>
+        <span>0{index + 1}</span>
+        <strong>{area.name}</strong>
+        <small>{area.options.join(" · ")}</small>
+       </article>
+      ))}
+     </div>
+     <p>Keep customer promises within confirmed company capability. Starting prices are editable guides; confirm scope, stock, travel and the final agreed price before accepting work.</p>
+    </section>
+   </section>
+  )}
   {section==="Settings"&&<section className="bdAdminDestination"><div className="bdAdminSectionHead"><div><span className="bdEyebrow">WORKSPACE PREFERENCES</span><h2>Settings</h2></div></div><NotificationSettings/><div className="bdAdminSettingsNote"><strong>Access & data protection</strong><p>Admin access is controlled by Firebase claims and Firestore rules. Customer contact details stay masked until deliberately revealed in the work queue. Do not record a payment until funds are verified.</p></div></section>}
  </main>;
 }
