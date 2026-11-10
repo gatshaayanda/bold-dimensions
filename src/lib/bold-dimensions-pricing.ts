@@ -33,5 +33,5 @@ export const SEEDED_SERVICE_PRICES: ServicePrice[] = [
 ];
 
 export function subscribeToServicePrices(onChange:(items:ServicePrice[])=>void,onError:(error:Error)=>void):Unsubscribe {
-  return onSnapshot(collection(db,"servicePricing"),snapshot=>onChange(snapshot.docs.map(item=>({id:item.id,...item.data()} as ServicePrice)).filter(item=>item.active).sort((a,b)=>a.sortOrder-b.sortOrder)),error=>onError(error instanceof Error?error:new Error("Service prices could not be loaded.")));
+  return onSnapshot(collection(db,"servicePricing"),snapshot=>{const saved=snapshot.docs.map(item=>({id:item.id,...item.data()} as ServicePrice)).filter(item=>item.active).sort((a,b)=>a.sortOrder-b.sortOrder);onChange(saved.length?saved:SEEDED_SERVICE_PRICES.filter(item=>item.active));},error=>{onChange(SEEDED_SERVICE_PRICES.filter(item=>item.active));onError(error instanceof Error?error:new Error("Service prices could not be loaded."))});
 }
