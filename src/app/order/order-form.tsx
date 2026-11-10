@@ -30,7 +30,7 @@ export default function OrderForm(){
  useEffect(()=>{if(!toast)return;const timer=window.setTimeout(()=>setToast(""),2200);return()=>window.clearTimeout(timer)},[toast]);
  const area=useMemo(()=>SERVICE_AREAS.find(item=>item.id===areaId)!,[areaId]);
  const selectedPrice=useMemo(()=>prices.find(item=>item.areaId===areaId&&item.serviceType===serviceType),[prices,areaId,serviceType]);
- useEffect(()=>subscribeToServicePrices(items=>{if(items.length)setPrices(items)},()=>{}),[]);
+ useEffect(()=>subscribeToServicePrices(items=>setPrices(items),()=>{}),[]);
  useEffect(()=>{const requested=new URLSearchParams(window.location.search).get("area");if(SERVICE_AREAS.some(item=>item.id===requested)){setAreaId(requested as ServiceAreaId);setServiceType("")}},[]);
  function changeArea(value:string){setAreaId(value as ServiceAreaId);setServiceType("");const next=SERVICE_AREAS.find(item=>item.id===value);setToast(next?next.name+" services selected":"Service area changed")}
  async function submit(event:FormEvent<HTMLFormElement>){
