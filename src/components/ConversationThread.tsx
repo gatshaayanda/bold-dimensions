@@ -45,7 +45,7 @@ export default function ConversationThread({conversationId,role,userId,title="Pr
  }
  async function resolve(){try{await resolveServiceConversation(conversationId);setNotice("Conversation marked resolved.")}catch{setError("Conversation status could not be updated.")}}
  const statusLabel=conversation?.status==="resolved"?"Resolved":conversation?.status==="waiting"?(role==="admin"?"Awaiting customer":"Bold Dimensions replied"):messages.length?(role==="admin"?"Customer replied":"Awaiting Bold Dimensions"):"New conversation";
- return <details className="bdConversation" open>
+ return <details className="bdConversation" id="conversation" open>
   <summary className="bdConversationSummary"><span><small>PRIVATE · CUSTOMER & BOLD DIMENSIONS TEAM</small><strong>{title}</strong></span><b className={conversation?.status==="resolved"?"resolved":""}>{statusLabel}</b><i>＋</i></summary>
   <div className="bdConversationBody">
    <div className="bdConversationMessages" aria-live="polite">
