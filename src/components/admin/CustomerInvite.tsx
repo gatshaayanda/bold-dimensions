@@ -20,9 +20,9 @@ export default function CustomerInvite() {
   }
 
   async function share(contact: Contact) {
-    const digits = contact.phone.replace(/\\D/g, "");
+    const digits = contact.phone.replace(/\D/g, "");
     const number = digits.startsWith("267") ? digits : digits.startsWith("0") ? "267" + digits.slice(1) : digits.length === 8 ? "267" + digits : digits;
-    if (!/^\\d{8,15}$/.test(number)) { setError("Enter a valid Botswana or international WhatsApp number."); return; }
+    if (!/^\d{8,15}$/.test(number)) { setError("Enter a valid Botswana or international WhatsApp number."); return; }
     const popup = window.open("about:blank", "_blank");
     if (!popup) { setError("Allow pop-ups to prepare the WhatsApp invitation."); return; }
     setBusy(contact.id); setError(""); setNotice("");
@@ -37,7 +37,7 @@ export default function CustomerInvite() {
       const result = await response.json() as { inviteUrl?: string; matchedRequests?: number; error?: string };
       if (!response.ok || !result.inviteUrl) throw new Error(result.error || "The secure customer invitation could not be created.");
       const greeting = contact.name.trim() ? "Hi " + contact.name.trim() + "," : "Hello,";
-      const message = greeting + " your Bold Dimensions customer account is ready. Open your personal account link to review your existing service requests, follow progress and place new service orders: " + result.inviteUrl + "\\n\\nIf WhatsApp opens the link inside its browser, tap ⋮ and choose Open in Chrome. This secure invitation can be used once and expires in 7 days.";
+      const message = greeting + " your Bold Dimensions customer account is ready. Open your personal account link to review your existing service requests, follow progress and place new service orders: " + result.inviteUrl + "\n\nIf WhatsApp opens the link inside its browser, tap ⋮ and choose Open in Chrome. This secure invitation can be used once and expires in 7 days.";
       popup.location.href = "https://wa.me/" + number + "?text=" + encodeURIComponent(message);
       setNotice("Secure account invitation prepared for " + (contact.name.trim() || number) + ". " + (result.matchedRequests || 0) + " existing request(s) matched. Review and send the WhatsApp message.");
     } catch (cause) {
