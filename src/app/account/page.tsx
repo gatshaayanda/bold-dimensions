@@ -30,10 +30,14 @@ export default function AccountPage(){
  const [message,setMessage]=useState("");
  const [busy,setBusy]=useState(false);
  const [inviteToken,setInviteToken]=useState("");
+ const [submittedRequestId,setSubmittedRequestId]=useState("");
  const [tab,setTab]=useState<AccountTab>("overview");
  const claimStarted=useRef(false);
  useEffect(()=>{
-  const token=new URLSearchParams(window.location.search).get("invite");
+  const params=new URLSearchParams(window.location.search);
+  const token=params.get("invite");
+  const submitted=params.get("submitted");
+  if(submitted)setSubmittedRequestId(submitted);
   if(token)setInviteToken(token);
   return onAuthStateChanged(auth,async next=>{
    if(next){setUser(next);return}
@@ -108,6 +112,7 @@ export default function AccountPage(){
   <header className="bdUtilityHeader"><Link href="/" className="bdBrand"><Image src="/brand/bold-dimensions-logo.jpg" alt="" width={42} height={42}/><span><strong>BOLD DIMENSIONS</strong><small>MY ACCOUNT</small></span></Link><Link href="/order" className="bdHeaderCta">New service request ↗</Link></header>
   <section className="bdWorkspaceHeading"><div><span className="bdEyebrow">YOUR BOLD DIMENSIONS SPACE · {today.toUpperCase()}</span><h1>{greeting}{customerName?", "+customerName:""}.</h1><p>Your service requests, updates and payment records — all together.</p></div><span className="bdWorkspaceAccountState">{user?.isAnonymous?"Guest session":"Account connected"}</span></section>
   {(error||message)&&<p className={error?"bdFormError":"bdInlineSuccess"} role="status">{error||message}</p>}
+  {submittedRequestId&&<section className="bdWorkspacePanel bdInlineSuccess" role="status"><span className="bdEyebrow">REQUEST RECEIVED</span><h2>Your request has been received.</h2>{(()=>{const submitted=requests.find(item=>item.id===submittedRequestId);return submitted?<><p><strong>{submitted.serviceType}</strong> · {submitted.status}</p><p>Reference #{submitted.id.slice(0,8).toUpperCase()} · {submitted.location}</p><p>The request and private conversation are now in your customer account.</p><div className="bdWorkspacePanelActions"><Link className="bdPrimary" href={"/orders/"+submitted.id}>View request ↗</Link><Link href={"/orders/"+submitted.id+"#conversation"}>Message the team</Link></div></>:<p>{loading?"Confirming your new request in your account…":"Your request is being checked. Refresh shortly if it does not appear in My services."}</p>})()}</section> }}
   <nav className="bdWorkspaceTabs" aria-label="Customer account sections">{tabs.map(item=><button key={item.id} type="button" className={tab===item.id?"active":""} aria-current={tab===item.id?"page":undefined} onClick={()=>setTab(item.id)}>{item.label}{item.count!==undefined&&<span>{item.count}</span>}</button>)}</nav>
   {loading?<section className="bdWorkspacePanel"><p className="bdLoading">Loading your private service records…</p></section>:<>
    {tab==="overview"&&<div className="bdWorkspaceContent">
