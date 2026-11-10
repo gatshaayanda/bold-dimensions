@@ -37,9 +37,9 @@ function Dashboard(){
   <section className="bdAdminWelcome"><div><span className="bdEyebrow">OPERATIONS OVERVIEW</span><h1>Service<br/><em>desk.</em></h1><p>Review incoming work, agree the next step and keep each customer request moving.</p></div><Link className="bdAdminPublicLink" href="/">View customer app ↗</Link></section>
   <CustomerInvite/>
   <section className="bdAdminStats"><article><small>OPEN REQUESTS</small><strong>{openCount}</strong><span>Needs follow-up</span></article><article><small>NEW REQUESTS</small><strong>{newCount}</strong><span>Awaiting first review</span></article><article><small>COMPLETED</small><strong>{requests.filter(item=>item.status==="Completed").length}</strong><span>Marked complete</span></article><article><small>TOTAL RECORDS</small><strong>{requests.length}</strong><span>All submitted requests</span></article></section>
+  <ServicePricingManager/>
   <NotificationSettings/>
   <PromotionManager/>
-  <ServicePricingManager/>
   <section className="bdAdminSection"><div className="bdAdminSectionHead"><div><span className="bdEyebrow">CUSTOMER WORK</span><h2>Service requests</h2></div><div className="bdAdminFilters">{(["Open","All","Closed"] as const).map(value=><button key={value} type="button" className={filter===value?"active":""} onClick={()=>setFilter(value)}>{value}</button>)}</div></div>
    {notice&&<p className="bdAdminNotice" role="status">{notice}</p>}{fromCache&&<p className="bdAdminNotice" role="status">Showing saved device data. Waiting for a live Firebase refresh; this view may not include the latest requests.</p>}{error&&<p className="bdFormError" role="alert">{error}</p>}
    {loading?<p className="bdAdminEmpty">Loading service requests…</p>:filtered.length===0?<div className="bdAdminEmpty"><strong>{fromCache?"No saved requests on this device.":filter==="Open"?"No open requests.":"No requests in this view."}</strong><p>{fromCache?"The live queue has not been confirmed yet. Reconnect to Firebase before treating this as an empty queue.":"New customer submissions will appear here when they are confirmed by Firebase."}</p></div>:<div className="bdAdminQueue">{filtered.map(item=>{
