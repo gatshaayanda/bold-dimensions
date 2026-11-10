@@ -11,7 +11,7 @@ export default function CustomerWeather(){
  const [busy,setBusy]=useState(true);
  const [error,setError]=useState("");
  const [coordinates,setCoordinates]=useState(DEFAULT);
- const load=useCallback(async(coords=coordinates)=>{
+ const load=useCallback(async(coords:typeof DEFAULT=DEFAULT)=>{
   setBusy(true);setError("");
   try{
    const params=new URLSearchParams({latitude:String(coords.latitude),longitude:String(coords.longitude),current:"temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,is_day,wind_speed_10m",timezone:"auto"});
@@ -33,7 +33,7 @@ export default function CustomerWeather(){
   },()=>{setBusy(false);setError("Location permission was not granted. Showing Gaborone weather.");},{enableHighAccuracy:false,timeout:8000,maximumAge:300000});
  }
  return <section className="bdCustomerWeather" aria-label="Local weather">
-  <div className="bdCustomerWeatherTop"><div><span className="bdEyebrow">LOCAL CONDITIONS</span><strong>{place}</strong></div><div className="bdWeatherActions"><button type="button" onClick={useLocation}>Use my location</button><button type="button" onClick={()=>void load()} aria-label="Refresh weather" disabled={busy}>↻</button></div></div>
+  <div className="bdCustomerWeatherTop"><div><span className="bdEyebrow">LOCAL CONDITIONS</span><strong>{place}</strong></div><div className="bdWeatherActions"><button type="button" onClick={useLocation}>Use my location</button><button type="button" onClick={()=>void load(coordinates)} aria-label="Refresh weather" disabled={busy}>↻</button></div></div>
   {busy&&!conditions?<p className="bdWeatherLoading">Checking current conditions…</p>:conditions?<div className="bdWeatherCurrent"><span className="bdWeatherIcon" aria-hidden="true">{icon(conditions.code)}</span><div className="bdWeatherTemperature"><strong>{Math.round(conditions.temperature)}°</strong><span>{describe(conditions.code)}</span></div><div className="bdWeatherDetails"><span>Feels like {Math.round(conditions.feelsLike)}°</span><span>Humidity {conditions.humidity}%</span><span>Wind {Math.round(conditions.wind)} km/h</span></div></div>:<p className="bdWeatherLoading">Weather is unavailable right now.</p>}
   {error&&<p className="bdWeatherError" role="status">{error}</p>}
   <small className="bdWeatherFoot">Live weather · Open-Meteo</small>
