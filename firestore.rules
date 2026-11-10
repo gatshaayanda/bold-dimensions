@@ -55,6 +55,15 @@ service cloud.firestore {
         && data.status == 'New'
         && data.createdAt is string
         && data.updatedAt is string
+        && (!data.keys().hasAny(['pricingSnapshot']) || (
+          data.pricingSnapshot is map
+          && data.pricingSnapshot.keys().hasAll(['startingPrice', 'priceMode', 'unit'])
+          && data.pricingSnapshot.keys().hasOnly(['startingPrice', 'priceMode', 'unit'])
+          && data.pricingSnapshot.priceMode in ['from', 'quote']
+          && data.pricingSnapshot.unit is string
+          && data.pricingSnapshot.unit.size() <= 100
+          && (data.pricingSnapshot.startingPrice == null || (data.pricingSnapshot.startingPrice is number && data.pricingSnapshot.startingPrice >= 0))
+        ))
         && existsAfter(conversationPath)
         && getAfter(conversationPath).data.customerId == request.auth.uid;
     }
