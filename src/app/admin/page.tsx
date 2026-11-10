@@ -6,6 +6,7 @@ import ConversationThread from "@/components/ConversationThread";
 import NotificationSettings from "@/components/NotificationSettings";
 import PromotionManager from "@/components/admin/PromotionManager";
 import CustomerInvite from "@/components/admin/CustomerInvite";
+import ServicePricingManager from "@/components/admin/ServicePricingManager";
 import { auth } from "@/lib/firebase/client";
 import { subscribeToServiceRequests, updateServiceRequest, SERVICE_AREAS, type ServiceRequest, type ServiceRequestStatus } from "@/lib/bold-dimensions";
 
@@ -38,6 +39,7 @@ function Dashboard(){
   <section className="bdAdminStats"><article><small>OPEN REQUESTS</small><strong>{openCount}</strong><span>Needs follow-up</span></article><article><small>NEW REQUESTS</small><strong>{newCount}</strong><span>Awaiting first review</span></article><article><small>COMPLETED</small><strong>{requests.filter(item=>item.status==="Completed").length}</strong><span>Marked complete</span></article><article><small>TOTAL RECORDS</small><strong>{requests.length}</strong><span>All submitted requests</span></article></section>
   <NotificationSettings/>
   <PromotionManager/>
+  <ServicePricingManager/>
   <section className="bdAdminSection"><div className="bdAdminSectionHead"><div><span className="bdEyebrow">CUSTOMER WORK</span><h2>Service requests</h2></div><div className="bdAdminFilters">{(["Open","All","Closed"] as const).map(value=><button key={value} type="button" className={filter===value?"active":""} onClick={()=>setFilter(value)}>{value}</button>)}</div></div>
    {notice&&<p className="bdAdminNotice" role="status">{notice}</p>}{fromCache&&<p className="bdAdminNotice" role="status">Showing saved device data. Waiting for a live Firebase refresh; this view may not include the latest requests.</p>}{error&&<p className="bdFormError" role="alert">{error}</p>}
    {loading?<p className="bdAdminEmpty">Loading service requests…</p>:filtered.length===0?<div className="bdAdminEmpty"><strong>{fromCache?"No saved requests on this device.":filter==="Open"?"No open requests.":"No requests in this view."}</strong><p>{fromCache?"The live queue has not been confirmed yet. Reconnect to Firebase before treating this as an empty queue.":"New customer submissions will appear here when they are confirmed by Firebase."}</p></div>:<div className="bdAdminQueue">{filtered.map(item=>{
