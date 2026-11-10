@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { auth } from "@/lib/firebase/client";
 import BdMobileDock from "@/components/bd-mobile-dock";
 import NotificationSettings from "@/components/NotificationSettings";
+import CustomerWeather from "@/components/CustomerWeather";
 import { subscribeToCustomerServiceRequests, SERVICE_AREAS, type ServiceRequest } from "@/lib/bold-dimensions";
 
 type AccountTab = "overview" | "services" | "receipts" | "messages";
@@ -84,6 +85,10 @@ export default function AccountPage(){
  const receipts=useMemo(()=>requests.filter(item=>Boolean(item.receiptNumber)&&Number(item.amountPaid||0)>0),[requests]);
  const needingCustomer=useMemo(()=>requests.filter(item=>["Quote prepared","Awaiting customer"].includes(item.status)),[requests]);
  const latest=active[0]||requests[0];
+ const customerName=(latest?.customerName||user?.displayName||"").trim().split(/\\s+/)[0];
+ const hour=Number(new Intl.DateTimeFormat("en-GB",{timeZone:"Africa/Gaborone",hour:"2-digit",hourCycle:"h23"}).format(new Date()));
+ const greeting=hour<12?"Good morning":hour<17?"Good afternoon":"Good evening";
+ const today=new Intl.DateTimeFormat("en-GB",{timeZone:"Africa/Gaborone",weekday:"long",day:"numeric",month:"long"}).format(new Date());
  const tabs:{id:AccountTab;label:string;count?:number}[]=[
   {id:"overview",label:"Overview"},
   {id:"services",label:"My services",count:requests.length},
@@ -101,12 +106,12 @@ export default function AccountPage(){
  }
  return <main className="bdUtility bdAccountPage">
   <header className="bdUtilityHeader"><Link href="/" className="bdBrand"><Image src="/brand/bold-dimensions-logo.jpg" alt="" width={42} height={42}/><span><strong>BOLD DIMENSIONS</strong><small>MY ACCOUNT</small></span></Link><Link href="/order" className="bdHeaderCta">New service request ↗</Link></header>
-  <section className="bdWorkspaceHeading"><div><span className="bdEyebrow">CUSTOMER WORKSPACE</span><h1>Your services.</h1><p>Requests, updates and payment records in one place.</p></div><span className="bdWorkspaceAccountState">{user?.isAnonymous?"Guest session":"Account connected"}</span></section>
+  <section className="bdWorkspaceHeading"><div><span className="bdEyebrow">YOUR BOLD DIMENSIONS SPACE · {today.toUpperCase()}</span><h1>{greeting}{customerName?", "+customerName:""}.</h1><p>Your service requests, updates and payment records — all together.</p></div><span className="bdWorkspaceAccountState">{user?.isAnonymous?"Guest session":"Account connected"}</span></section>
   {(error||message)&&<p className={error?"bdFormError":"bdInlineSuccess"} role="status">{error||message}</p>}
   <nav className="bdWorkspaceTabs" aria-label="Customer account sections">{tabs.map(item=><button key={item.id} type="button" className={tab===item.id?"active":""} aria-current={tab===item.id?"page":undefined} onClick={()=>setTab(item.id)}>{item.label}{item.count!==undefined&&<span>{item.count}</span>}</button>)}</nav>
   {loading?<section className="bdWorkspacePanel"><p className="bdLoading">Loading your private service records…</p></section>:<>
    {tab==="overview"&&<div className="bdWorkspaceContent">
-    <div className="bdWorkspaceMetrics"><div><strong>{active.length}</strong><span>Active services</span></div><div><strong>{needingCustomer.length}</strong><span>Need your response</span></div><div><strong>{receipts.length}</strong><span>Receipts ready</span></div></div>
+    <div className="bdWorkspaceMetrics"><div><strong>{active.length}</strong><span>Active services</span></div><div><strong>{needingCustomer.length}</strong><span>Need your response</span></div><div><strong>{receipts.length}</strong><span>Receipts ready</span></div></div><CustomerWeather/><div className="bdWorkspaceQuickActions"><Link href="/order"><span>＋</span><strong>Request a service</strong><small>Solar · Air conditioning · Machinery</small></Link><button type="button" onClick={()=>setTab("services")}><span>↗</span><strong>Track your work</strong><small>See progress and team updates</small></button><button type="button" onClick={()=>setTab("receipts")}><span>▤</span><strong>Payment receipts</strong><small>View verified payment records</small></button></div>
     {latest?<section className="bdWorkspacePanel"><div className="bdWorkspaceSectionHead"><div><span className="bdEyebrow">{active.includes(latest)?"CURRENT SERVICE":"MOST RECENT SERVICE"}</span><h2>{latest.serviceType}</h2></div><b className="bdStatus">{latest.status}</b></div><p className="bdWorkspaceContext">{nextStep(latest)}</p><div className="bdWorkspacePanelActions"><Link className="bdPrimary" href={"/orders/"+latest.id}>View service progress ↗</Link><Link href={"/orders/"+latest.id+"#conversation"}>Message the team</Link></div></section>:<section className="bdWorkspacePanel bdWorkspaceEmpty"><h2>Start with your first service</h2><p>Choose solar water heating, air conditioning or machinery support and send the team your requirements.</p><Link className="bdPrimary" href="/order">Create a service request ↗</Link></section>}
     <section className="bdWorkspacePanel"><div className="bdWorkspaceSectionHead"><div><span className="bdEyebrow">RECENT ACTIVITY</span><h2>Latest requests</h2></div><button type="button" onClick={()=>setTab("services")}>View all ↗</button></div>{requests.slice(0,3).length?requests.slice(0,3).map(requestRow):<p className="bdWorkspaceContext">Your submitted requests will appear here.</p>}</section>
     <section className="bdWorkspacePanel bdWorkspaceAccount"><div><span className="bdEyebrow">ACCOUNT ACCESS</span><strong>{user?.isAnonymous?"Save your service history":"Your account is connected"}</strong><p>{user?.isAnonymous?"Connect Google to return to these same service records on another device.":"Your request history is linked to this Google account."}</p></div><button type="button" className="bdSecondary" disabled={busy||!user||!user.isAnonymous} onClick={()=>void connectGoogle()}>{busy?"Connecting…":user?.isAnonymous?"Connect Google ↗":"Google connected"}</button></section>
