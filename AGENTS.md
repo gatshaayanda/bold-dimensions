@@ -275,3 +275,13 @@ Report code/commit, GitHub push, checks, visual QA, outstanding Firebase configu
 - Admin Service price list must be visible near the top of the operations dashboard, not buried after promotional content. It supports create, edit, active/hidden state and delete. Never silently overwrite an existing numeric price during seed migration.
 - Firestore servicePricing must allow public reads and admin-claim-only create/update/delete with field validation. Verify the live rules are published to project the-wall-ab746; a code push alone does not publish Firestore rules.
 - The customer request form displays the selected service's current active starting price and stores a price snapshot on submission. A starting price is guidance, not a final quote or payment request.
+
+
+## 17. Admin operations workspace — 2026-11-10
+
+- Admin navigation is organized into Today, Work, Customers, Money, Store and Settings. This is navigation over existing Firebase-backed workflows; never replace live data with Iteration 13 demo/local-storage records.
+- Today uses real request counts and the current service queue. Work provides searchable service requests. Customers retains secure multi-contact WhatsApp invitations and request history. Money totals derive only from agreed totals and staff-recorded verified payments. Store contains service-price and promotional-content CRUD plus published service scope. Settings contains notification preferences and concise access guidance.
+- Preserve AdminGate, Firebase subscriptions, private-detail reveal, status transitions, quote/schedule/internal notes, payment validation, receipts, private conversations, UploadThing promotion uploads and the customer invitation endpoint.
+- Keep customer contact details masked until deliberate authorized reveal. Search must not expose hidden contact fields or bypass Firebase authorization.
+- Money summaries are operational totals, not bank reconciliation, tax reporting or proof of settlement.
+- Keep mobile navigation horizontally scrollable and sticky, with distinct content sections and readable spacing. Do not claim visual QA until rendered mobile and desktop screens have been inspected.
