@@ -512,3 +512,37 @@
  .bdWorkspaceReceipt>a{padding:4px 0}
  .bdWorkspaceRequestMain{align-items:flex-start}
 }
+
+
+/* Customer-facing welcome, local conditions and quick actions */
+.bdCustomerWeather{width:min(1000px,calc(100% - 36px));margin:0 auto 12px;padding:13px 15px;border:1px solid var(--bd-line);background:linear-gradient(110deg,#112c50,#0b1c36)}
+.bdWorkspaceContent>.bdCustomerWeather{width:100%;margin:0}
+.bdCustomerWeatherTop{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.bdCustomerWeatherTop>div:first-child{display:grid;gap:4px}
+.bdCustomerWeatherTop>div:first-child strong{font-size:.75rem}
+.bdWeatherActions{display:flex;align-items:center;gap:8px}
+.bdWeatherActions button{border:1px solid var(--bd-line);border-radius:6px;background:#0b1c36;color:var(--bd-cyan);padding:6px 8px;font-size:.62rem;font-weight:800;cursor:pointer}
+.bdWeatherActions button:disabled{opacity:.5;cursor:wait}
+.bdWeatherCurrent{display:flex;align-items:center;gap:13px;margin-top:10px}
+.bdWeatherIcon{font-size:2.2rem;line-height:1;color:#ffd18a}
+.bdWeatherTemperature{display:grid;gap:1px}
+.bdWeatherTemperature strong{font:500 1.9rem/1 Georgia,serif}
+.bdWeatherTemperature span{font-size:.65rem;color:var(--bd-muted)}
+.bdWeatherDetails{display:flex;gap:12px;flex-wrap:wrap;margin-left:auto;color:#c0d1e8;font-size:.62rem}
+.bdWeatherLoading,.bdWeatherError{margin:10px 0 0;color:var(--bd-muted);font-size:.66rem}
+.bdWeatherError{color:#ffbdad}
+.bdWeatherFoot{display:block;margin-top:9px;color:#8098b8;font-size:.55rem}
+.bdWorkspaceQuickActions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.bdWorkspaceQuickActions>a,.bdWorkspaceQuickActions>button{display:grid;gap:5px;align-content:start;min-width:0;padding:12px;border:1px solid var(--bd-line);background:#0b1c36;color:var(--bd-text);text-align:left;text-decoration:none;cursor:pointer}
+.bdWorkspaceQuickActions>a>span,.bdWorkspaceQuickActions>button>span{color:var(--bd-cyan);font-size:1.1rem}
+.bdWorkspaceQuickActions strong{font-size:.69rem}
+.bdWorkspaceQuickActions small{color:var(--bd-muted);font-size:.59rem;line-height:1.4}
+@media(max-width:600px){
+ .bdCustomerWeather{padding:11px}
+ .bdWeatherCurrent{gap:9px;flex-wrap:wrap}
+ .bdWeatherDetails{width:100%;margin-left:0;gap:10px}
+ .bdWorkspaceQuickActions{grid-template-columns:1fr}
+ .bdWorkspaceQuickActions>a,.bdWorkspaceQuickActions>button{grid-template-columns:24px 1fr;align-items:center}
+ .bdWorkspaceQuickActions>a>span,.bdWorkspaceQuickActions>button>span{grid-row:span 2}
+ .bdWorkspaceQuickActions small{grid-column:2}
+}
