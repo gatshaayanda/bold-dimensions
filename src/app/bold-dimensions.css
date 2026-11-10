@@ -444,3 +444,7 @@
  .bdReceiptSheet{width:100%;max-width:none;margin:0;padding:0;border:0;box-shadow:none}
  .bdReceiptActions{display:none!important}
 }
+
+.bdTrackPriceGuide{display:grid;gap:4px;margin:12px 0 0;padding:10px 12px;border-left:2px solid var(--bd-cyan);background:#0a1d37}
+.bdTrackPriceGuide strong{color:var(--bd-text);font-size:.74rem}
+.bdTrackPriceGuide small{color:var(--bd-muted);font-size:.62rem}
